@@ -162,7 +162,7 @@ body {
     position: relative;
 }
 
-/* KPI SUMMARY BOX - REVISI PREISI SEJAJAR & UNIFORM */
+/* KPI SUMMARY BOX - REVISI IKON KUNING */
 .kpi-container {
     background: #ffffff;
     border: 2px solid #000;
@@ -175,7 +175,7 @@ body {
 }
 
 .kpi-icon-box {
-    background: #ffb703;
+    background: #ffb703; /* Warna kuning disesuaikan dengan tema header */
     border: 2px solid #000;
     border-radius: 8px;
     padding: 8px;
@@ -190,6 +190,7 @@ body {
 .kpi-icon-box svg {
     width: 36px;
     height: 36px;
+    stroke: #000;
 }
 
 .kpi-metrics {
@@ -207,7 +208,6 @@ body {
     text-align: center;
 }
 
-/* Angka Utama Menonjol & Sejajar */
 .kpi-item h3 {
     font-size: 24px;
     font-weight: 800;
@@ -217,13 +217,24 @@ body {
     width: 100%;
     text-align: center;
 }
-/* TABLE REKAP JABATAN */
+
+.kpi-item p {
+    font-size: 11px;
+    font-weight: bold;
+    color: #444;
+    line-height: 1.3;
+    margin: 0;
+    text-align: center;
+    white-space: normal;
+    max-width: 130px;
+}
+
+/* TABLE REKAP JABATAN (DI BAWAH KPI BOX) */
 .jabatan-table-container {
     background: #ffffff;
     border: 2px solid #000;
     border-radius: 4px;
     padding: 10px;
-    margin-top: 5px;
 }
 
 .jabatan-table-container .sub-header {
@@ -231,7 +242,7 @@ body {
 }
 
 .table-wrapper {
-    max-height: 180px; /* Batas tinggi agar ada scrollbar jika jabatan sangat banyak */
+    max-height: 180px;
     overflow-y: auto;
 }
 
@@ -252,7 +263,7 @@ body {
     color: #000;
     font-weight: bold;
     position: sticky;
-    top: 0; /* Agar header tabel tetap terlihat saat di-scroll */
+    top: 0;
 }
 
 .jabatan-table tr:nth-child(even) {
@@ -262,18 +273,6 @@ body {
 .jabatan-table td.count-col {
     text-align: center;
     font-weight: bold;
-}
-    
-/* Keterangan Teks Berbaris Rapi Di Bawah Angka */
-.kpi-item p {
-    font-size: 11px;
-    font-weight: bold;
-    color: #444;
-    line-height: 1.3;
-    margin: 0;
-    text-align: center;
-    white-space: normal;
-    max-width: 130px;
 }
 
 /* SECTION BAWAH (DIAGRAM GARIS PRE VS POST TEST) */
@@ -336,7 +335,7 @@ body {
             </div>
         </div>
 
-        <!-- KPI SUMMARY BOX (TEXT DI-CENTER KAN & SEJAJAR) -->
+        <!-- KPI SUMMARY BOX -->
         <div class="kpi-container">
             <div class="kpi-icon-box">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -363,6 +362,24 @@ body {
                     <h3 id="kpiTopModule" style="font-size: 16px;">-</h3>
                     <p>Most Popular Module<br>2026 (YTD)</p>
                 </div>
+            </div>
+        </div>
+
+        <!-- TABEL REKAP JABATAN (PENGISI RUANG KOSONG) -->
+        <div class="jabatan-table-container">
+            <div class="sub-header">Rekap Jumlah Pegawai per Jabatan</div>
+            <div class="table-wrapper">
+                <table class="jabatan-table">
+                    <thead>
+                        <tr>
+                            <th>Jabatan</th>
+                            <th style="width: 110px; text-align: center;">Total Pegawai</th>
+                        </tr>
+                    </thead>
+                    <tbody id="jabatanTableBody">
+                        <!-- Data akan diisi secara otomatis via JavaScript -->
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -431,7 +448,7 @@ const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQk1Gnwtu-vKG24
 let parsedData = [];
 let moduleColumns = [];
 let chartInstances = {};
-let colMap = {}; // Dynamic Mapping untuk posisi kolom
+let colMap = {};
 
 function parseCustomCSV(text) {
     const lines = text.split("\n").filter(l => l.trim().length > 0);
@@ -459,7 +476,6 @@ function parseCustomCSV(text) {
     const row1 = splitCSVLine(lines[0]);
     const row2 = splitCSVLine(lines[1]);
 
-    // 1. CARI INDEKS KOLOM SECARA DINAMIS SESUAI NAMA HEADER
     colMap = {
         nrp: -1,
         nama: -1,
@@ -474,7 +490,6 @@ function parseCustomCSV(text) {
         statusTarget: -1
     };
 
-    // Scan Baris 1 & Baris 2 untuk mencari kolom identitas & ringkasan
     for (let c = 0; c < Math.max(row1.length, row2.length); c++) {
         const h1 = (row1[c] || "").toLowerCase().trim();
         const h2 = (row2[c] || "").toLowerCase().trim();
@@ -493,7 +508,6 @@ function parseCustomCSV(text) {
         else if (combined.includes("status target") || combined.includes("target status")) colMap.statusTarget = c;
     }
 
-    // Default fallback jika tidak terdeteksi
     if (colMap.nrp === -1) colMap.nrp = 1;
     if (colMap.nama === -1) colMap.nama = 2;
     if (colMap.lokasi === -1) colMap.lokasi = 3;
@@ -501,13 +515,11 @@ function parseCustomCSV(text) {
     if (colMap.jumlahModul === -1) colMap.jumlahModul = 5;
     if (colMap.jabatan === -1) colMap.jabatan = 6;
 
-    // 2. DETEKSI KOLOM MODUL
     moduleColumns = [];
     let currentModule = "";
     for (let colIdx = 0; colIdx < row1.length; colIdx++) {
         if (row1[colIdx] && row1[colIdx].trim() !== "") {
             const h1Upper = row1[colIdx].trim();
-            // Abaikan kolom non-modul utama
             if (!["no", "nrp", "name", "nama", "lokasi kerja update", "corpu area", "jumlah modul yg diambil", "jabatan"].includes(h1Upper.toLowerCase())) {
                 currentModule = h1Upper;
             }
@@ -526,7 +538,6 @@ function parseCustomCSV(text) {
         }
     }
 
-    // 3. PARSE DATA BARIS PESERTA (BARIS 3 KE BAWAH)
     parsedData = [];
     for (let i = 2; i < lines.length; i++) {
         const row = splitCSVLine(lines[i]);
@@ -547,7 +558,6 @@ function parseCustomCSV(text) {
             modules: {}
         };
 
-        // Fallback hitung manual jika kolom statusCoverage / recap berada di tempat lain
         let hasAnyPicked = false;
         let hasDoneAny = false;
         let hasProgressAny = false;
@@ -570,7 +580,6 @@ function parseCustomCSV(text) {
             }
         });
 
-        // Jika kolom Status Coverage tidak ditemukan di CSV, hitung berdasarkan pilihan modul
         if (!item.statusCoverage) {
             item.statusCoverage = (item.jumlahModul > 0 || hasAnyPicked) ? "Tercoverage" : "Not Yet";
         }
@@ -584,7 +593,6 @@ function parseCustomCSV(text) {
     }
 }
 
-// Fetch Data Google Sheets CSV
 fetch(CSV_URL)
     .then(res => res.text())
     .then(csvText => {
@@ -629,7 +637,7 @@ function renderDashboard(data) {
     const jabatanList = [...new Set(data.map(d => d.jabatan))].sort();
 
     // -------------------------------------------------------------
-    // KPI METRICS CALCULATIONS
+    // KPI METRICS
     // -------------------------------------------------------------
     const totalPart = data.length;
     let totalCovered = 0;
@@ -807,7 +815,7 @@ function renderDashboard(data) {
     });
 
     // -------------------------------------------------------------
-    // 5. BOTTOM LINE CHART (PRE-TEST VS POST-TEST PER MODUL)
+    // 5. LINE CHART PRE VS POST TEST
     // -------------------------------------------------------------
     const modNames = moduleColumns.map(m => m.name);
     const avgPreList = [];
@@ -867,6 +875,23 @@ function renderDashboard(data) {
                 }
             }
         }
+    });
+
+    // -------------------------------------------------------------
+    // 6. RENDER TABEL REKAP JABATAN
+    // -------------------------------------------------------------
+    const tableBody = document.getElementById("jabatanTableBody");
+    tableBody.innerHTML = "";
+
+    const sortedJabatan = Object.keys(jabatanCounts).sort();
+    
+    sortedJabatan.forEach(jab => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${jab}</td>
+            <td class="count-col">${jabatanCounts[jab]}</td>
+        `;
+        tableBody.appendChild(row);
     });
 }
 </script>
