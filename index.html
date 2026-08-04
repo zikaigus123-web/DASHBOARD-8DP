@@ -8,8 +8,9 @@
 <!-- Favicon -->
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 
-<!-- Chart.js CDN -->
+<!-- Chart.js CDN & Plugin DataLabels (Untuk menampilkan persentase di Pie Chart) -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
 <style>
 * {
@@ -38,7 +39,7 @@ body {
 }
 
 .logo-ut { height: 45px; }
-.logo-corpu { height: 100px; }
+.logo-corpu { height: 60px; }
 
 .title-container h1 {
     font-size: 22px;
@@ -66,7 +67,7 @@ body {
 }
 
 .filter-select {
-    padding: 4px 8px;
+    padding: 6px 8px;
     font-size: 13px;
     border-radius: 4px;
     border: 1px solid #aaa;
@@ -80,12 +81,6 @@ body {
     grid-template-columns: 1fr 2fr;
     gap: 15px;
     margin-bottom: 15px;
-}
-
-@media (max-width: 1024px) {
-    .main-layout {
-        grid-template-columns: 1fr;
-    }
 }
 
 .left-column {
@@ -104,12 +99,6 @@ body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 15px;
-}
-
-@media (max-width: 768px) {
-    .top-right-grid {
-        grid-template-columns: 1fr;
-    }
 }
 
 /* CARD & BANNER STYLES */
@@ -162,7 +151,7 @@ body {
     position: relative;
 }
 
-/* KPI SUMMARY BOX - REVISI IKON KUNING */
+/* KPI SUMMARY BOX */
 .kpi-container {
     background: #ffffff;
     border: 2px solid #000;
@@ -175,7 +164,7 @@ body {
 }
 
 .kpi-icon-box {
-    background: #ffb703; /* Warna kuning disesuaikan dengan tema header */
+    background: #ffb703;
     border: 2px solid #000;
     border-radius: 8px;
     padding: 8px;
@@ -196,7 +185,7 @@ body {
 .kpi-metrics {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
+    gap: 10px;
     width: 100%;
     align-items: flex-start;
 }
@@ -209,7 +198,7 @@ body {
 }
 
 .kpi-item h3 {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 800;
     color: #000;
     line-height: 1;
@@ -226,10 +215,9 @@ body {
     margin: 0;
     text-align: center;
     white-space: normal;
-    max-width: 130px;
 }
 
-/* TABLE REKAP JABATAN (DI BAWAH KPI BOX) */
+/* TABLE REKAP JABATAN */
 .jabatan-table-container {
     background: #ffffff;
     border: 2px solid #000;
@@ -289,6 +277,69 @@ body {
 .bottom-chart-box {
     height: 280px;
     position: relative;
+}
+
+/* ========================================================= */
+/* MEDIA QUERIES UNTUK TAMPILAN MOBILE (HP)                  */
+/* ========================================================= */
+@media (max-width: 768px) {
+    body {
+        padding: 8px;
+    }
+
+    .header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+        padding: 12px;
+    }
+
+    .logo-ut { height: 35px; }
+    .logo-corpu { height: 45px; }
+
+    .title-container h1 {
+        font-size: 16px;
+    }
+
+    .filter-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-select {
+        width: 100%;
+    }
+
+    .main-layout {
+        grid-template-columns: 1fr; /* Jadi 1 Kolom ke bawah */
+        gap: 12px;
+    }
+
+    .top-right-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .kpi-container {
+        flex-direction: column;
+        padding: 12px;
+    }
+
+    .kpi-metrics {
+        grid-template-columns: repeat(2, 1fr); /* KPI jadi 2x2 di HP */
+        gap: 12px;
+    }
+
+    .kpi-item h3 {
+        font-size: 20px;
+    }
+
+    .kpi-item p {
+        font-size: 10px;
+    }
+
+    .chart-box {
+        height: 240px; /* Sedikit ditambahkan tinggi untuk ruang legenda di HP */
+    }
 }
 </style>
 </head>
@@ -359,13 +410,13 @@ body {
                     <p>Top Chosen Count<br>2026 (YTD)</p>
                 </div>
                 <div class="kpi-item">
-                    <h3 id="kpiTopModule" style="font-size: 16px;">-</h3>
+                    <h3 id="kpiTopModule" style="font-size: 15px;">-</h3>
                     <p>Most Popular Module<br>2026 (YTD)</p>
                 </div>
             </div>
         </div>
 
-        <!-- TABEL REKAP JABATAN (PENGISI RUANG KOSONG) -->
+        <!-- TABEL REKAP JABATAN -->
         <div class="jabatan-table-container">
             <div class="sub-header">Rekap Jumlah Pegawai per Jabatan</div>
             <div class="table-wrapper">
@@ -377,7 +428,6 @@ body {
                         </tr>
                     </thead>
                     <tbody id="jabatanTableBody">
-                        <!-- Data akan diisi secara otomatis via JavaScript -->
                     </tbody>
                 </table>
             </div>
@@ -442,7 +492,9 @@ body {
 </div>
 
 <script>
-// LINK CSV PUBLIK GOOGLE SHEETS
+// DAFTARKAN PLUGIN DATALABELS PADA CHART.JS
+Chart.register(ChartDataLabels);
+
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQk1Gnwtu-vKG24ImVYA0ytCuAuOuWeujzNpFbUPz2C-Y0jLwRxWspRCSMPqG9gj7WfcTGtXWwSlFH6/pub?gid=1260922175&single=true&output=csv";
 
 let parsedData = [];
@@ -477,17 +529,9 @@ function parseCustomCSV(text) {
     const row2 = splitCSVLine(lines[1]);
 
     colMap = {
-        nrp: -1,
-        nama: -1,
-        lokasi: -1,
-        corpu: -1,
-        jumlahModul: -1,
-        jabatan: -1,
-        statusCoverage: -1,
-        allRecap: -1,
-        trainingHours: -1,
-        targetHours: -1,
-        statusTarget: -1
+        nrp: -1, nama: -1, lokasi: -1, corpu: -1, jumlahModul: -1,
+        jabatan: -1, statusCoverage: -1, allRecap: -1, trainingHours: -1,
+        targetHours: -1, statusTarget: -1
     };
 
     for (let c = 0; c < Math.max(row1.length, row2.length); c++) {
@@ -558,9 +602,7 @@ function parseCustomCSV(text) {
             modules: {}
         };
 
-        let hasAnyPicked = false;
-        let hasDoneAny = false;
-        let hasProgressAny = false;
+        let hasAnyPicked = false, hasDoneAny = false, hasProgressAny = false;
 
         moduleColumns.forEach(mod => {
             const preVal = parseFloat(row[mod.preIdx]);
@@ -604,9 +646,7 @@ fetch(CSV_URL)
 
 function initLokasiFilter() {
     const lokasiSet = new Set();
-    parsedData.forEach(item => {
-        if (item.lokasi) lokasiSet.add(item.lokasi);
-    });
+    parsedData.forEach(item => { if (item.lokasi) lokasiSet.add(item.lokasi); });
 
     const select = document.getElementById("filterLokasi");
     select.innerHTML = '<option value="ALL">-- Semua Lokasi Kerja --</option>';
@@ -631,6 +671,32 @@ function destroyChart(id) {
     if (chartInstances[id]) {
         chartInstances[id].destroy();
     }
+}
+
+// FORMATTER PIE CHART OPTIONS DENGAN PERSENTASE DAN LEGENDA DI KANAN
+function getPieOptions() {
+    return {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'right', // LEGENDA DI SAMPING KANAN (Persis foto)
+                labels: { font: { size: 11 } }
+            },
+            datalabels: {
+                formatter: (value, ctx) => {
+                    let sum = 0;
+                    let dataArr = ctx.chart.data.datasets[0].data;
+                    dataArr.map(data => { sum += data; });
+                    if (sum === 0) return "0%";
+                    let percentage = (value * 100 / sum).toFixed(1) + "%";
+                    return percentage;
+                },
+                color: '#000',
+                font: { weight: 'bold', size: 11 }
+            }
+        }
+    };
 }
 
 function renderDashboard(data) {
@@ -695,7 +761,7 @@ function renderDashboard(data) {
             labels: ["Tercoverage", "Not Yet"],
             datasets: [{ data: [tercoverageCount, notCoverageCount], backgroundColor: ["#f77f00", "#4285f4"] }]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: false } } }
+        options: getPieOptions()
     });
 
     destroyChart("coverageBar");
@@ -708,7 +774,11 @@ function renderDashboard(data) {
                 { label: "Not Yet", data: jabatanList.map(j => coverageByJabatan[j]["Not Yet"]), backgroundColor: "#4285f4" }
             ]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: false } }, scales: { y: { beginAtZero: true } } }
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { datalabels: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
     });
 
     // -------------------------------------------------------------
@@ -740,7 +810,7 @@ function renderDashboard(data) {
             labels: ["Not Yet", "Done", "On Progress"],
             datasets: [{ data: [notYetPartCount, doneCount, onProgressCount], backgroundColor: ["#4285f4", "#f77f00", "#a855f7"] }]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: false } } }
+        options: getPieOptions()
     });
 
     destroyChart("partBar");
@@ -754,7 +824,11 @@ function renderDashboard(data) {
                 { label: "Not Yet", data: jabatanList.map(j => participantByJabatan[j]["Not Yet"]), backgroundColor: "#4285f4" }
             ]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: false } }, scales: { y: { beginAtZero: true } } }
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { datalabels: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
     });
 
     // -------------------------------------------------------------
@@ -782,7 +856,7 @@ function renderDashboard(data) {
             labels: ["Tercapai", "Belum Tercapai"],
             datasets: [{ data: [tercapaiCount, belumTercapaiCount], backgroundColor: ["#4285f4", "#f77f00"] }]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: false } } }
+        options: getPieOptions()
     });
 
     destroyChart("hoursBar");
@@ -795,7 +869,11 @@ function renderDashboard(data) {
                 { label: "Target Hours", data: jabatanList.map(j => hoursByJabatan[j].target), backgroundColor: "#ffb703" }
             ]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: false } }, scales: { y: { beginAtZero: true } } }
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { datalabels: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
     });
 
     // -------------------------------------------------------------
@@ -811,7 +889,7 @@ function renderDashboard(data) {
             labels: Object.keys(jabatanCounts),
             datasets: [{ data: Object.values(jabatanCounts), backgroundColor: ["#4285f4", "#f77f00", "#34a853", "#ea4335", "#a855f7", "#14b8a6", "#f59e0b", "#6366f1"] }]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: false } } }
+        options: getPieOptions()
     });
 
     // -------------------------------------------------------------
@@ -866,7 +944,7 @@ function renderDashboard(data) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { title: { display: false } },
+            plugins: { datalabels: { display: false } },
             scales: {
                 y: {
                     beginAtZero: true,
