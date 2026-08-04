@@ -217,7 +217,53 @@ body {
     width: 100%;
     text-align: center;
 }
+/* TABLE REKAP JABATAN */
+.jabatan-table-container {
+    background: #ffffff;
+    border: 2px solid #000;
+    border-radius: 4px;
+    padding: 10px;
+    margin-top: 5px;
+}
 
+.jabatan-table-container .sub-header {
+    margin-bottom: 8px;
+}
+
+.table-wrapper {
+    max-height: 180px; /* Batas tinggi agar ada scrollbar jika jabatan sangat banyak */
+    overflow-y: auto;
+}
+
+.jabatan-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.jabatan-table th, .jabatan-table td {
+    border: 1px solid #ccc;
+    padding: 6px 10px;
+    text-align: left;
+}
+
+.jabatan-table th {
+    background-color: #ffb703;
+    color: #000;
+    font-weight: bold;
+    position: sticky;
+    top: 0; /* Agar header tabel tetap terlihat saat di-scroll */
+}
+
+.jabatan-table tr:nth-child(even) {
+    background-color: #f9fafb;
+}
+
+.jabatan-table td.count-col {
+    text-align: center;
+    font-weight: bold;
+}
+    
 /* Keterangan Teks Berbaris Rapi Di Bawah Angka */
 .kpi-item p {
     font-size: 11px;
