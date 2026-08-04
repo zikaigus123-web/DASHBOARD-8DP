@@ -163,11 +163,12 @@ body {
 }
 
 /* KPI SUMMARY BOX - PENYESUAIAN RATA TENGAH (CENTERED) */
+/* KPI SUMMARY BOX - ALIGNMENT PERBAIKAN */
 .kpi-container {
     background: #ffffff;
     border: 2px solid #000;
     border-radius: 4px;
-    padding: 15px;
+    padding: 12px 15px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -197,30 +198,37 @@ body {
     grid-template-columns: repeat(4, 1fr);
     gap: 10px;
     width: 100%;
-    align-items: center;
+    align-items: start; /* Memastikan semua kolom mulai sejajar dari atas */
 }
 
 .kpi-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     text-align: center;
 }
 
+/* Memaksa area angka/judul memiliki tinggi yang sama dan kontennya tepat di tengah */
 .kpi-item h3 {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 800;
     color: #000;
     line-height: 1.2;
+    height: 40px;            /* Tinggi tetap agar angka/teks atas sejajar */
+    display: flex;
+    align-items: center;     /* Vertikal center untuk angka/judul */
+    justify-content: center;  /* Horisontal center */
+    margin-bottom: 4px;
+    width: 100%;
 }
 
+/* Teks keterangan di bawah akan otomatis mulai tepat di bawah baris h3 secara sejajar */
 .kpi-item p {
     font-size: 11px;
     font-weight: bold;
     color: #555;
-    margin-top: 4px;
     line-height: 1.2;
+    margin: 0;
 }
 
 /* SECTION BAWAH (DIAGRAM GARIS PRE VS POST TEST) */
