@@ -8,7 +8,7 @@
 <!-- Favicon -->
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 
-<!-- Chart.js CDN & Plugin DataLabels (Untuk menampilkan persentase di Pie Chart) -->
+<!-- Chart.js CDN & Plugin DataLabels -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
@@ -24,6 +24,95 @@ body {
     background-color: #e5e7eb;
     color: #333;
     padding: 15px;
+}
+
+/* MODAL LOGIN STYLES */
+.login-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.login-card {
+    background: #ffffff;
+    border: 3px solid #000;
+    border-radius: 8px;
+    padding: 25px 30px;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    text-align: center;
+}
+
+.login-card h2 {
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 5px;
+    color: #000;
+}
+
+.login-card p {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.login-field {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.login-field label {
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.login-field input {
+    width: 100%;
+    padding: 10px;
+    font-size: 13px;
+    border: 2px solid #000;
+    border-radius: 4px;
+    outline: none;
+}
+
+.login-btn {
+    width: 100%;
+    background: #ffb703;
+    color: #000;
+    border: 2px solid #000;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.login-btn:hover {
+    background: #e0a200;
+}
+
+.error-msg {
+    color: #d9534f;
+    font-size: 12px;
+    margin-top: 10px;
+    font-weight: bold;
+    display: none;
+}
+
+/* MAIN CONTENT BLUR/HIDDEN UNTIL LOGIN */
+.dashboard-container {
+    display: none; /* Disembunyikan sebelum login */
 }
 
 /* HEADER SECTION */
@@ -49,13 +138,20 @@ body {
     text-align: center;
 }
 
-/* FILTER SECTION */
+/* FILTER & BUTTON CONTAINER SECTION */
 .filter-container {
     background: #ffffff;
     border: 2px solid #000;
     border-radius: 4px;
     padding: 8px 15px;
     margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Membuat filter di kiri dan tombol spreadsheet di kanan */
+    gap: 10px;
+}
+
+.filter-left {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -73,6 +169,34 @@ body {
     border: 1px solid #aaa;
     outline: none;
     min-width: 200px;
+}
+
+/* BUTTON SPREADSHEET (POSISI SEJAJAR FILTER & DI ATAS TRAINING HOURS) */
+.btn-spreadsheet {
+    background-color: #ffb703;
+    color: #000;
+    border: 2px solid #000;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn-spreadsheet:hover {
+    background-color: #e0a200;
+    transform: translateY(-1px);
+}
+
+.btn-spreadsheet svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
 }
 
 /* MAIN LAYOUT SPLIT (KIRI & KANAN) */
@@ -287,7 +411,9 @@ body {
     .logo-corpu { height: 45px; }
     .title-container h1 { font-size: 16px; }
     .filter-container { flex-direction: column; align-items: stretch; }
+    .filter-left { flex-direction: column; align-items: stretch; }
     .filter-select { width: 100%; }
+    .btn-spreadsheet { justify-content: center; width: 100%; }
     .main-layout { grid-template-columns: 1fr; gap: 12px; }
     .top-right-grid { grid-template-columns: 1fr; }
     .kpi-container { flex-direction: column; padding: 12px; }
@@ -300,153 +426,209 @@ body {
 </head>
 <body>
 
-<!-- HEADER -->
-<div class="header">
-    <img src="logo ut.png" alt="United Tractors" class="logo-ut">
-    <div class="title-container">
-        <h1>DASHBOARD MONITORING DEVELOPMENT 8 DP</h1>
+<!-- MODAL LOGIN SECURITY -->
+<div id="loginModal" class="login-overlay">
+    <div class="login-card">
+        <h2>LOGIN DASHBOARD</h2>
+        <p>Silakan masuk untuk mengakses data monitoring</p>
+        <form onsubmit="handleLogin(event)">
+            <div class="login-field">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Masukkan Username" required autocomplete="off">
+            </div>
+            <div class="login-field">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Masukkan Password" required>
+            </div>
+            <button type="submit" class="login-btn">MASUK DASHBOARD</button>
+            <div id="errorMsg" class="error-msg">Username atau Password salah!</div>
+        </form>
     </div>
-    <img src="logo corpu.png" alt="UT Corporate University" class="logo-corpu">
 </div>
 
-<!-- FILTER LOKASI KERJA -->
-<div class="filter-container">
-    <label for="filterLokasi">Filter Lokasi Kerja Update:</label>
-    <select id="filterLokasi" class="filter-select" onchange="applyFilter()">
-        <option value="ALL">-- Semua Lokasi Kerja --</option>
-    </select>
-</div>
+<!-- DASHBOARD CONTAINER (DISIMPANG SAMPAI LOGIN BERHASIL) -->
+<div id="dashboardContent" class="dashboard-container">
 
-<!-- MAIN LAYOUT (LEFT & RIGHT) -->
-<div class="main-layout">
-
-    <!-- LEFT COLUMN -->
-    <div class="left-column">
-        <!-- TRAINING COVERAGE CARD -->
-        <div class="column-card">
-            <div class="column-header">Training Coverage</div>
-            
-            <div class="chart-wrapper">
-                <div class="sub-header">Overall Coverage Rate</div>
-                <div class="chart-box">
-                    <canvas id="coveragePieChart"></canvas>
-                </div>
-            </div>
-
-            <div class="chart-wrapper">
-                <div class="sub-header">Training Coverage per Jabatan</div>
-                <div class="chart-box">
-                    <canvas id="coverageBarChart"></canvas>
-                </div>
-            </div>
+    <!-- HEADER -->
+    <div class="header">
+        <img src="logo ut.png" alt="United Tractors" class="logo-ut">
+        <div class="title-container">
+            <h1>DASHBOARD MONITORING DEVELOPMENT 8 DP</h1>
         </div>
-
-        <!-- KPI SUMMARY BOX -->
-        <div class="kpi-container">
-            <div class="kpi-icon-box">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                </svg>
-            </div>
-            <div class="kpi-metrics">
-                <div class="kpi-item">
-                    <h3 id="kpiTotalPart">0</h3>
-                    <p>Total Participant<br>2026 (YTD)</p>
-                </div>
-                <div class="kpi-item">
-                    <h3 id="kpiOverallCoverage">0</h3>
-                    <p>Overall Coverage<br>2026 (YTD)</p>
-                </div>
-                <div class="kpi-item">
-                    <h3 id="kpiHighestModuleCount">0</h3>
-                    <p>Top Chosen Count<br>2026 (YTD)</p>
-                </div>
-                <div class="kpi-item">
-                    <h3 id="kpiTopModule" style="font-size: 15px;">-</h3>
-                    <p>Most Popular Module<br>2026 (YTD)</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- TABEL REKAP JABATAN -->
-        <div class="jabatan-table-container">
-            <div class="sub-header">Rekap Jumlah Pegawai per Jabatan</div>
-            <div class="table-wrapper">
-                <table class="jabatan-table">
-                    <thead>
-                        <tr>
-                            <th>Jabatan</th>
-                            <th style="width: 110px; text-align: center;">Total Pegawai</th>
-                        </tr>
-                    </thead>
-                    <tbody id="jabatanTableBody">
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <img src="logo corpu.png" alt="UT Corporate University" class="logo-corpu">
     </div>
 
-    <!-- RIGHT COLUMN -->
-    <div class="right-column">
-        <div class="top-right-grid">
-            <!-- TRAINING PARTICIPANT CARD -->
+    <!-- FILTER & BUTTON SPREADSHEET BAR -->
+    <div class="filter-container">
+        <div class="filter-left">
+            <label for="filterLokasi">Filter Lokasi Kerja Update:</label>
+            <select id="filterLokasi" class="filter-select" onchange="applyFilter()">
+                <option value="ALL">-- Semua Lokasi Kerja --</option>
+            </select>
+        </div>
+
+        <!-- TOMBOL SEJAJAR FILTER & DI ATAS TRAINING HOURS -->
+        <a href="https://docs.google.com/spreadsheets/d/1vQk1Gnwtu-vKG24ImVYA0ytCuAuOuWeujzNpFbUPz2C-Y0jLwRxWspRCSMPqG9gj7WfcTGtXWwSlFH6/edit" target="_blank" class="btn-spreadsheet">
+            <svg viewBox="0 0 24 24">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-2h2v2zm0-4H7v-2h2v2zm0-4H7V7h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/>
+            </svg>
+            Buka Spreadsheet Data
+        </a>
+    </div>
+
+    <!-- MAIN LAYOUT (LEFT & RIGHT) -->
+    <div class="main-layout">
+
+        <!-- LEFT COLUMN -->
+        <div class="left-column">
+            <!-- TRAINING COVERAGE CARD -->
             <div class="column-card">
-                <div class="column-header">Training Participant</div>
+                <div class="column-header">Training Coverage</div>
+                
                 <div class="chart-wrapper">
-                    <div class="sub-header">Overall Participation Status</div>
+                    <div class="sub-header">Overall Coverage Rate</div>
                     <div class="chart-box">
-                        <canvas id="participantPieChart"></canvas>
+                        <canvas id="coveragePieChart"></canvas>
                     </div>
                 </div>
+
                 <div class="chart-wrapper">
-                    <div class="sub-header">Training Participant per Jabatan</div>
+                    <div class="sub-header">Training Coverage per Jabatan</div>
                     <div class="chart-box">
-                        <canvas id="participantBarChart"></canvas>
+                        <canvas id="coverageBarChart"></canvas>
                     </div>
                 </div>
             </div>
 
-            <!-- TRAINING HOURS CARD -->
+            <!-- KPI SUMMARY BOX -->
+            <div class="kpi-container">
+                <div class="kpi-icon-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </div>
+                <div class="kpi-metrics">
+                    <div class="kpi-item">
+                        <h3 id="kpiTotalPart">0</h3>
+                        <p>Total Participant<br>2026 (YTD)</p>
+                    </div>
+                    <div class="kpi-item">
+                        <h3 id="kpiOverallCoverage">0</h3>
+                        <p>Overall Coverage<br>2026 (YTD)</p>
+                    </div>
+                    <div class="kpi-item">
+                        <h3 id="kpiHighestModuleCount">0</h3>
+                        <p>Top Chosen Count<br>2026 (YTD)</p>
+                    </div>
+                    <div class="kpi-item">
+                        <h3 id="kpiTopModule" style="font-size: 15px;">-</h3>
+                        <p>Most Popular Module<br>2026 (YTD)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABEL REKAP JABATAN -->
+            <div class="jabatan-table-container">
+                <div class="sub-header">Rekap Jumlah Pegawai per Jabatan</div>
+                <div class="table-wrapper">
+                    <table class="jabatan-table">
+                        <thead>
+                            <tr>
+                                <th>Jabatan</th>
+                                <th style="width: 110px; text-align: center;">Total Pegawai</th>
+                            </tr>
+                        </thead>
+                        <tbody id="jabatanTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="right-column">
+            <div class="top-right-grid">
+                <!-- TRAINING PARTICIPANT CARD -->
+                <div class="column-card">
+                    <div class="column-header">Training Participant</div>
+                    <div class="chart-wrapper">
+                        <div class="sub-header">Overall Participation Status</div>
+                        <div class="chart-box">
+                            <canvas id="participantPieChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <div class="sub-header">Training Participant per Jabatan</div>
+                        <div class="chart-box">
+                            <canvas id="participantBarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TRAINING HOURS CARD -->
+                <div class="column-card">
+                    <div class="column-header">Training Hours</div>
+                    <div class="chart-wrapper">
+                        <div class="sub-header">Overall Hours Target Achievement</div>
+                        <div class="chart-box">
+                            <canvas id="hoursPieChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <div class="sub-header">Training Hours per Jabatan</div>
+                        <div class="chart-box">
+                            <canvas id="hoursBarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXTRA: DISTRIBUSI TOTAL PESERTA BERDASARKAN JABATAN -->
             <div class="column-card">
-                <div class="column-header">Training Hours</div>
-                <div class="chart-wrapper">
-                    <div class="sub-header">Overall Hours Target Achievement</div>
-                    <div class="chart-box">
-                        <canvas id="hoursPieChart"></canvas>
-                    </div>
-                </div>
-                <div class="chart-wrapper">
-                    <div class="sub-header">Training Hours per Jabatan</div>
-                    <div class="chart-box">
-                        <canvas id="hoursBarChart"></canvas>
-                    </div>
+                <div class="sub-header">Distribusi Total Peserta Berdasarkan Jabatan</div>
+                <div class="chart-box" style="height: 200px;">
+                    <canvas id="jabatanPieChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <!-- EXTRA: DISTRIBUSI TOTAL PESERTA BERDASARKAN JABATAN -->
-        <div class="column-card">
-            <div class="sub-header">Distribusi Total Peserta Berdasarkan Jabatan</div>
-            <div class="chart-box" style="height: 200px;">
-                <canvas id="jabatanPieChart"></canvas>
-            </div>
+    </div>
+
+    <!-- BOTTOM SECTION: EVALUASI NILAI PRE VS POST TEST PER MODUL -->
+    <div class="bottom-section">
+        <div class="sub-header">Rata-Rata Nilai Pre-Test vs Post-Test per Modul Training</div>
+        <div class="bottom-chart-box">
+            <canvas id="prePostLineChart"></canvas>
         </div>
     </div>
 
-</div>
-
-<!-- BOTTOM SECTION: EVALUASI NILAI PRE VS POST TEST PER MODUL -->
-<div class="bottom-section">
-    <div class="sub-header">Rata-Rata Nilai Pre-Test vs Post-Test per Modul Training</div>
-    <div class="bottom-chart-box">
-        <canvas id="prePostLineChart"></canvas>
-    </div>
 </div>
 
 <script>
+// ==========================================
+// KREDENSIAL LOGIN SECURITY
+// ==========================================
+const CORRECT_USER = "admin";
+const CORRECT_PASS = "utcorp2026";
+
+function handleLogin(event) {
+    event.preventDefault();
+    const userInput = document.getElementById("username").value.trim();
+    const passInput = document.getElementById("password").value.trim();
+    const errorMsg = document.getElementById("errorMsg");
+
+    if (userInput === CORRECT_USER && passInput === CORRECT_PASS) {
+        document.getElementById("loginModal").style.display = "none";
+        document.getElementById("dashboardContent").style.display = "block";
+        loadDashboardData(); // Mulai memuat data setelah berhasil login
+    } else {
+        errorMsg.style.display = "block";
+    }
+}
+
 // DAFTARKAN PLUGIN DATALABELS PADA CHART.JS
 Chart.register(ChartDataLabels);
 
@@ -593,14 +775,16 @@ function parseCustomCSV(text) {
     }
 }
 
-fetch(CSV_URL)
-    .then(res => res.text())
-    .then(csvText => {
-        parseCustomCSV(csvText);
-        initLokasiFilter();
-        renderDashboard(parsedData);
-    })
-    .catch(err => console.error("Error loading CSV:", err));
+function loadDashboardData() {
+    fetch(CSV_URL)
+        .then(res => res.text())
+        .then(csvText => {
+            parseCustomCSV(csvText);
+            initLokasiFilter();
+            renderDashboard(parsedData);
+        })
+        .catch(err => console.error("Error loading CSV:", err));
+}
 
 function initLokasiFilter() {
     const lokasiSet = new Set();
@@ -656,12 +840,10 @@ function getPieOptions() {
     };
 }
 
-// FUNGSI UNTUK MENGURUTKAN JABATAN SESUAI HIRARKI
 function getOrderedJabatanList(data) {
     const existingJabatan = new Set(data.map(d => d.jabatan));
     const ordered = [];
 
-    // Tambahkan sesuai urutan hirarki kustom
     CUSTOM_JABATAN_ORDER.forEach(j => {
         if (existingJabatan.has(j)) {
             ordered.push(j);
@@ -669,7 +851,6 @@ function getOrderedJabatanList(data) {
         }
     });
 
-    // Jika ada jabatan lain di luar list standar, letakkan di akhir
     Array.from(existingJabatan).sort().forEach(j => {
         if(j) ordered.push(j);
     });
@@ -678,12 +859,9 @@ function getOrderedJabatanList(data) {
 }
 
 function renderDashboard(data) {
-    // MENERAPKAN URUTAN HIRARKI JABATAN
     const jabatanList = getOrderedJabatanList(data);
 
-    // -------------------------------------------------------------
     // KPI METRICS
-    // -------------------------------------------------------------
     const totalPart = data.length;
     let totalCovered = 0;
     const modulePickCounts = {};
@@ -715,9 +893,7 @@ function renderDashboard(data) {
     document.getElementById("kpiTopModule").textContent = topModName;
     document.getElementById("kpiHighestModuleCount").textContent = highestCount;
 
-    // -------------------------------------------------------------
     // 1. TRAINING COVERAGE
-    // -------------------------------------------------------------
     let tercoverageCount = 0, notCoverageCount = 0;
     const coverageByJabatan = {};
     jabatanList.forEach(j => coverageByJabatan[j] = { Tercoverage: 0, "Not Yet": 0 });
@@ -760,9 +936,7 @@ function renderDashboard(data) {
         }
     });
 
-    // -------------------------------------------------------------
     // 2. TRAINING PARTICIPANT
-    // -------------------------------------------------------------
     let doneCount = 0, onProgressCount = 0, notYetPartCount = 0;
     const participantByJabatan = {};
     jabatanList.forEach(j => participantByJabatan[j] = { Done: 0, "On Progress": 0, "Not Yet": 0 });
@@ -810,9 +984,7 @@ function renderDashboard(data) {
         }
     });
 
-    // -------------------------------------------------------------
     // 3. TRAINING HOURS
-    // -------------------------------------------------------------
     let tercapaiCount = 0, belumTercapaiCount = 0;
     const hoursByJabatan = {};
     jabatanList.forEach(j => hoursByJabatan[j] = { actual: 0, target: 0 });
@@ -855,9 +1027,7 @@ function renderDashboard(data) {
         }
     });
 
-    // -------------------------------------------------------------
     // 4. DISTRIBUSI JABATAN (PIE)
-    // -------------------------------------------------------------
     const jabatanCounts = {};
     data.forEach(d => { jabatanCounts[d.jabatan] = (jabatanCounts[d.jabatan] || 0) + 1; });
 
@@ -874,9 +1044,7 @@ function renderDashboard(data) {
         options: getPieOptions()
     });
 
-    // -------------------------------------------------------------
     // 5. LINE CHART PRE VS POST TEST
-    // -------------------------------------------------------------
     const modNames = moduleColumns.map(m => m.name);
     const avgPreList = [];
     const avgPostList = [];
@@ -937,9 +1105,7 @@ function renderDashboard(data) {
         }
     });
 
-    // -------------------------------------------------------------
-    // 6. RENDER TABEL REKAP JABATAN (URUTAN DARI TOP MANAGEMENT)
-    // -------------------------------------------------------------
+    // 6. RENDER TABEL REKAP JABATAN
     const tableBody = document.getElementById("jabatanTableBody");
     tableBody.innerHTML = "";
 
