@@ -372,16 +372,25 @@ body {
     position: relative;
 }
 
-/* KPI BOX */
+/* KPI BOX & SUMMARY STYLES */
 .kpi-container {
     background: #ffffff;
     border: 2px solid #000;
     border-radius: 4px;
     padding: 12px 15px;
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.kpi-content-wrapper {
+    display: flex;
     align-items: center;
     justify-content: center;
     gap: 15px;
+    width: 100%;
 }
 
 .kpi-icon-box {
@@ -419,7 +428,7 @@ body {
 }
 
 .kpi-item h3 {
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 800;
     color: #000;
     line-height: 1;
@@ -428,7 +437,7 @@ body {
 }
 
 .kpi-item p {
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: bold;
     color: #444;
     line-height: 1.3;
@@ -506,7 +515,7 @@ body {
     .btn-spreadsheet { justify-content: center; width: 100%; }
     .main-layout { grid-template-columns: 1fr; }
     .top-right-grid { grid-template-columns: 1fr; }
-    .kpi-container { flex-direction: column; }
+    .kpi-content-wrapper { flex-direction: column; }
     .kpi-metrics { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
@@ -617,21 +626,43 @@ body {
                 </div>
             </div>
 
-            <!-- KPI BOX -->
+            <!-- KPI SUMMARY BOX -->
             <div class="kpi-container">
-                <div class="kpi-icon-box">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    </svg>
-                </div>
-                <div class="kpi-metrics">
-                    <div class="kpi-item"><h3 id="kpiTotalPart">0</h3><p>Total Employee<br>2026 (YTD)</p></div>
-                    <div class="kpi-item"><h3 id="kpiOverallCoverage">0</h3><p>Overall Coverage<br>2026 (YTD)</p></div>
-                    <div class="kpi-item"><h3 id="kpiHighestModuleCount">0</h3><p>Top Chosen Count<br>2026 (YTD)</p></div>
-                    <div class="kpi-item"><h3 id="kpiTopModule" style="font-size: 15px;">-</h3><p>Most Popular Module<br>2026 (YTD)</p></div>
+                <!-- HEADER SUMMARY -->
+                <div class="sub-header" style="width: 100%; text-align: center; margin-bottom: 4px;">SUMMARY</div>
+                
+                <div class="kpi-content-wrapper">
+                    <div class="kpi-icon-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </div>
+                    
+                    <div class="kpi-metrics">
+                        <!-- Kartu 1 -->
+                        <div class="kpi-item">
+                            <h3 id="kpiTotalPart">0</h3>
+                            <p>Total Employee<br>2026 (YTD)</p>
+                        </div>
+                        <!-- Kartu 2 -->
+                        <div class="kpi-item">
+                            <h3 id="kpiOverallCoverage">0</h3>
+                            <p>Total Employee Coverage<br>2026 (YTD)</p>
+                        </div>
+                        <!-- Kartu 3 -->
+                        <div class="kpi-item">
+                            <h3 id="kpiTotalParticipant">0</h3>
+                            <p>Total Training Participant<br>2026 (YTD)</p>
+                        </div>
+                        <!-- Kartu 4 -->
+                        <div class="kpi-item">
+                            <h3 id="kpiTotalHours">0</h3>
+                            <p>Total Training Hours<br>2026 (YTD)</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -947,36 +978,34 @@ function getOrderedJabatanList(data) {
 function renderDashboard(data) {
     const jabatanList = getOrderedJabatanList(data);
 
-    // KPI METRICS
+    // KPI METRICS CALCULATIONS
     const totalPart = data.length;
     let totalCovered = 0;
-    const modulePickCounts = {};
+    let totalParticipantWithScore = 0;
+    let totalTrainingHours = 0;
 
     data.forEach(d => {
-        if (d.statusCoverage === "Tercoverage" || d.statusCoverage.toLowerCase().includes("tercoverage")) {
+        // 1. Total Employee Coverage
+        if (d.statusCoverage === "Tercoverage" || (d.statusCoverage && d.statusCoverage.toLowerCase().includes("tercoverage"))) {
             totalCovered++;
         }
-        moduleColumns.forEach(mod => {
-            const mData = d.modules[mod.name];
-            if (mData && mData.status && !mData.status.toLowerCase().includes("not picked") && mData.status.trim() !== "") {
-                modulePickCounts[mod.name] = (modulePickCounts[mod.name] || 0) + 1;
-            }
-        });
-    });
 
-    let topModName = "-";
-    let highestCount = 0;
-    Object.keys(modulePickCounts).forEach(mName => {
-        if (modulePickCounts[mName] > highestCount) {
-            highestCount = modulePickCounts[mName];
-            topModName = mName;
+        // 2. Total Training Participant (Sudah bernilai / status Done)
+        if (d.allRecap && d.allRecap.toLowerCase().includes("done")) {
+            totalParticipantWithScore++;
+        }
+
+        // 3. Total Training Hours (Akumulasi jam)
+        if (d.trainingHours) {
+            totalTrainingHours += parseFloat(d.trainingHours) || 0;
         }
     });
 
+    // UPDATE DISPLAY KE SCORECARD SUMMARY
     document.getElementById("kpiTotalPart").textContent = totalPart;
     document.getElementById("kpiOverallCoverage").textContent = totalCovered;
-    document.getElementById("kpiTopModule").textContent = topModName;
-    document.getElementById("kpiHighestModuleCount").textContent = highestCount;
+    document.getElementById("kpiTotalParticipant").textContent = totalParticipantWithScore;
+    document.getElementById("kpiTotalHours").textContent = totalTrainingHours.toLocaleString("id-ID");
 
     // 1. COVERAGE
     let tercoverageCount = 0, notCoverageCount = 0;
@@ -984,7 +1013,7 @@ function renderDashboard(data) {
     jabatanList.forEach(j => coverageByJabatan[j] = { Tercoverage: 0, "Not Yet": 0 });
 
     data.forEach(d => {
-        const isCov = d.statusCoverage === "Tercoverage" || d.statusCoverage.toLowerCase().includes("tercoverage");
+        const isCov = d.statusCoverage === "Tercoverage" || (d.statusCoverage && d.statusCoverage.toLowerCase().includes("tercoverage"));
         if (isCov) tercoverageCount++; else notCoverageCount++;
         if (coverageByJabatan[d.jabatan]) {
             if (isCov) coverageByJabatan[d.jabatan]["Tercoverage"]++;
@@ -1012,7 +1041,7 @@ function renderDashboard(data) {
         options: { responsive: true, maintainAspectRatio: false, plugins: { datalabels: { display: false } }, scales: { y: { beginAtZero: true } } }
     });
 
-    // 2. Employee
+    // 2. Employee Participation
     let doneCount = 0, onProgressCount = 0, notYetPartCount = 0;
     const EmployeeByJabatan = {};
     jabatanList.forEach(j => EmployeeByJabatan[j] = { Done: 0, "On Progress": 0, "Not Yet": 0 });
