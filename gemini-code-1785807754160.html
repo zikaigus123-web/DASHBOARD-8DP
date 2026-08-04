@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Monitoring Development 8 DP</title>
+
+<!-- Favicon -->
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    padding: 15px;
+}
+
+/* HEADER SECTION */
+.header {
+    background: #ffffff;
+    border: 2px solid #000;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.logo-ut {
+    height: 45px;
+}
+
+.logo-insan {
+    height: 45px;
+}
+
+.title-container {
+    text-align: center;
+}
+
+.title-container h1 {
+    font-size: 24px;
+    font-weight: 800;
+    font-style: italic;
+    color: #111;
+    letter-spacing: 0.5px;
+}
+
+/* FILTER SECTION */
+.filter-container {
+    background: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.filter-container label {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.filter-select {
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #aaa;
+    outline: none;
+    min-width: 200px;
+}
+
+/* MAIN DASHBOARD LAYOUT (3 COLUMNS) */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.column-card {
+    background: #f8f9fa;
+    border: 2px solid #000;
+    border-radius: 4px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.column-header {
+    background: #ffb703;
+    border: 2px solid #000;
+    padding: 8px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    font-style: italic;
+    color: #000;
+    border-radius: 4px;
+}
+
+.chart-box {
+    background: #ffffff;
+    border: 2px solid #000;
+    border-radius: 4px;
+    padding: 15px;
+    height: 280px;
+    position: relative;
+}
+
+/* EXTRA CHART SECTION (Demografi Jabatan) */
+.extra-section {
+    background: #ffffff;
+    border: 2px solid #000;
+    border-radius: 4px;
+    padding: 15px;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.extra-section h2 {
+    text-align: center;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.extra-chart-box {
+    height: 250px;
+    position: relative;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <img src="logo-ut.png" alt="United Tractors" class="logo-ut">
+    <div class="title-container">
+        <h1>DASHBOARD MONITORING DEVELOPMENT 8 DP</h1>
+    </div>
+    <img src="logo-insan.png" alt="UT Corporate University" class="logo-insan">
+</div>
+
+<!-- FILTER LOKASI KERJA -->
+<div class="filter-container">
+    <label for="filterLokasi">Filter Lokasi Kerja Update:</label>
+    <select id="filterLokasi" class="filter-select" onchange="applyFilter()">
+        <option value="ALL">-- Semua Lokasi Kerja --</option>
+    </select>
+</div>
+
+<!-- DASHBOARD GRID (3 COLUMNS) -->
+<div class="dashboard-grid">
+
+    <!-- KOLOM 1: TRAINING COVERAGE -->
+    <div class="column-card">
+        <div class="column-header">Training Coverage</div>
+        <div class="chart-box">
+            <canvas id="coveragePieChart"></canvas>
+        </div>
+        <div class="chart-box">
+            <canvas id="coverageBarChart"></canvas>
+        </div>
+    </div>
+
+    <!-- KOLOM 2: TRAINING PARTICIPANT -->
+    <div class="column-card">
+        <div class="column-header">Training Participant</div>
+        <div class="chart-box">
+            <canvas id="participantPieChart"></canvas>
+        </div>
+        <div class="chart-box">
+            <canvas id="participantBarChart"></canvas>
+        </div>
+    </div>
+
+    <!-- KOLOM 3: TRAINING HOURS -->
+    <div class="column-card">
+        <div class="column-header">Training Hours</div>
+        <div class="chart-box">
+            <canvas id="hoursPieChart"></canvas>
+        </div>
+        <div class="chart-box">
+            <canvas id="hoursBarChart"></canvas>
+        </div>
+    </div>
+
+</div>
+
+<!-- TAMBAHAN: PIE CHART PEMBAGIAN PESERTA PER JABATAN -->
+<div class="extra-section">
+    <h2>Distribusi Total Peserta Berdasarkan Jabatan</h2>
+    <div class="extra-chart-box">
+        <canvas id="jabatanPieChart"></canvas>
+    </div>
+</div>
+
+<script>
+// MASUKKAN LINK CSV PUBLIK GOOGLE SHEETS KAMU DI SINI:
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/YOUR_PUBLISHED_CSV_URL_HERE/pub?output=csv";
+
+let allData = [];
+let chartInstances = {};
+
+// Parse CSV Text ke Array of Objects
+function parseCSV(text) {
+    const lines = text.split("\n").map(l => l.trim()).filter(l => l.length > 0);
+    if (lines.length === 0) return [];
+
+    const headers = lines[0].split(",").map(h => h.replace(/^"|"$/g, '').trim());
+    const result = [];
+
+    for (let i = 1; i < lines.length; i++) {
+        // Regex untuk menangani koma di dalam tanda petik
+        const row = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || lines[i].split(",");
+        const obj = {};
+        headers.forEach((h, idx) => {
+            let val = row[idx] ? row[idx].replace(/^"|"$/g, '').trim() : "";
+            obj[h] = val;
+        });
+        result.push(obj);
+    }
+    return result;
+}
+
+// Fetch Data Google Sheets CSV
+fetch(CSV_URL)
+    .then(res => res.text())
+    .then(csvText => {
+        allData = parseCSV(csvText);
+        initLokasiFilter();
+        renderDashboard(allData);
+    })
+    .catch(err => console.error("Error loading CSV data:", err));
+
+// Populate Dropdown Filter Lokasi Kerja
+function initLokasiFilter() {
+    const lokasiSet = new Set();
+    allData.forEach(item => {
+        const loc = item["Lokasi Kerja Update"];
+        if (loc) lokasiSet.add(loc);
+    });
+
+    const select = document.getElementById("filterLokasi");
+    Array.from(lokasiSet).sort().forEach(loc => {
+        const opt = document.createElement("option");
+        opt.value = loc;
+        opt.textContent = loc;
+        select.appendChild(opt);
+    });
+}
+
+// Trigger Filter Event
+function applyFilter() {
+    const selected = document.getElementById("filterLokasi").value;
+    const filtered = selected === "ALL" 
+        ? allData 
+        : allData.filter(d => d["Lokasi Kerja Update"] === selected);
+
+    renderDashboard(filtered);
+}
+
+// Destroy Chart Instance Jika Sudah Ada
+function destroyChart(id) {
+    if (chartInstances[id]) {
+        chartInstances[id].destroy();
+    }
+}
+
+// Main Render Function
+function renderDashboard(data) {
+    // Collect list of jabatan
+    const jabatanList = [...new Set(data.map(d => d["Jabatan"] || "#N/A"))].sort();
+
+    // -------------------------------------------------------------
+    // 1. TRAINING COVERAGE
+    // -------------------------------------------------------------
+    let tercoverageCount = 0, notCoverageCount = 0;
+    const coverageByJabatan = {};
+
+    jabatanList.forEach(j => coverageByJabatan[j] = { Tercoverage: 0, "Not Yet": 0 });
+
+    data.forEach(d => {
+        const status = d["Status Coverage"] || "Not Yet";
+        const jab = d["Jabatan"] || "#N/A";
+
+        if (status === "Tercoverage") tercoverageCount++;
+        else notCoverageCount++;
+
+        if (coverageByJabatan[jab]) {
+            if (status === "Tercoverage") coverageByJabatan[jab]["Tercoverage"]++;
+            else coverageByJabatan[jab]["Not Yet"]++;
+        }
+    });
+
+    // Coverage Pie
+    destroyChart("coveragePie");
+    chartInstances["coveragePie"] = new Chart(document.getElementById("coveragePieChart"), {
+        type: "pie",
+        data: {
+            labels: ["Tercoverage", "Not Yet"],
+            datasets: [{
+                data: [tercoverageCount, notCoverageCount],
+                backgroundColor: ["#f77f00", "#4285f4"]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { title: { display: true, text: "Overall Coverage Rate" } }
+        }
+    });
+
+    // Coverage Bar
+    destroyChart("coverageBar");
+    chartInstances["coverageBar"] = new Chart(document.getElementById("coverageBarChart"), {
+        type: "bar",
+        data: {
+            labels: jabatanList,
+            datasets: [
+                {
+                    label: "Tercoverage",
+                    data: jabatanList.map(j => coverageByJabatan[j]["Tercoverage"]),
+                    backgroundColor: "#f77f00"
+                },
+                {
+                    label: "Not Yet",
+                    data: jabatanList.map(j => coverageByJabatan[j]["Not Yet"]),
+                    backgroundColor: "#4285f4"
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { x: { stacked: false }, y: { beginAtZero: true } }
+        }
+    });
+
+    // -------------------------------------------------------------
+    // 2. TRAINING PARTICIPANT
+    // -------------------------------------------------------------
+    let doneCount = 0, onProgressCount = 0, notYetPartCount = 0;
+    const participantByJabatan = {};
+
+    jabatanList.forEach(j => participantByJabatan[j] = { Done: 0, "On Progress": 0, "Not Yet": 0 });
+
+    data.forEach(d => {
+        const recap = d["All Recap"] || "Not Yet";
+        const jab = d["Jabatan"] || "#N/A";
+
+        if (recap === "Done") doneCount++;
+        else if (recap === "On Progress") onProgressCount++;
+        else notYetPartCount++;
+
+        if (participantByJabatan[jab]) {
+            if (recap === "Done") participantByJabatan[jab]["Done"]++;
+            else if (recap === "On Progress") participantByJabatan[jab]["On Progress"]++;
+            else participantByJabatan[jab]["Not Yet"]++;
+        }
+    });
+
+    // Participant Pie
+    destroyChart("partPie");
+    chartInstances["partPie"] = new Chart(document.getElementById("participantPieChart"), {
+        type: "pie",
+        data: {
+            labels: ["Not Yet", "Done", "On Progress"],
+            datasets: [{
+                data: [notYetPartCount, doneCount, onProgressCount],
+                backgroundColor: ["#4285f4", "#f77f00", "#a855f7"]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { title: { display: true, text: "Overall Participation Status" } }
+        }
+    });
+
+    // Participant Bar
+    destroyChart("partBar");
+    chartInstances["partBar"] = new Chart(document.getElementById("participantBarChart"), {
+        type: "bar",
+        data: {
+            labels: jabatanList,
+            datasets: [
+                {
+                    label: "Done",
+                    data: jabatanList.map(j => participantByJabatan[j]["Done"]),
+                    backgroundColor: "#f77f00"
+                },
+                {
+                    label: "On Progress",
+                    data: jabatanList.map(j => participantByJabatan[j]["On Progress"]),
+                    backgroundColor: "#a855f7"
+                },
+                {
+                    label: "Not Yet",
+                    data: jabatanList.map(j => participantByJabatan[j]["Not Yet"]),
+                    backgroundColor: "#4285f4"
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { x: { stacked: false }, y: { beginAtZero: true } }
+        }
+    });
+
+    // -------------------------------------------------------------
+    // 3. TRAINING HOURS
+    // -------------------------------------------------------------
+    let tercapaiCount = 0, belumTercapaiCount = 0;
+    const hoursByJabatan = {};
+
+    jabatanList.forEach(j => hoursByJabatan[j] = { actual: 0, target: 0 });
+
+    data.forEach(d => {
+        const targetStatus = d["Status Target"] || "Belum Tercapai";
+        const jab = d["Jabatan"] || "#N/A";
+        const actualH = parseFloat(d["Training Hours"]) || 0;
+        const targetH = parseFloat(d["Target Training Hours"]) || 0;
+
+        if (targetStatus === "Tercapai") tercapaiCount++;
+        else belumTercapaiCount++;
+
+        if (hoursByJabatan[jab]) {
+            hoursByJabatan[jab].actual += actualH;
+            hoursByJabatan[jab].target += targetH;
+        }
+    });
+
+    // Hours Pie
+    destroyChart("hoursPie");
+    chartInstances["hoursPie"] = new Chart(document.getElementById("hoursPieChart"), {
+        type: "pie",
+        data: {
+            labels: ["Tercapai", "Belum Tercapai"],
+            datasets: [{
+                data: [tercapaiCount, belumTercapaiCount],
+                backgroundColor: ["#4285f4", "#f77f00"]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { title: { display: true, text: "Overall Hours Target Achievement" } }
+        }
+    });
+
+    // Hours Bar (Comparing Actual vs Target Hours per Jabatan)
+    destroyChart("hoursBar");
+    chartInstances["hoursBar"] = new Chart(document.getElementById("hoursBarChart"), {
+        type: "bar",
+        data: {
+            labels: jabatanList,
+            datasets: [
+                {
+                    label: "Training Hours",
+                    data: jabatanList.map(j => hoursByJabatan[j].actual),
+                    backgroundColor: "#4285f4"
+                },
+                {
+                    label: "Target Training Hours",
+                    data: jabatanList.map(j => hoursByJabatan[j].target),
+                    backgroundColor: "#ffb703"
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+
+    // -------------------------------------------------------------
+    // 4. EXTRA: PIE CHART DEMOGRAFI JABATAN
+    // -------------------------------------------------------------
+    const jabatanCounts = {};
+    data.forEach(d => {
+        const j = d["Jabatan"] || "#N/A";
+        jabatanCounts[j] = (jabatanCounts[j] || 0) + 1;
+    });
+
+    const jabatanLabels = Object.keys(jabatanCounts);
+    const jabatanValues = Object.values(jabatanCounts);
+
+    destroyChart("jabatanPie");
+    chartInstances["jabatanPie"] = new Chart(document.getElementById("jabatanPieChart"), {
+        type: "pie",
+        data: {
+            labels: jabatanLabels,
+            datasets: [{
+                data: jabatanValues,
+                backgroundColor: ["#4285f4", "#f77f00", "#34a853", "#ea4335", "#a855f7"]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+}
+</script>
+
+</body>
+</html>
