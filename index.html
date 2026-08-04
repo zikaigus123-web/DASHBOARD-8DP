@@ -20,7 +20,7 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #f0f2f5;
+    background-color: #e5e7eb;
     color: #333;
     padding: 15px;
 }
@@ -33,101 +33,114 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-.logo-ut {
-    height: 45px;
-}
-
-.logo-corpu {
-    height: 65px; 
-}
-
-.title-container {
-    text-align: center;
-}
+.logo-ut { height: 45px; }
+.logo-corpu { height: 60px; }
 
 .title-container h1 {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 800;
     font-style: italic;
     color: #111;
-    letter-spacing: 0.5px;
+    text-align: center;
 }
 
 /* FILTER SECTION */
 .filter-container {
     background: #ffffff;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    padding: 12px 20px;
-    margin-bottom: 20px;
+    border: 2px solid #000;
+    border-radius: 4px;
+    padding: 8px 15px;
+    margin-bottom: 15px;
     display: flex;
     align-items: center;
-    gap: 15px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    gap: 10px;
 }
 
 .filter-container label {
     font-weight: bold;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 .filter-select {
-    padding: 8px 12px;
-    font-size: 14px;
+    padding: 4px 8px;
+    font-size: 13px;
     border-radius: 4px;
     border: 1px solid #aaa;
     outline: none;
     min-width: 200px;
 }
 
-/* MAIN DASHBOARD LAYOUT (3 COLUMNS) */
-.dashboard-grid {
+/* MAIN LAYOUT SPLIT (KIRI & KANAN) */
+.main-layout {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin-bottom: 20px;
+    grid-template-columns: 1fr 2fr;
+    gap: 15px;
+    margin-bottom: 15px;
 }
 
 @media (max-width: 1024px) {
-    .dashboard-grid {
+    .main-layout {
         grid-template-columns: 1fr;
     }
 }
 
+.left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.top-right-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+@media (max-width: 768px) {
+    .top-right-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* CARD & BANNER STYLES */
 .column-card {
-    background: #f8f9fa;
+    background: #ffffff;
     border: 2px solid #000;
     border-radius: 4px;
     padding: 10px;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
 }
 
-/* HEADER UTAMA KOLOM */
 .column-header {
     background: #ffb703;
     border: 2px solid #000;
-    padding: 8px;
+    padding: 6px;
     text-align: center;
-    font-size: 20px;
+    font-size: 16px;
     font-weight: bold;
     font-style: italic;
     color: #000;
     border-radius: 4px;
 }
 
-/* HEADER BANNER KUNING UNTUK SUB-DIAGRAM */
 .sub-header {
     background: #ffb703;
     border: 2px solid #000;
-    padding: 6px;
+    padding: 4px;
     text-align: center;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: bold;
     font-style: italic;
     color: #000;
@@ -137,37 +150,81 @@ body {
 .chart-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
 }
 
 .chart-box {
     background: #ffffff;
-    border: 2px solid #000;
+    border: 1px solid #ccc;
     border-radius: 4px;
-    padding: 10px;
-    height: 270px;
+    padding: 8px;
+    height: 220px;
     position: relative;
 }
 
-/* EXTRA CHART SECTION */
-.extra-section {
-    background: #f8f9fa;
+/* KPI SUMMARY BOX (DI BAWAH TRAINING COVERAGE) */
+.kpi-container {
+    background: #ffffff;
     border: 2px solid #000;
     border-radius: 4px;
     padding: 12px;
-    max-width: 550px;
-    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.kpi-icon-box {
+    background: #e2e8f0;
+    border: 2px solid #000;
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 65px;
+    height: 65px;
+    flex-shrink: 0;
+}
+
+.kpi-icon-box svg {
+    width: 40px;
+    height: 40px;
+}
+
+.kpi-metrics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    width: 100%;
+    text-align: center;
+}
+
+.kpi-item h3 {
+    font-size: 18px;
+    font-weight: 800;
+    color: #000;
+}
+
+.kpi-item p {
+    font-size: 11px;
+    font-weight: bold;
+    color: #555;
+    margin-top: 2px;
+}
+
+/* SECTION BAWAH (DIAGRAM GARIS PRE VS POST TEST) */
+.bottom-section {
+    background: #ffffff;
+    border: 2px solid #000;
+    border-radius: 4px;
+    padding: 12px;
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.extra-chart-box {
-    background: #ffffff;
-    border: 2px solid #000;
-    border-radius: 4px;
-    padding: 10px;
-    height: 250px;
+.bottom-chart-box {
+    height: 280px;
     position: relative;
 }
 </style>
@@ -191,87 +248,131 @@ body {
     </select>
 </div>
 
-<!-- DASHBOARD GRID (3 COLUMNS) -->
-<div class="dashboard-grid">
+<!-- MAIN LAYOUT (LEFT & RIGHT) -->
+<div class="main-layout">
 
-    <!-- KOLOM 1: TRAINING COVERAGE -->
-    <div class="column-card">
-        <div class="column-header">Training Coverage</div>
-        
-        <div class="chart-wrapper">
-            <div class="sub-header">Overall Coverage Rate</div>
-            <div class="chart-box">
-                <canvas id="coveragePieChart"></canvas>
+    <!-- LEFT COLUMN -->
+    <div class="left-column">
+        <!-- TRAINING COVERAGE CARD -->
+        <div class="column-card">
+            <div class="column-header">Training Coverage</div>
+            
+            <div class="chart-wrapper">
+                <div class="sub-header">Overall Coverage Rate</div>
+                <div class="chart-box">
+                    <canvas id="coveragePieChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-wrapper">
+                <div class="sub-header">Training Coverage per Jabatan</div>
+                <div class="chart-box">
+                    <canvas id="coverageBarChart"></canvas>
+                </div>
             </div>
         </div>
 
-        <div class="chart-wrapper">
-            <div class="sub-header">Training Coverage per Jabatan</div>
-            <div class="chart-box">
-                <canvas id="coverageBarChart"></canvas>
+        <!-- KPI SUMMARY BOX -->
+        <div class="kpi-container">
+            <div class="kpi-icon-box">
+                <!-- User/People Icon -->
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+            </div>
+            <div class="kpi-metrics">
+                <div class="kpi-item">
+                    <h3 id="kpiTotalPart">0</h3>
+                    <p>Total Participant 2026 (YTD)</p>
+                </div>
+                <div class="kpi-item">
+                    <h3 id="kpiOverallCoverage">0</h3>
+                    <p>Overal Training Coverage</p>
+                </div>
+                <div class="kpi-item">
+                    <h3 id="kpiTopModule" style="font-size: 13px;">-</h3>
+                    <p>Top Module Chosen</p>
+                </div>
+                <div class="kpi-item">
+                    <h3 id="kpiHighestModuleCount">0</h3>
+                    <p>Highest module choosen in one group</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- KOLOM 2: TRAINING PARTICIPANT -->
-    <div class="column-card">
-        <div class="column-header">Training Participant</div>
-        
-        <div class="chart-wrapper">
-            <div class="sub-header">Overall Participation Status</div>
-            <div class="chart-box">
-                <canvas id="participantPieChart"></canvas>
+    <!-- RIGHT COLUMN -->
+    <div class="right-column">
+        <div class="top-right-grid">
+            <!-- TRAINING PARTICIPANT CARD -->
+            <div class="column-card">
+                <div class="column-header">Training Participant</div>
+                <div class="chart-wrapper">
+                    <div class="sub-header">Overall Participation Status</div>
+                    <div class="chart-box">
+                        <canvas id="participantPieChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <div class="sub-header">Training Participant per Jabatan</div>
+                    <div class="chart-box">
+                        <canvas id="participantBarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TRAINING HOURS CARD -->
+            <div class="column-card">
+                <div class="column-header">Training Hours</div>
+                <div class="chart-wrapper">
+                    <div class="sub-header">Overall Hours Target Achievement</div>
+                    <div class="chart-box">
+                        <canvas id="hoursPieChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <div class="sub-header">Training Hours per Jabatan</div>
+                    <div class="chart-box">
+                        <canvas id="hoursBarChart"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="chart-wrapper">
-            <div class="sub-header">Training Participant per Jabatan</div>
-            <div class="chart-box">
-                <canvas id="participantBarChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- KOLOM 3: TRAINING HOURS -->
-    <div class="column-card">
-        <div class="column-header">Training Hours</div>
-        
-        <div class="chart-wrapper">
-            <div class="sub-header">Overall Hours Target Achievement</div>
-            <div class="chart-box">
-                <canvas id="hoursPieChart"></canvas>
-            </div>
-        </div>
-
-        <div class="chart-wrapper">
-            <div class="sub-header">Training Hours per Jabatan</div>
-            <div class="chart-box">
-                <canvas id="hoursBarChart"></canvas>
+        <!-- EXTRA: DISTRIBUSI TOTAL PESERTA BERDASARKAN JABATAN -->
+        <div class="column-card">
+            <div class="sub-header">Distribusi Total Peserta Berdasarkan Jabatan</div>
+            <div class="chart-box" style="height: 200px;">
+                <canvas id="jabatanPieChart"></canvas>
             </div>
         </div>
     </div>
 
 </div>
 
-<!-- TAMBAHAN: PIE CHART PEMBAGIAN PESERTA PER JABATAN -->
-<div class="extra-section">
-    <div class="sub-header">Distribusi Total Peserta Berdasarkan Jabatan</div>
-    <div class="extra-chart-box">
-        <canvas id="jabatanPieChart"></canvas>
+<!-- BOTTOM SECTION: EVALUASI NILAI PRE VS POST TEST PER MODUL -->
+<div class="bottom-section">
+    <div class="sub-header">Rata-Rata Nilai Pre-Test vs Post-Test per Modul Training</div>
+    <div class="bottom-chart-box">
+        <canvas id="prePostLineChart"></canvas>
     </div>
 </div>
 
 <script>
-// LINK CSV PUBLIK GOOGLE SHEETS:
+// LINK CSV PUBLIK GOOGLE SHEETS
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQk1Gnwtu-vKG24ImVYA0ytCuAuOuWeujzNpFbUPz2C-Y0jLwRxWspRCSMPqG9gj7WfcTGtXWwSlFH6/pub?gid=1260922175&single=true&output=csv";
 
-let allData = [];
+let parsedData = [];
+let moduleColumns = [];
 let chartInstances = {};
 
-// Parse CSV Text ke Array of Objects
-function parseCSV(text) {
+// Parse Custom CSV Multilevel Header (Baris 1 & Baris 2)
+function parseCustomCSV(text) {
     const lines = text.split("\n").filter(l => l.trim().length > 0);
-    if (lines.length === 0) return [];
+    if (lines.length < 2) return;
 
     function splitCSVLine(line) {
         const result = [];
@@ -292,37 +393,78 @@ function parseCSV(text) {
         return result;
     }
 
-    const headers = splitCSVLine(lines[0]);
-    const result = [];
+    const row1 = splitCSVLine(lines[0]);
+    const row2 = splitCSVLine(lines[1]);
 
-    for (let i = 1; i < lines.length; i++) {
-        const row = splitCSVLine(lines[i]);
-        if (row.length < headers.length) continue;
-        const obj = {};
-        headers.forEach((h, idx) => {
-            obj[h] = row[idx] || "";
-        });
-        result.push(obj);
+    // Deteksi Modul dan Indeks Kolomnya
+    moduleColumns = [];
+    let currentModule = "";
+    for (let colIdx = 7; colIdx < row1.length; colIdx++) {
+        if (row1[colIdx] && row1[colIdx].trim() !== "") {
+            currentModule = row1[colIdx].trim();
+        }
+        const subHeader = row2[colIdx] ? row2[colIdx].toLowerCase().trim() : "";
+        if (currentModule && (subHeader.includes("pre") || subHeader.includes("post") || subHeader.includes("status"))) {
+            if (!moduleColumns.find(m => m.name === currentModule)) {
+                moduleColumns.push({
+                    name: currentModule,
+                    preIdx: colIdx,
+                    postIdx: colIdx + 1,
+                    statusIdx: colIdx + 2
+                });
+            }
+        }
     }
-    return result;
+
+    // Parse Data Mulai Baris 3
+    parsedData = [];
+    for (let i = 2; i < lines.length; i++) {
+        const row = splitCSVLine(lines[i]);
+        if (row.length < 5) continue;
+
+        const item = {
+            nrp: row[1] || "",
+            nama: row[2] || "",
+            lokasi: row[3] || "",
+            corpu: row[4] || "",
+            jumlahModul: parseInt(row[5]) || 0,
+            jabatan: row[6] || "#N/A",
+            statusCoverage: row[7] || "", 
+            allRecap: row[8] || "",
+            trainingHours: parseFloat(row[9]) || 0,
+            targetHours: parseFloat(row[10]) || 0,
+            statusTarget: row[11] || "",
+            modules: {}
+        };
+
+        moduleColumns.forEach(mod => {
+            const preVal = parseFloat(row[mod.preIdx]);
+            const postVal = parseFloat(row[mod.postIdx]);
+            item.modules[mod.name] = {
+                pre: !isNaN(preVal) ? preVal : null,
+                post: !isNaN(postVal) ? postVal : null,
+                status: row[mod.statusIdx] || ""
+            };
+        });
+
+        parsedData.push(item);
+    }
 }
 
 // Fetch Data Google Sheets CSV
 fetch(CSV_URL)
     .then(res => res.text())
     .then(csvText => {
-        allData = parseCSV(csvText);
+        parseCustomCSV(csvText);
         initLokasiFilter();
-        renderDashboard(allData);
+        renderDashboard(parsedData);
     })
-    .catch(err => console.error("Error loading CSV data:", err));
+    .catch(err => console.error("Error loading CSV:", err));
 
-// Populate Dropdown Filter Lokasi Kerja
 function initLokasiFilter() {
     const lokasiSet = new Set();
-    allData.forEach(item => {
-        const loc = item["Lokasi Kerja Update"];
-        if (loc) lokasiSet.add(loc);
+    parsedData.forEach(item => {
+        if (item.lokasi) lokasiSet.add(item.lokasi);
     });
 
     const select = document.getElementById("filterLokasi");
@@ -334,91 +476,94 @@ function initLokasiFilter() {
     });
 }
 
-// Trigger Filter Event
 function applyFilter() {
     const selected = document.getElementById("filterLokasi").value;
     const filtered = selected === "ALL" 
-        ? allData 
-        : allData.filter(d => d["Lokasi Kerja Update"] === selected);
+        ? parsedData 
+        : parsedData.filter(d => d.lokasi === selected);
 
     renderDashboard(filtered);
 }
 
-// Destroy Chart Instance Jika Sudah Ada
 function destroyChart(id) {
     if (chartInstances[id]) {
         chartInstances[id].destroy();
     }
 }
 
-// Main Render Function
 function renderDashboard(data) {
-    const jabatanList = [...new Set(data.map(d => d["Jabatan"] || "#N/A"))].sort();
+    const jabatanList = [...new Set(data.map(d => d.jabatan))].sort();
+
+    // -------------------------------------------------------------
+    // KPI METRICS CALCULATIONS
+    // -------------------------------------------------------------
+    const totalPart = data.length;
+    let totalCovered = 0;
+    const modulePickCounts = {};
+
+    data.forEach(d => {
+        if (d.statusCoverage === "Tercoverage") totalCovered++;
+        
+        moduleColumns.forEach(mod => {
+            const mData = d.modules[mod.name];
+            if (mData && mData.status && !mData.status.toLowerCase().includes("not picked")) {
+                modulePickCounts[mod.name] = (modulePickCounts[mod.name] || 0) + 1;
+            }
+        });
+    });
+
+    let topModName = "-";
+    let highestCount = 0;
+    Object.keys(modulePickCounts).forEach(mName => {
+        if (modulePickCounts[mName] > highestCount) {
+            highestCount = modulePickCounts[mName];
+            topModName = mName;
+        }
+    });
+
+    document.getElementById("kpiTotalPart").textContent = totalPart;
+    document.getElementById("kpiOverallCoverage").textContent = totalCovered;
+    document.getElementById("kpiTopModule").textContent = topModName;
+    document.getElementById("kpiHighestModuleCount").textContent = highestCount;
 
     // -------------------------------------------------------------
     // 1. TRAINING COVERAGE
     // -------------------------------------------------------------
     let tercoverageCount = 0, notCoverageCount = 0;
     const coverageByJabatan = {};
-
     jabatanList.forEach(j => coverageByJabatan[j] = { Tercoverage: 0, "Not Yet": 0 });
 
     data.forEach(d => {
-        const status = d["Status Coverage"] || "Not Yet";
-        const jab = d["Jabatan"] || "#N/A";
-
-        if (status === "Tercoverage") tercoverageCount++;
+        if (d.statusCoverage === "Tercoverage") tercoverageCount++;
         else notCoverageCount++;
 
-        if (coverageByJabatan[jab]) {
-            if (status === "Tercoverage") coverageByJabatan[jab]["Tercoverage"]++;
-            else coverageByJabatan[jab]["Not Yet"]++;
+        if (coverageByJabatan[d.jabatan]) {
+            if (d.statusCoverage === "Tercoverage") coverageByJabatan[d.jabatan]["Tercoverage"]++;
+            else coverageByJabatan[d.jabatan]["Not Yet"]++;
         }
     });
 
-    // Coverage Pie
     destroyChart("coveragePie");
     chartInstances["coveragePie"] = new Chart(document.getElementById("coveragePieChart"), {
         type: "pie",
         data: {
             labels: ["Tercoverage", "Not Yet"],
-            datasets: [{
-                data: [tercoverageCount, notCoverageCount],
-                backgroundColor: ["#f77f00", "#4285f4"]
-            }]
+            datasets: [{ data: [tercoverageCount, notCoverageCount], backgroundColor: ["#f77f00", "#4285f4"] }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { title: { display: false } }
-        }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: false } } }
     });
 
-    // Coverage Bar
     destroyChart("coverageBar");
     chartInstances["coverageBar"] = new Chart(document.getElementById("coverageBarChart"), {
         type: "bar",
         data: {
             labels: jabatanList,
             datasets: [
-                {
-                    label: "Tercoverage",
-                    data: jabatanList.map(j => coverageByJabatan[j]["Tercoverage"]),
-                    backgroundColor: "#f77f00"
-                },
-                {
-                    label: "Not Yet",
-                    data: jabatanList.map(j => coverageByJabatan[j]["Not Yet"]),
-                    backgroundColor: "#4285f4"
-                }
+                { label: "Tercoverage", data: jabatanList.map(j => coverageByJabatan[j]["Tercoverage"]), backgroundColor: "#f77f00" },
+                { label: "Not Yet", data: jabatanList.map(j => coverageByJabatan[j]["Not Yet"]), backgroundColor: "#4285f4" }
             ]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { title: { display: false } },
-            scales: { x: { stacked: false }, y: { beginAtZero: true } }
-        }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: false } }, scales: { y: { beginAtZero: true } } }
     });
 
     // -------------------------------------------------------------
@@ -426,72 +571,42 @@ function renderDashboard(data) {
     // -------------------------------------------------------------
     let doneCount = 0, onProgressCount = 0, notYetPartCount = 0;
     const participantByJabatan = {};
-
     jabatanList.forEach(j => participantByJabatan[j] = { Done: 0, "On Progress": 0, "Not Yet": 0 });
 
     data.forEach(d => {
-        const recap = d["All Recap"] || "Not Yet";
-        const jab = d["Jabatan"] || "#N/A";
-
-        if (recap === "Done") doneCount++;
-        else if (recap === "On Progress") onProgressCount++;
+        if (d.allRecap === "Done") doneCount++;
+        else if (d.allRecap === "On Progress") onProgressCount++;
         else notYetPartCount++;
 
-        if (participantByJabatan[jab]) {
-            if (recap === "Done") participantByJabatan[jab]["Done"]++;
-            else if (recap === "On Progress") participantByJabatan[jab]["On Progress"]++;
-            else participantByJabatan[jab]["Not Yet"]++;
+        if (participantByJabatan[d.jabatan]) {
+            if (d.allRecap === "Done") participantByJabatan[d.jabatan]["Done"]++;
+            else if (d.allRecap === "On Progress") participantByJabatan[d.jabatan]["On Progress"]++;
+            else participantByJabatan[d.jabatan]["Not Yet"]++;
         }
     });
 
-    // Participant Pie
     destroyChart("partPie");
     chartInstances["partPie"] = new Chart(document.getElementById("participantPieChart"), {
         type: "pie",
         data: {
             labels: ["Not Yet", "Done", "On Progress"],
-            datasets: [{
-                data: [notYetPartCount, doneCount, onProgressCount],
-                backgroundColor: ["#4285f4", "#f77f00", "#a855f7"]
-            }]
+            datasets: [{ data: [notYetPartCount, doneCount, onProgressCount], backgroundColor: ["#4285f4", "#f77f00", "#a855f7"] }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { title: { display: false } }
-        }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: false } } }
     });
 
-    // Participant Bar
     destroyChart("partBar");
     chartInstances["partBar"] = new Chart(document.getElementById("participantBarChart"), {
         type: "bar",
         data: {
             labels: jabatanList,
             datasets: [
-                {
-                    label: "Done",
-                    data: jabatanList.map(j => participantByJabatan[j]["Done"]),
-                    backgroundColor: "#f77f00"
-                },
-                {
-                    label: "On Progress",
-                    data: jabatanList.map(j => participantByJabatan[j]["On Progress"]),
-                    backgroundColor: "#a855f7"
-                },
-                {
-                    label: "Not Yet",
-                    data: jabatanList.map(j => participantByJabatan[j]["Not Yet"]),
-                    backgroundColor: "#4285f4"
-                }
+                { label: "Done", data: jabatanList.map(j => participantByJabatan[j]["Done"]), backgroundColor: "#f77f00" },
+                { label: "On Progress", data: jabatanList.map(j => participantByJabatan[j]["On Progress"]), backgroundColor: "#a855f7" },
+                { label: "Not Yet", data: jabatanList.map(j => participantByJabatan[j]["Not Yet"]), backgroundColor: "#4285f4" }
             ]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { title: { display: false } },
-            scales: { x: { stacked: false }, y: { beginAtZero: true } }
-        }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: false } }, scales: { y: { beginAtZero: true } } }
     });
 
     // -------------------------------------------------------------
@@ -499,58 +614,103 @@ function renderDashboard(data) {
     // -------------------------------------------------------------
     let tercapaiCount = 0, belumTercapaiCount = 0;
     const hoursByJabatan = {};
-
     jabatanList.forEach(j => hoursByJabatan[j] = { actual: 0, target: 0 });
 
     data.forEach(d => {
-        const targetStatus = d["Status Target"] || "Belum Tercapai";
-        const jab = d["Jabatan"] || "#N/A";
-        const actualH = parseFloat(d["Training Hours"]) || 0;
-        const targetH = parseFloat(d["Target Training Hours"]) || 0;
-
-        if (targetStatus === "Tercapai") tercapaiCount++;
+        if (d.statusTarget === "Tercapai") tercapaiCount++;
         else belumTercapaiCount++;
 
-        if (hoursByJabatan[jab]) {
-            hoursByJabatan[jab].actual += actualH;
-            hoursByJabatan[jab].target += targetH;
+        if (hoursByJabatan[d.jabatan]) {
+            hoursByJabatan[d.jabatan].actual += d.trainingHours;
+            hoursByJabatan[d.jabatan].target += d.targetHours;
         }
     });
 
-    // Hours Pie
     destroyChart("hoursPie");
     chartInstances["hoursPie"] = new Chart(document.getElementById("hoursPieChart"), {
         type: "pie",
         data: {
             labels: ["Tercapai", "Belum Tercapai"],
-            datasets: [{
-                data: [tercapaiCount, belumTercapaiCount],
-                backgroundColor: ["#4285f4", "#f77f00"]
-            }]
+            datasets: [{ data: [tercapaiCount, belumTercapaiCount], backgroundColor: ["#4285f4", "#f77f00"] }]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { title: { display: false } }
-        }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: false } } }
     });
 
-    // Hours Bar
     destroyChart("hoursBar");
     chartInstances["hoursBar"] = new Chart(document.getElementById("hoursBarChart"), {
         type: "bar",
         data: {
             labels: jabatanList,
             datasets: [
+                { label: "Training Hours", data: jabatanList.map(j => hoursByJabatan[j].actual), backgroundColor: "#4285f4" },
+                { label: "Target Hours", data: jabatanList.map(j => hoursByJabatan[j].target), backgroundColor: "#ffb703" }
+            ]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+
+    // -------------------------------------------------------------
+    // 4. DISTRIBUSI JABATAN (PIE)
+    // -------------------------------------------------------------
+    const jabatanCounts = {};
+    data.forEach(d => { jabatanCounts[d.jabatan] = (jabatanCounts[d.jabatan] || 0) + 1; });
+
+    destroyChart("jabatanPie");
+    chartInstances["jabatanPie"] = new Chart(document.getElementById("jabatanPieChart"), {
+        type: "pie",
+        data: {
+            labels: Object.keys(jabatanCounts),
+            datasets: [{ data: Object.values(jabatanCounts), backgroundColor: ["#4285f4", "#f77f00", "#34a853", "#ea4335", "#a855f7", "#14b8a6", "#f59e0b", "#6366f1"] }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: false } } }
+    });
+
+    // -------------------------------------------------------------
+    // 5. BOTTOM LINE CHART (PRE-TEST VS POST-TEST PER MODUL)
+    // -------------------------------------------------------------
+    const modNames = moduleColumns.map(m => m.name);
+    const avgPreList = [];
+    const avgPostList = [];
+
+    moduleColumns.forEach(mod => {
+        let preSum = 0, preCount = 0;
+        let postSum = 0, postCount = 0;
+
+        data.forEach(d => {
+            const mData = d.modules[mod.name];
+            if (mData) {
+                if (mData.pre !== null && !isNaN(mData.pre)) { preSum += mData.pre; preCount++; }
+                if (mData.post !== null && !isNaN(mData.post)) { postSum += mData.post; postCount++; }
+            }
+        });
+
+        avgPreList.push(preCount > 0 ? (preSum / preCount).toFixed(1) : 0);
+        avgPostList.push(postCount > 0 ? (postSum / postCount).toFixed(1) : 0);
+    });
+
+    destroyChart("prePostLine");
+    chartInstances["prePostLine"] = new Chart(document.getElementById("prePostLineChart"), {
+        type: "line",
+        data: {
+            labels: modNames.length > 0 ? modNames : ["Modul 1", "Modul 2", "Modul 3"],
+            datasets: [
                 {
-                    label: "Training Hours",
-                    data: jabatanList.map(j => hoursByJabatan[j].actual),
-                    backgroundColor: "#4285f4"
+                    label: "Rata-Rata Pre-Test",
+                    data: avgPreList,
+                    borderColor: "#ea4335",
+                    backgroundColor: "#ea4335",
+                    tension: 0.3,
+                    borderWidth: 3,
+                    pointRadius: 5
                 },
                 {
-                    label: "Target Training Hours",
-                    data: jabatanList.map(j => hoursByJabatan[j].target),
-                    backgroundColor: "#ffb703"
+                    label: "Rata-Rata Post-Test",
+                    data: avgPostList,
+                    borderColor: "#34a853",
+                    backgroundColor: "#34a853",
+                    tension: 0.3,
+                    borderWidth: 3,
+                    pointRadius: 5
                 }
             ]
         },
@@ -558,36 +718,13 @@ function renderDashboard(data) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: { title: { display: false } },
-            scales: { y: { beginAtZero: true } }
-        }
-    });
-
-    // -------------------------------------------------------------
-    // 4. EXTRA: PIE CHART DEMOGRAFI JABATAN
-    // -------------------------------------------------------------
-    const jabatanCounts = {};
-    data.forEach(d => {
-        const j = d["Jabatan"] || "#N/A";
-        jabatanCounts[j] = (jabatanCounts[j] || 0) + 1;
-    });
-
-    const jabatanLabels = Object.keys(jabatanCounts);
-    const jabatanValues = Object.values(jabatanCounts);
-
-    destroyChart("jabatanPie");
-    chartInstances["jabatanPie"] = new Chart(document.getElementById("jabatanPieChart"), {
-        type: "pie",
-        data: {
-            labels: jabatanLabels,
-            datasets: [{
-                data: jabatanValues,
-                backgroundColor: ["#4285f4", "#f77f00", "#34a853", "#ea4335", "#a855f7"]
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { title: { display: false } }
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    title: { display: true, text: "Nilai (0 - 100)" }
+                }
+            }
         }
     });
 }
