@@ -41,7 +41,7 @@ body {
     height: 45px;
 }
 
-.logo-insan {
+.logo-corpu {
     height: 45px;
 }
 
@@ -155,11 +155,11 @@ body {
 
 <!-- HEADER -->
 <div class="header">
-    <img src="logo-ut.png" alt="United Tractors" class="logo-ut">
+    <img src="logo ut.png" alt="United Tractors" class="logo-ut">
     <div class="title-container">
         <h1>DASHBOARD MONITORING DEVELOPMENT 8 DP</h1>
     </div>
-    <img src="logo-insan.png" alt="UT Corporate University" class="logo-insan">
+    <img src="logo corpu.png" alt="UT Corporate University" class="logo-corpu">
 </div>
 
 <!-- FILTER LOKASI KERJA -->
@@ -217,27 +217,45 @@ body {
 </div>
 
 <script>
-// MASUKKAN LINK CSV PUBLIK GOOGLE SHEETS KAMU DI SINI:
+// LINK CSV PUBLIK GOOGLE SHEETS:
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQk1Gnwtu-vKG24ImVYA0ytCuAuOuWeujzNpFbUPz2C-Y0jLwRxWspRCSMPqG9gj7WfcTGtXWwSlFH6/pub?gid=1260922175&single=true&output=csv";
 
 let allData = [];
 let chartInstances = {};
 
-// Parse CSV Text ke Array of Objects
+// Parse CSV Text ke Array of Objects (Versi Robust untuk Menangani Koma & Kutip)
 function parseCSV(text) {
-    const lines = text.split("\n").map(l => l.trim()).filter(l => l.length > 0);
+    const lines = text.split("\n").filter(l => l.trim().length > 0);
     if (lines.length === 0) return [];
 
-    const headers = lines[0].split(",").map(h => h.replace(/^"|"$/g, '').trim());
+    function splitCSVLine(line) {
+        const result = [];
+        let cur = '';
+        let inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+            const c = line[i];
+            if (c === '"') {
+                inQuotes = !inQuotes;
+            } else if (c === ',' && !inQuotes) {
+                result.push(cur.trim().replace(/^"|"$/g, ''));
+                cur = '';
+            } else {
+                cur += c;
+            }
+        }
+        result.push(cur.trim().replace(/^"|"$/g, ''));
+        return result;
+    }
+
+    const headers = splitCSVLine(lines[0]);
     const result = [];
 
     for (let i = 1; i < lines.length; i++) {
-        // Regex untuk menangani koma di dalam tanda petik
-        const row = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || lines[i].split(",");
+        const row = splitCSVLine(lines[i]);
+        if (row.length < headers.length) continue;
         const obj = {};
         headers.forEach((h, idx) => {
-            let val = row[idx] ? row[idx].replace(/^"|"$/g, '').trim() : "";
-            obj[h] = val;
+            obj[h] = row[idx] || "";
         });
         result.push(obj);
     }
@@ -290,7 +308,6 @@ function destroyChart(id) {
 
 // Main Render Function
 function renderDashboard(data) {
-    // Collect list of jabatan
     const jabatanList = [...new Set(data.map(d => d["Jabatan"] || "#N/A"))].sort();
 
     // -------------------------------------------------------------
@@ -471,7 +488,7 @@ function renderDashboard(data) {
         }
     });
 
-    // Hours Bar (Comparing Actual vs Target Hours per Jabatan)
+    // Hours Bar
     destroyChart("hoursBar");
     chartInstances["hoursBar"] = new Chart(document.getElementById("hoursBarChart"), {
         type: "bar",
