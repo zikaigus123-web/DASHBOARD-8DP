@@ -21,12 +21,12 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #1e1e1e; /* Background gelap modern untuk layar login */
+    background-color: #1e1e1e;
     color: #333;
 }
 
 /* ==========================================
-   MODAL LOGIN STYLES (MODERN UI MATCHING IMAGE)
+   MODAL LOGIN STYLES
    ========================================== */
 .login-overlay {
     position: fixed;
@@ -34,7 +34,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: #18181b; /* Dark gradient backdrop */
+    background: #18181b;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -47,12 +47,12 @@ body {
     border-radius: 12px;
     padding: 24px 32px 30px 32px;
     width: 100%;
-    max-width: 440px;
+    max-width: 450px;
     box-shadow: 0 20px 40px rgba(0,0,0,0.5);
     text-align: center;
     position: relative;
     overflow: hidden;
-    border-top: 6px solid #ffc107; /* Accent Yellow Line di Atas Card */
+    border-top: 6px solid #ffc107;
 }
 
 /* LOGO KIRI DAN KANAN ATAS */
@@ -66,11 +66,11 @@ body {
 .login-logo-ut { height: 32px; object-fit: contain; }
 .login-logo-corpu { height: 40px; object-fit: contain; }
 
-/* ICON HELM SAFETY UT */
+/* ICON DASHBOARD BARU */
 .login-icon-badge {
     background-color: #ffc107;
-    width: 54px;
-    height: 54px;
+    width: 56px;
+    height: 56px;
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -80,18 +80,18 @@ body {
 }
 
 .login-icon-badge svg {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     fill: #111;
 }
 
-/* BRANDING & TITLE */
+/* BRANDING JUDUL BARU (8DP Development & Subtitle) */
 .brand-title {
     font-size: 24px;
     font-weight: 800;
     color: #111;
     letter-spacing: -0.5px;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
 }
 
 .brand-title span {
@@ -99,12 +99,13 @@ body {
 }
 
 .brand-subtitle {
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 700;
-    color: #888;
+    color: #666;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     margin-bottom: 24px;
+    line-height: 1.3;
 }
 
 /* INPUT FIELD STYLES */
@@ -222,7 +223,7 @@ body {
    DASHBOARD STYLES
    ========================================== */
 .dashboard-container {
-    display: none; /* Disembunyikan sebelum login */
+    display: none;
     padding: 15px;
     background-color: #e5e7eb;
     min-height: 100vh;
@@ -319,13 +320,7 @@ body {
     margin-bottom: 15px;
 }
 
-.left-column {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.right-column {
+.left-column, .right-column {
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -348,29 +343,19 @@ body {
     gap: 10px;
 }
 
-.column-header {
+.column-header, .sub-header {
     background: #ffb703;
     border: 2px solid #000;
     padding: 6px;
     text-align: center;
-    font-size: 16px;
     font-weight: bold;
     font-style: italic;
     color: #000;
     border-radius: 4px;
 }
 
-.sub-header {
-    background: #ffb703;
-    border: 2px solid #000;
-    padding: 4px;
-    text-align: center;
-    font-size: 12px;
-    font-weight: bold;
-    font-style: italic;
-    color: #000;
-    border-radius: 4px;
-}
+.column-header { font-size: 16px; }
+.sub-header { font-size: 12px; padding: 4px; }
 
 .chart-wrapper {
     display: flex;
@@ -528,7 +513,7 @@ body {
 </head>
 <body>
 
-<!-- MODAL LOGIN SECURITY (DESAIN SESUAI GAMBAR) -->
+<!-- MODAL LOGIN SECURITY -->
 <div id="loginModal" class="login-overlay">
     <div class="login-card">
         
@@ -538,16 +523,16 @@ body {
             <img src="logo corpu.png" alt="UT Corporate University" class="login-logo-corpu">
         </div>
 
-        <!-- ICON HELM KESELAMATAN UT -->
+        <!-- ICON DASHBOARD -->
         <div class="login-icon-badge">
             <svg viewBox="0 0 24 24">
-                <path d="M12 3a9 9 0 0 0-9 9v1h18v-1a9 9 0 0 0-9-9zm-8 11h16v1a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-1z"/>
+                <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
             </svg>
         </div>
 
-        <!-- BRANDING JUDUL -->
-        <h2 class="brand-title">Edu<span>Track</span></h2>
-        <div class="brand-subtitle">Training Management</div>
+        <!-- BRANDING JUDUL DENGAN NAMA BARU -->
+        <h2 class="brand-title">8DP <span>Development</span></h2>
+        <div class="brand-subtitle">DASHBOARD MONITORING DEVELOPMENT 8DP</div>
 
         <!-- FORM LOGIN -->
         <form onsubmit="handleLogin(event)">
@@ -575,7 +560,7 @@ body {
             <div id="errorMsg" class="error-msg">Username / NIK atau Password salah!</div>
         </form>
 
-        <!-- FOOTER INTEGRITY BADGE -->
+        <!-- FOOTER SECURITY BADGE -->
         <div class="login-footer">
             <svg viewBox="0 0 24 24">
                 <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
