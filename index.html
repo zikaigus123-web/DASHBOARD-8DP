@@ -162,8 +162,7 @@ body {
     position: relative;
 }
 
-/* KPI SUMMARY BOX - PENYESUAIAN RATA TENGAH (CENTERED) */
-/* KPI SUMMARY BOX - ALIGNMENT PERBAIKAN */
+/* KPI SUMMARY BOX - REVISI PREISI SEJAJAR & UNIFORM */
 .kpi-container {
     background: #ffffff;
     border: 2px solid #000;
@@ -196,9 +195,9 @@ body {
 .kpi-metrics {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+    gap: 15px;
     width: 100%;
-    align-items: start; /* Memastikan semua kolom mulai sejajar dari atas */
+    align-items: flex-start;
 }
 
 .kpi-item {
@@ -208,27 +207,27 @@ body {
     text-align: center;
 }
 
-/* Memaksa area angka/judul memiliki tinggi yang sama dan kontennya tepat di tengah */
+/* Angka Utama Menonjol & Sejajar */
 .kpi-item h3 {
-    font-size: 16px;
+    font-size: 24px;
     font-weight: 800;
     color: #000;
-    line-height: 1.2;
-    height: 40px;            /* Tinggi tetap agar angka/teks atas sejajar */
-    display: flex;
-    align-items: center;     /* Vertikal center untuk angka/judul */
-    justify-content: center;  /* Horisontal center */
-    margin-bottom: 4px;
+    line-height: 1;
+    margin-bottom: 6px;
     width: 100%;
+    text-align: center;
 }
 
-/* Teks keterangan di bawah akan otomatis mulai tepat di bawah baris h3 secara sejajar */
+/* Keterangan Teks Berbaris Rapi Di Bawah Angka */
 .kpi-item p {
     font-size: 11px;
     font-weight: bold;
-    color: #555;
-    line-height: 1.2;
+    color: #444;
+    line-height: 1.3;
     margin: 0;
+    text-align: center;
+    white-space: normal;
+    max-width: 130px;
 }
 
 /* SECTION BAWAH (DIAGRAM GARIS PRE VS POST TEST) */
@@ -291,7 +290,7 @@ body {
             </div>
         </div>
 
-        <!-- KPI SUMMARY BOX (TEXT DI-CENTER KAN) -->
+        <!-- KPI SUMMARY BOX (TEXT DI-CENTER KAN & SEJAJAR) -->
         <div class="kpi-container">
             <div class="kpi-icon-box">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -304,19 +303,19 @@ body {
             <div class="kpi-metrics">
                 <div class="kpi-item">
                     <h3 id="kpiTotalPart">0</h3>
-                    <p>Total Participant 2026 (YTD)</p>
+                    <p>Total Participant<br>2026 (YTD)</p>
                 </div>
                 <div class="kpi-item">
                     <h3 id="kpiOverallCoverage">0</h3>
-                    <p>Overal Training Coverage</p>
-                </div>
-                <div class="kpi-item">
-                    <h3 id="kpiTopModule" style="font-size: 13px;">-</h3>
-                    <p>Top Module Chosen</p>
+                    <p>Overall Coverage<br>2026 (YTD)</p>
                 </div>
                 <div class="kpi-item">
                     <h3 id="kpiHighestModuleCount">0</h3>
-                    <p>Highest module choosen in one group</p>
+                    <p>Top Chosen Count<br>2026 (YTD)</p>
+                </div>
+                <div class="kpi-item">
+                    <h3 id="kpiTopModule" style="font-size: 16px;">-</h3>
+                    <p>Most Popular Module<br>2026 (YTD)</p>
                 </div>
             </div>
         </div>
