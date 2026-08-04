@@ -41,9 +41,8 @@ body {
     height: 45px;
 }
 
-/* PERBESAR LOGO CORPU DI SINI */
 .logo-corpu {
-    height: 85px; 
+    height: 65px; 
 }
 
 .title-container {
@@ -106,9 +105,10 @@ body {
     padding: 10px;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
 }
 
+/* HEADER UTAMA KOLOM */
 .column-header {
     background: #ffb703;
     border: 2px solid #000;
@@ -121,32 +121,52 @@ body {
     border-radius: 4px;
 }
 
+/* HEADER BANNER KUNING UNTUK SUB-DIAGRAM */
+.sub-header {
+    background: #ffb703;
+    border: 2px solid #000;
+    padding: 6px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: bold;
+    font-style: italic;
+    color: #000;
+    border-radius: 4px;
+}
+
+.chart-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
 .chart-box {
     background: #ffffff;
     border: 2px solid #000;
     border-radius: 4px;
-    padding: 15px;
-    height: 280px;
+    padding: 10px;
+    height: 270px;
     position: relative;
 }
 
-/* EXTRA CHART SECTION (Demografi Jabatan) */
+/* EXTRA CHART SECTION */
 .extra-section {
-    background: #ffffff;
+    background: #f8f9fa;
     border: 2px solid #000;
     border-radius: 4px;
-    padding: 15px;
-    max-width: 500px;
+    padding: 12px;
+    max-width: 550px;
     margin: 0 auto;
-}
-
-.extra-section h2 {
-    text-align: center;
-    font-size: 16px;
-    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .extra-chart-box {
+    background: #ffffff;
+    border: 2px solid #000;
+    border-radius: 4px;
+    padding: 10px;
     height: 250px;
     position: relative;
 }
@@ -177,33 +197,57 @@ body {
     <!-- KOLOM 1: TRAINING COVERAGE -->
     <div class="column-card">
         <div class="column-header">Training Coverage</div>
-        <div class="chart-box">
-            <canvas id="coveragePieChart"></canvas>
+        
+        <div class="chart-wrapper">
+            <div class="sub-header">Overall Coverage Rate</div>
+            <div class="chart-box">
+                <canvas id="coveragePieChart"></canvas>
+            </div>
         </div>
-        <div class="chart-box">
-            <canvas id="coverageBarChart"></canvas>
+
+        <div class="chart-wrapper">
+            <div class="sub-header">Training Coverage per Jabatan</div>
+            <div class="chart-box">
+                <canvas id="coverageBarChart"></canvas>
+            </div>
         </div>
     </div>
 
     <!-- KOLOM 2: TRAINING PARTICIPANT -->
     <div class="column-card">
         <div class="column-header">Training Participant</div>
-        <div class="chart-box">
-            <canvas id="participantPieChart"></canvas>
+        
+        <div class="chart-wrapper">
+            <div class="sub-header">Overall Participation Status</div>
+            <div class="chart-box">
+                <canvas id="participantPieChart"></canvas>
+            </div>
         </div>
-        <div class="chart-box">
-            <canvas id="participantBarChart"></canvas>
+
+        <div class="chart-wrapper">
+            <div class="sub-header">Training Participant per Jabatan</div>
+            <div class="chart-box">
+                <canvas id="participantBarChart"></canvas>
+            </div>
         </div>
     </div>
 
     <!-- KOLOM 3: TRAINING HOURS -->
     <div class="column-card">
         <div class="column-header">Training Hours</div>
-        <div class="chart-box">
-            <canvas id="hoursPieChart"></canvas>
+        
+        <div class="chart-wrapper">
+            <div class="sub-header">Overall Hours Target Achievement</div>
+            <div class="chart-box">
+                <canvas id="hoursPieChart"></canvas>
+            </div>
         </div>
-        <div class="chart-box">
-            <canvas id="hoursBarChart"></canvas>
+
+        <div class="chart-wrapper">
+            <div class="sub-header">Training Hours per Jabatan</div>
+            <div class="chart-box">
+                <canvas id="hoursBarChart"></canvas>
+            </div>
         </div>
     </div>
 
@@ -211,7 +255,7 @@ body {
 
 <!-- TAMBAHAN: PIE CHART PEMBAGIAN PESERTA PER JABATAN -->
 <div class="extra-section">
-    <h2>Distribusi Total Peserta Berdasarkan Jabatan</h2>
+    <div class="sub-header">Distribusi Total Peserta Berdasarkan Jabatan</div>
     <div class="extra-chart-box">
         <canvas id="jabatanPieChart"></canvas>
     </div>
@@ -346,11 +390,11 @@ function renderDashboard(data) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { title: { display: true, text: "Overall Coverage Rate" } }
+            plugins: { title: { display: false } }
         }
     });
 
-    // Coverage Bar (Diberi Judul)
+    // Coverage Bar
     destroyChart("coverageBar");
     chartInstances["coverageBar"] = new Chart(document.getElementById("coverageBarChart"), {
         type: "bar",
@@ -372,12 +416,7 @@ function renderDashboard(data) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { 
-                title: { 
-                    display: true, 
-                    text: "Training Coverage per Jabatan" 
-                } 
-            },
+            plugins: { title: { display: false } },
             scales: { x: { stacked: false }, y: { beginAtZero: true } }
         }
     });
@@ -419,11 +458,11 @@ function renderDashboard(data) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { title: { display: true, text: "Overall Participation Status" } }
+            plugins: { title: { display: false } }
         }
     });
 
-    // Participant Bar (Diberi Judul)
+    // Participant Bar
     destroyChart("partBar");
     chartInstances["partBar"] = new Chart(document.getElementById("participantBarChart"), {
         type: "bar",
@@ -450,12 +489,7 @@ function renderDashboard(data) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { 
-                title: { 
-                    display: true, 
-                    text: "Training Participant per Jabatan" 
-                } 
-            },
+            plugins: { title: { display: false } },
             scales: { x: { stacked: false }, y: { beginAtZero: true } }
         }
     });
@@ -497,11 +531,11 @@ function renderDashboard(data) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { title: { display: true, text: "Overall Hours Target Achievement" } }
+            plugins: { title: { display: false } }
         }
     });
 
-    // Hours Bar (Diberi Judul)
+    // Hours Bar
     destroyChart("hoursBar");
     chartInstances["hoursBar"] = new Chart(document.getElementById("hoursBarChart"), {
         type: "bar",
@@ -523,12 +557,7 @@ function renderDashboard(data) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { 
-                title: { 
-                    display: true, 
-                    text: "Training Hours per Jabatan" 
-                } 
-            },
+            plugins: { title: { display: false } },
             scales: { y: { beginAtZero: true } }
         }
     });
@@ -557,7 +586,8 @@ function renderDashboard(data) {
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false
+            maintainAspectRatio: false,
+            plugins: { title: { display: false } }
         }
     });
 }
