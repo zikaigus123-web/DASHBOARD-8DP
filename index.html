@@ -20,99 +20,212 @@
 }
 
 body {
-    font-family: Arial, sans-serif;
-    background-color: #e5e7eb;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1e1e1e; /* Background gelap modern untuk layar login */
     color: #333;
-    padding: 15px;
 }
 
-/* MODAL LOGIN STYLES */
+/* ==========================================
+   MODAL LOGIN STYLES (MODERN UI MATCHING IMAGE)
+   ========================================== */
 .login-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.75);
+    background: #18181b; /* Dark gradient backdrop */
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 9999;
+    padding: 15px;
 }
 
 .login-card {
     background: #ffffff;
-    border: 3px solid #000;
-    border-radius: 8px;
-    padding: 25px 30px;
+    border-radius: 12px;
+    padding: 24px 32px 30px 32px;
     width: 100%;
-    max-width: 380px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    max-width: 440px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
     text-align: center;
+    position: relative;
+    overflow: hidden;
+    border-top: 6px solid #ffc107; /* Accent Yellow Line di Atas Card */
 }
 
-.login-card h2 {
-    font-size: 20px;
-    font-weight: 800;
-    margin-bottom: 5px;
-    color: #000;
-}
-
-.login-card p {
-    font-size: 12px;
-    color: #666;
-    margin-bottom: 20px;
-}
-
-.login-field {
+/* LOGO KIRI DAN KANAN ATAS */
+.login-header-logos {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 15px;
+}
+
+.login-logo-ut { height: 32px; object-fit: contain; }
+.login-logo-corpu { height: 40px; object-fit: contain; }
+
+/* ICON HELM SAFETY UT */
+.login-icon-badge {
+    background-color: #ffc107;
+    width: 54px;
+    height: 54px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px auto;
+    box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3);
+}
+
+.login-icon-badge svg {
+    width: 32px;
+    height: 32px;
+    fill: #111;
+}
+
+/* BRANDING & TITLE */
+.brand-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #111;
+    letter-spacing: -0.5px;
+    margin-bottom: 2px;
+}
+
+.brand-title span {
+    color: #ffc107;
+}
+
+.brand-subtitle {
+    font-size: 11px;
+    font-weight: 700;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 24px;
+}
+
+/* INPUT FIELD STYLES */
+.login-field {
+    margin-bottom: 16px;
     text-align: left;
 }
 
 .login-field label {
     display: block;
-    font-size: 12px;
-    font-weight: bold;
-    margin-bottom: 5px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 6px;
+}
+
+.input-icon-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon-wrapper svg {
+    position: absolute;
+    left: 14px;
+    width: 18px;
+    height: 18px;
+    fill: #a0aec0;
+    transition: fill 0.2s;
 }
 
 .login-field input {
     width: 100%;
-    padding: 10px;
-    font-size: 13px;
-    border: 2px solid #000;
-    border-radius: 4px;
+    padding: 12px 14px 12px 42px;
+    font-size: 13.5px;
+    border: 1px solid #e2e8f0;
+    background-color: #f8fafc;
+    border-radius: 8px;
     outline: none;
+    transition: all 0.2s;
+    color: #1a202c;
 }
 
+.login-field input:focus {
+    background-color: #ffffff;
+    border-color: #ffc107;
+    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.2);
+}
+
+.login-field input:focus + svg,
+.login-field input:focus ~ svg {
+    fill: #ffc107;
+}
+
+/* BUTTON MASUK */
 .login-btn {
     width: 100%;
-    background: #ffb703;
-    color: #000;
-    border: 2px solid #000;
-    padding: 10px;
-    font-size: 14px;
-    font-weight: bold;
-    border-radius: 4px;
+    background: #ffc107;
+    color: #111;
+    border: none;
+    padding: 12px;
+    font-size: 13.5px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background 0.2s;
+    margin-top: 8px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.25);
 }
 
 .login-btn:hover {
-    background: #e0a200;
+    background: #e0a800;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(255, 193, 7, 0.35);
+}
+
+.login-btn:active {
+    transform: translateY(0);
 }
 
 .error-msg {
-    color: #d9534f;
+    color: #e53e3e;
+    background-color: #fff5f5;
+    border: 1px solid #fed7d7;
+    padding: 8px 12px;
+    border-radius: 6px;
     font-size: 12px;
-    margin-top: 10px;
-    font-weight: bold;
+    margin-top: 14px;
+    font-weight: 600;
     display: none;
 }
 
-/* MAIN CONTENT BLUR/HIDDEN UNTIL LOGIN */
+/* FOOTER SECURITY BADGE */
+.login-footer {
+    margin-top: 22px;
+    padding-top: 14px;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 11.5px;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.login-footer svg {
+    width: 14px;
+    height: 14px;
+    fill: #94a3b8;
+}
+
+/* ==========================================
+   DASHBOARD STYLES
+   ========================================== */
 .dashboard-container {
     display: none; /* Disembunyikan sebelum login */
+    padding: 15px;
+    background-color: #e5e7eb;
+    min-height: 100vh;
 }
 
 /* HEADER SECTION */
@@ -138,7 +251,7 @@ body {
     text-align: center;
 }
 
-/* FILTER & BUTTON CONTAINER SECTION */
+/* FILTER SECTION */
 .filter-container {
     background: #ffffff;
     border: 2px solid #000;
@@ -147,7 +260,7 @@ body {
     margin-bottom: 15px;
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Membuat filter di kiri dan tombol spreadsheet di kanan */
+    justify-content: space-between;
     gap: 10px;
 }
 
@@ -171,7 +284,6 @@ body {
     min-width: 200px;
 }
 
-/* BUTTON SPREADSHEET (POSISI SEJAJAR FILTER & DI ATAS TRAINING HOURS) */
 .btn-spreadsheet {
     background-color: #ffb703;
     color: #000;
@@ -199,7 +311,7 @@ body {
     fill: currentColor;
 }
 
-/* MAIN LAYOUT SPLIT (KIRI & KANAN) */
+/* MAIN LAYOUT SPLIT */
 .main-layout {
     display: grid;
     grid-template-columns: 1fr 2fr;
@@ -225,7 +337,7 @@ body {
     gap: 15px;
 }
 
-/* CARD & BANNER STYLES */
+/* CARDS */
 .column-card {
     background: #ffffff;
     border: 2px solid #000;
@@ -275,7 +387,7 @@ body {
     position: relative;
 }
 
-/* KPI SUMMARY BOX */
+/* KPI BOX */
 .kpi-container {
     background: #ffffff;
     border: 2px solid #000;
@@ -328,7 +440,6 @@ body {
     line-height: 1;
     margin-bottom: 6px;
     width: 100%;
-    text-align: center;
 }
 
 .kpi-item p {
@@ -337,11 +448,9 @@ body {
     color: #444;
     line-height: 1.3;
     margin: 0;
-    text-align: center;
-    white-space: normal;
 }
 
-/* TABLE REKAP JABATAN */
+/* TABLE */
 .jabatan-table-container {
     background: #ffffff;
     border: 2px solid #000;
@@ -387,7 +496,7 @@ body {
     font-weight: bold;
 }
 
-/* SECTION BAWAH (DIAGRAM GARIS PRE VS POST TEST) */
+/* BOTTOM SECTION */
 .bottom-section {
     background: #ffffff;
     border: 2px solid #000;
@@ -403,50 +512,81 @@ body {
     position: relative;
 }
 
-/* MEDIA QUERIES UNTUK TAMPILAN MOBILE (HP) */
 @media (max-width: 768px) {
-    body { padding: 8px; }
-    .header { flex-direction: column; gap: 10px; text-align: center; padding: 12px; }
-    .logo-ut { height: 35px; }
-    .logo-corpu { height: 45px; }
-    .title-container h1 { font-size: 16px; }
+    .login-card { padding: 20px 20px 24px 20px; }
+    .header { flex-direction: column; gap: 10px; text-align: center; }
     .filter-container { flex-direction: column; align-items: stretch; }
     .filter-left { flex-direction: column; align-items: stretch; }
     .filter-select { width: 100%; }
     .btn-spreadsheet { justify-content: center; width: 100%; }
-    .main-layout { grid-template-columns: 1fr; gap: 12px; }
+    .main-layout { grid-template-columns: 1fr; }
     .top-right-grid { grid-template-columns: 1fr; }
-    .kpi-container { flex-direction: column; padding: 12px; }
-    .kpi-metrics { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-    .kpi-item h3 { font-size: 20px; }
-    .kpi-item p { font-size: 10px; }
-    .chart-box { height: 240px; }
+    .kpi-container { flex-direction: column; }
+    .kpi-metrics { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
 </head>
 <body>
 
-<!-- MODAL LOGIN SECURITY -->
+<!-- MODAL LOGIN SECURITY (DESAIN SESUAI GAMBAR) -->
 <div id="loginModal" class="login-overlay">
     <div class="login-card">
-        <h2>LOGIN DASHBOARD</h2>
-        <p>Silakan masuk untuk mengakses data monitoring</p>
+        
+        <!-- LOGO UT & CORPU DI POJOK ATAS KIRI & KANAN -->
+        <div class="login-header-logos">
+            <img src="logo ut.png" alt="United Tractors" class="login-logo-ut">
+            <img src="logo corpu.png" alt="UT Corporate University" class="login-logo-corpu">
+        </div>
+
+        <!-- ICON HELM KESELAMATAN UT -->
+        <div class="login-icon-badge">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 3a9 9 0 0 0-9 9v1h18v-1a9 9 0 0 0-9-9zm-8 11h16v1a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-1z"/>
+            </svg>
+        </div>
+
+        <!-- BRANDING JUDUL -->
+        <h2 class="brand-title">Edu<span>Track</span></h2>
+        <div class="brand-subtitle">Training Management</div>
+
+        <!-- FORM LOGIN -->
         <form onsubmit="handleLogin(event)">
             <div class="login-field">
-                <label for="username">Username</label>
-                <input type="text" id="username" placeholder="Masukkan Username" required autocomplete="off">
+                <label for="username">Username / NIK</label>
+                <div class="input-icon-wrapper">
+                    <input type="text" id="username" placeholder="Masukkan ID Anda" required autocomplete="off">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </div>
             </div>
+
             <div class="login-field">
                 <label for="password">Password</label>
-                <input type="password" id="password" placeholder="Masukkan Password" required>
+                <div class="input-icon-wrapper">
+                    <input type="password" id="password" placeholder="••••••••" required>
+                    <svg viewBox="0 0 24 24">
+                        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                    </svg>
+                </div>
             </div>
-            <button type="submit" class="login-btn">MASUK DASHBOARD</button>
-            <div id="errorMsg" class="error-msg">Username atau Password salah!</div>
+
+            <button type="submit" class="login-btn">MASUK KE SISTEM</button>
+            <div id="errorMsg" class="error-msg">Username / NIK atau Password salah!</div>
         </form>
+
+        <!-- FOOTER INTEGRITY BADGE -->
+        <div class="login-footer">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+            </svg>
+            Secure Enterprise Portal
+        </div>
+
     </div>
 </div>
 
-<!-- DASHBOARD CONTAINER (DISIMPANG SAMPAI LOGIN BERHASIL) -->
+<!-- DASHBOARD CONTAINER -->
 <div id="dashboardContent" class="dashboard-container">
 
     <!-- HEADER -->
@@ -458,7 +598,7 @@ body {
         <img src="logo corpu.png" alt="UT Corporate University" class="logo-corpu">
     </div>
 
-    <!-- FILTER & BUTTON SPREADSHEET BAR -->
+    <!-- FILTER & SPREADSHEET BAR -->
     <div class="filter-container">
         <div class="filter-left">
             <label for="filterLokasi">Filter Lokasi Kerja Update:</label>
@@ -467,7 +607,6 @@ body {
             </select>
         </div>
 
-        <!-- TOMBOL SEJAJAR FILTER & DI ATAS TRAINING HOURS -->
         <a href="https://docs.google.com/spreadsheets/d/1vQk1Gnwtu-vKG24ImVYA0ytCuAuOuWeujzNpFbUPz2C-Y0jLwRxWspRCSMPqG9gj7WfcTGtXWwSlFH6/edit" target="_blank" class="btn-spreadsheet">
             <svg viewBox="0 0 24 24">
                 <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-2h2v2zm0-4H7v-2h2v2zm0-4H7V7h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/>
@@ -476,31 +615,24 @@ body {
         </a>
     </div>
 
-    <!-- MAIN LAYOUT (LEFT & RIGHT) -->
+    <!-- MAIN LAYOUT -->
     <div class="main-layout">
 
         <!-- LEFT COLUMN -->
         <div class="left-column">
-            <!-- TRAINING COVERAGE CARD -->
             <div class="column-card">
                 <div class="column-header">Training Coverage</div>
-                
                 <div class="chart-wrapper">
                     <div class="sub-header">Overall Coverage Rate</div>
-                    <div class="chart-box">
-                        <canvas id="coveragePieChart"></canvas>
-                    </div>
+                    <div class="chart-box"><canvas id="coveragePieChart"></canvas></div>
                 </div>
-
                 <div class="chart-wrapper">
                     <div class="sub-header">Training Coverage per Jabatan</div>
-                    <div class="chart-box">
-                        <canvas id="coverageBarChart"></canvas>
-                    </div>
+                    <div class="chart-box"><canvas id="coverageBarChart"></canvas></div>
                 </div>
             </div>
 
-            <!-- KPI SUMMARY BOX -->
+            <!-- KPI BOX -->
             <div class="kpi-container">
                 <div class="kpi-icon-box">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -511,26 +643,14 @@ body {
                     </svg>
                 </div>
                 <div class="kpi-metrics">
-                    <div class="kpi-item">
-                        <h3 id="kpiTotalPart">0</h3>
-                        <p>Total Participant<br>2026 (YTD)</p>
-                    </div>
-                    <div class="kpi-item">
-                        <h3 id="kpiOverallCoverage">0</h3>
-                        <p>Overall Coverage<br>2026 (YTD)</p>
-                    </div>
-                    <div class="kpi-item">
-                        <h3 id="kpiHighestModuleCount">0</h3>
-                        <p>Top Chosen Count<br>2026 (YTD)</p>
-                    </div>
-                    <div class="kpi-item">
-                        <h3 id="kpiTopModule" style="font-size: 15px;">-</h3>
-                        <p>Most Popular Module<br>2026 (YTD)</p>
-                    </div>
+                    <div class="kpi-item"><h3 id="kpiTotalPart">0</h3><p>Total Participant<br>2026 (YTD)</p></div>
+                    <div class="kpi-item"><h3 id="kpiOverallCoverage">0</h3><p>Overall Coverage<br>2026 (YTD)</p></div>
+                    <div class="kpi-item"><h3 id="kpiHighestModuleCount">0</h3><p>Top Chosen Count<br>2026 (YTD)</p></div>
+                    <div class="kpi-item"><h3 id="kpiTopModule" style="font-size: 15px;">-</h3><p>Most Popular Module<br>2026 (YTD)</p></div>
                 </div>
             </div>
 
-            <!-- TABEL REKAP JABATAN -->
+            <!-- TABEL REKAP -->
             <div class="jabatan-table-container">
                 <div class="sub-header">Rekap Jumlah Pegawai per Jabatan</div>
                 <div class="table-wrapper">
@@ -541,8 +661,7 @@ body {
                                 <th style="width: 110px; text-align: center;">Total Pegawai</th>
                             </tr>
                         </thead>
-                        <tbody id="jabatanTableBody">
-                        </tbody>
+                        <tbody id="jabatanTableBody"></tbody>
                     </table>
                 </div>
             </div>
@@ -551,42 +670,31 @@ body {
         <!-- RIGHT COLUMN -->
         <div class="right-column">
             <div class="top-right-grid">
-                <!-- TRAINING PARTICIPANT CARD -->
                 <div class="column-card">
                     <div class="column-header">Training Participant</div>
                     <div class="chart-wrapper">
                         <div class="sub-header">Overall Participation Status</div>
-                        <div class="chart-box">
-                            <canvas id="participantPieChart"></canvas>
-                        </div>
+                        <div class="chart-box"><canvas id="participantPieChart"></canvas></div>
                     </div>
                     <div class="chart-wrapper">
                         <div class="sub-header">Training Participant per Jabatan</div>
-                        <div class="chart-box">
-                            <canvas id="participantBarChart"></canvas>
-                        </div>
+                        <div class="chart-box"><canvas id="participantBarChart"></canvas></div>
                     </div>
                 </div>
 
-                <!-- TRAINING HOURS CARD -->
                 <div class="column-card">
                     <div class="column-header">Training Hours</div>
                     <div class="chart-wrapper">
                         <div class="sub-header">Overall Hours Target Achievement</div>
-                        <div class="chart-box">
-                            <canvas id="hoursPieChart"></canvas>
-                        </div>
+                        <div class="chart-box"><canvas id="hoursPieChart"></canvas></div>
                     </div>
                     <div class="chart-wrapper">
                         <div class="sub-header">Training Hours per Jabatan</div>
-                        <div class="chart-box">
-                            <canvas id="hoursBarChart"></canvas>
-                        </div>
+                        <div class="chart-box"><canvas id="hoursBarChart"></canvas></div>
                     </div>
                 </div>
             </div>
 
-            <!-- EXTRA: DISTRIBUSI TOTAL PESERTA BERDASARKAN JABATAN -->
             <div class="column-card">
                 <div class="sub-header">Distribusi Total Peserta Berdasarkan Jabatan</div>
                 <div class="chart-box" style="height: 200px;">
@@ -597,7 +705,7 @@ body {
 
     </div>
 
-    <!-- BOTTOM SECTION: EVALUASI NILAI PRE VS POST TEST PER MODUL -->
+    <!-- BOTTOM SECTION -->
     <div class="bottom-section">
         <div class="sub-header">Rata-Rata Nilai Pre-Test vs Post-Test per Modul Training</div>
         <div class="bottom-chart-box">
@@ -623,18 +731,15 @@ function handleLogin(event) {
     if (userInput === CORRECT_USER && passInput === CORRECT_PASS) {
         document.getElementById("loginModal").style.display = "none";
         document.getElementById("dashboardContent").style.display = "block";
-        loadDashboardData(); // Mulai memuat data setelah berhasil login
+        loadDashboardData();
     } else {
         errorMsg.style.display = "block";
     }
 }
 
-// DAFTARKAN PLUGIN DATALABELS PADA CHART.JS
 Chart.register(ChartDataLabels);
 
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQk1Gnwtu-vKG24ImVYA0ytCuAuOuWeujzNpFbUPz2C-Y0jLwRxWspRCSMPqG9gj7WfcTGtXWwSlFH6/pub?gid=1260922175&single=true&output=csv";
-
-// HIRARKI JABATAN DARI TOP MANAGEMENT KE BAWAH
 const CUSTOM_JABATAN_ORDER = ["BC", "BM", "SM", "SDH", "PDH", "ADH", "SPY", "ASC"];
 
 let parsedData = [];
@@ -820,18 +925,14 @@ function getPieOptions() {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-            legend: {
-                position: 'right',
-                labels: { font: { size: 11 } }
-            },
+            legend: { position: 'right', labels: { font: { size: 11 } } },
             datalabels: {
                 formatter: (value, ctx) => {
                     let sum = 0;
                     let dataArr = ctx.chart.data.datasets[0].data;
                     dataArr.map(data => { sum += data; });
                     if (sum === 0) return "0%";
-                    let percentage = (value * 100 / sum).toFixed(1) + "%";
-                    return percentage;
+                    return (value * 100 / sum).toFixed(1) + "%";
                 },
                 color: '#000',
                 font: { weight: 'bold', size: 11 }
@@ -870,7 +971,6 @@ function renderDashboard(data) {
         if (d.statusCoverage === "Tercoverage" || d.statusCoverage.toLowerCase().includes("tercoverage")) {
             totalCovered++;
         }
-        
         moduleColumns.forEach(mod => {
             const mData = d.modules[mod.name];
             if (mData && mData.status && !mData.status.toLowerCase().includes("not picked") && mData.status.trim() !== "") {
@@ -893,16 +993,14 @@ function renderDashboard(data) {
     document.getElementById("kpiTopModule").textContent = topModName;
     document.getElementById("kpiHighestModuleCount").textContent = highestCount;
 
-    // 1. TRAINING COVERAGE
+    // 1. COVERAGE
     let tercoverageCount = 0, notCoverageCount = 0;
     const coverageByJabatan = {};
     jabatanList.forEach(j => coverageByJabatan[j] = { Tercoverage: 0, "Not Yet": 0 });
 
     data.forEach(d => {
         const isCov = d.statusCoverage === "Tercoverage" || d.statusCoverage.toLowerCase().includes("tercoverage");
-        if (isCov) tercoverageCount++;
-        else notCoverageCount++;
-
+        if (isCov) tercoverageCount++; else notCoverageCount++;
         if (coverageByJabatan[d.jabatan]) {
             if (isCov) coverageByJabatan[d.jabatan]["Tercoverage"]++;
             else coverageByJabatan[d.jabatan]["Not Yet"]++;
@@ -912,10 +1010,7 @@ function renderDashboard(data) {
     destroyChart("coveragePie");
     chartInstances["coveragePie"] = new Chart(document.getElementById("coveragePieChart"), {
         type: "pie",
-        data: {
-            labels: ["Tercoverage", "Not Yet"],
-            datasets: [{ data: [tercoverageCount, notCoverageCount], backgroundColor: ["#f77f00", "#4285f4"] }]
-        },
+        data: { labels: ["Tercoverage", "Not Yet"], datasets: [{ data: [tercoverageCount, notCoverageCount], backgroundColor: ["#f77f00", "#4285f4"] }] },
         options: getPieOptions()
     });
 
@@ -929,14 +1024,10 @@ function renderDashboard(data) {
                 { label: "Not Yet", data: jabatanList.map(j => coverageByJabatan[j]["Not Yet"]), backgroundColor: "#4285f4" }
             ]
         },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { datalabels: { display: false } },
-            scales: { y: { beginAtZero: true } }
-        }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { datalabels: { display: false } }, scales: { y: { beginAtZero: true } } }
     });
 
-    // 2. TRAINING PARTICIPANT
+    // 2. PARTICIPANT
     let doneCount = 0, onProgressCount = 0, notYetPartCount = 0;
     const participantByJabatan = {};
     jabatanList.forEach(j => participantByJabatan[j] = { Done: 0, "On Progress": 0, "Not Yet": 0 });
@@ -959,10 +1050,7 @@ function renderDashboard(data) {
     destroyChart("partPie");
     chartInstances["partPie"] = new Chart(document.getElementById("participantPieChart"), {
         type: "pie",
-        data: {
-            labels: ["Not Yet", "Done", "On Progress"],
-            datasets: [{ data: [notYetPartCount, doneCount, onProgressCount], backgroundColor: ["#4285f4", "#f77f00", "#a855f7"] }]
-        },
+        data: { labels: ["Not Yet", "Done", "On Progress"], datasets: [{ data: [notYetPartCount, doneCount, onProgressCount], backgroundColor: ["#4285f4", "#f77f00", "#a855f7"] }] },
         options: getPieOptions()
     });
 
@@ -977,14 +1065,10 @@ function renderDashboard(data) {
                 { label: "Not Yet", data: jabatanList.map(j => participantByJabatan[j]["Not Yet"]), backgroundColor: "#4285f4" }
             ]
         },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { datalabels: { display: false } },
-            scales: { y: { beginAtZero: true } }
-        }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { datalabels: { display: false } }, scales: { y: { beginAtZero: true } } }
     });
 
-    // 3. TRAINING HOURS
+    // 3. HOURS
     let tercapaiCount = 0, belumTercapaiCount = 0;
     const hoursByJabatan = {};
     jabatanList.forEach(j => hoursByJabatan[j] = { actual: 0, target: 0 });
@@ -1003,10 +1087,7 @@ function renderDashboard(data) {
     destroyChart("hoursPie");
     chartInstances["hoursPie"] = new Chart(document.getElementById("hoursPieChart"), {
         type: "pie",
-        data: {
-            labels: ["Tercapai", "Belum Tercapai"],
-            datasets: [{ data: [tercapaiCount, belumTercapaiCount], backgroundColor: ["#4285f4", "#f77f00"] }]
-        },
+        data: { labels: ["Tercapai", "Belum Tercapai"], datasets: [{ data: [tercapaiCount, belumTercapaiCount], backgroundColor: ["#4285f4", "#f77f00"] }] },
         options: getPieOptions()
     });
 
@@ -1020,14 +1101,10 @@ function renderDashboard(data) {
                 { label: "Target Hours", data: jabatanList.map(j => hoursByJabatan[j].target), backgroundColor: "#ffb703" }
             ]
         },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { datalabels: { display: false } },
-            scales: { y: { beginAtZero: true } }
-        }
+        options: { responsive: true, maintainAspectRatio: false, plugins: { datalabels: { display: false } }, scales: { y: { beginAtZero: true } } }
     });
 
-    // 4. DISTRIBUSI JABATAN (PIE)
+    // 4. DISTRIBUSI JABATAN
     const jabatanCounts = {};
     data.forEach(d => { jabatanCounts[d.jabatan] = (jabatanCounts[d.jabatan] || 0) + 1; });
 
@@ -1036,15 +1113,12 @@ function renderDashboard(data) {
         type: "pie",
         data: {
             labels: jabatanList,
-            datasets: [{ 
-                data: jabatanList.map(j => jabatanCounts[j] || 0), 
-                backgroundColor: ["#4285f4", "#f77f00", "#34a853", "#ea4335", "#a855f7", "#14b8a6", "#f59e0b", "#6366f1"] 
-            }]
+            datasets: [{ data: jabatanList.map(j => jabatanCounts[j] || 0), backgroundColor: ["#4285f4", "#f77f00", "#34a853", "#ea4335", "#a855f7", "#14b8a6", "#f59e0b", "#6366f1"] }]
         },
         options: getPieOptions()
     });
 
-    // 5. LINE CHART PRE VS POST TEST
+    // 5. LINE CHART PRE VS POST
     const modNames = moduleColumns.map(m => m.name);
     const avgPreList = [];
     const avgPostList = [];
@@ -1071,51 +1145,25 @@ function renderDashboard(data) {
         data: {
             labels: modNames.length > 0 ? modNames : ["Modul 1", "Modul 2"],
             datasets: [
-                {
-                    label: "Rata-Rata Pre-Test",
-                    data: avgPreList,
-                    borderColor: "#ea4335",
-                    backgroundColor: "#ea4335",
-                    tension: 0.3,
-                    borderWidth: 3,
-                    pointRadius: 5
-                },
-                {
-                    label: "Rata-Rata Post-Test",
-                    data: avgPostList,
-                    borderColor: "#34a853",
-                    backgroundColor: "#34a853",
-                    tension: 0.3,
-                    borderWidth: 3,
-                    pointRadius: 5
-                }
+                { label: "Rata-Rata Pre-Test", data: avgPreList, borderColor: "#ea4335", backgroundColor: "#ea4335", tension: 0.3, borderWidth: 3, pointRadius: 5 },
+                { label: "Rata-Rata Post-Test", data: avgPostList, borderColor: "#34a853", backgroundColor: "#34a853", tension: 0.3, borderWidth: 3, pointRadius: 5 }
             ]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
+            responsive: true, maintainAspectRatio: false,
             plugins: { datalabels: { display: false } },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 100,
-                    title: { display: true, text: "Nilai (0 - 100)" }
-                }
-            }
+            scales: { y: { beginAtZero: true, max: 100, title: { display: true, text: "Nilai (0 - 100)" } } }
         }
     });
 
-    // 6. RENDER TABEL REKAP JABATAN
+    // 6. TABEL REKAP
     const tableBody = document.getElementById("jabatanTableBody");
     tableBody.innerHTML = "";
 
     jabatanList.forEach(jab => {
         if (jabatanCounts[jab]) {
             const row = document.createElement("tr");
-            row.innerHTML = `
-                <td>${jab}</td>
-                <td class="count-col">${jabatanCounts[jab]}</td>
-            `;
+            row.innerHTML = `<td>${jab}</td><td class="count-col">${jabatanCounts[jab]}</td>`;
             tableBody.appendChild(row);
         }
     });
