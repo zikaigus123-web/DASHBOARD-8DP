@@ -162,14 +162,15 @@ body {
     position: relative;
 }
 
-/* KPI SUMMARY BOX (DI BAWAH TRAINING COVERAGE) */
+/* KPI SUMMARY BOX - PENYESUAIAN RATA TENGAH (CENTERED) */
 .kpi-container {
     background: #ffffff;
     border: 2px solid #000;
     border-radius: 4px;
-    padding: 12px;
+    padding: 15px;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 15px;
 }
 
@@ -177,18 +178,18 @@ body {
     background: #e2e8f0;
     border: 2px solid #000;
     border-radius: 8px;
-    padding: 10px;
+    padding: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 65px;
-    height: 65px;
+    width: 60px;
+    height: 60px;
     flex-shrink: 0;
 }
 
 .kpi-icon-box svg {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
 }
 
 .kpi-metrics {
@@ -196,6 +197,14 @@ body {
     grid-template-columns: repeat(4, 1fr);
     gap: 10px;
     width: 100%;
+    align-items: center;
+}
+
+.kpi-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
 }
 
@@ -203,13 +212,15 @@ body {
     font-size: 18px;
     font-weight: 800;
     color: #000;
+    line-height: 1.2;
 }
 
 .kpi-item p {
     font-size: 11px;
     font-weight: bold;
     color: #555;
-    margin-top: 2px;
+    margin-top: 4px;
+    line-height: 1.2;
 }
 
 /* SECTION BAWAH (DIAGRAM GARIS PRE VS POST TEST) */
@@ -272,10 +283,9 @@ body {
             </div>
         </div>
 
-        <!-- KPI SUMMARY BOX -->
+        <!-- KPI SUMMARY BOX (TEXT DI-CENTER KAN) -->
         <div class="kpi-container">
             <div class="kpi-icon-box">
-                <!-- User/People Icon -->
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                     <circle cx="9" cy="7" r="4"></circle>
@@ -368,8 +378,8 @@ const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQk1Gnwtu-vKG24
 let parsedData = [];
 let moduleColumns = [];
 let chartInstances = {};
+let colMap = {}; // Dynamic Mapping untuk posisi kolom
 
-// Parse Custom CSV Multilevel Header (Baris 1 & Baris 2)
 function parseCustomCSV(text) {
     const lines = text.split("\n").filter(l => l.trim().length > 0);
     if (lines.length < 2) return;
@@ -396,15 +406,62 @@ function parseCustomCSV(text) {
     const row1 = splitCSVLine(lines[0]);
     const row2 = splitCSVLine(lines[1]);
 
-    // Deteksi Modul dan Indeks Kolomnya
+    // 1. CARI INDEKS KOLOM SECARA DINAMIS SESUAI NAMA HEADER
+    colMap = {
+        nrp: -1,
+        nama: -1,
+        lokasi: -1,
+        corpu: -1,
+        jumlahModul: -1,
+        jabatan: -1,
+        statusCoverage: -1,
+        allRecap: -1,
+        trainingHours: -1,
+        targetHours: -1,
+        statusTarget: -1
+    };
+
+    // Scan Baris 1 & Baris 2 untuk mencari kolom identitas & ringkasan
+    for (let c = 0; c < Math.max(row1.length, row2.length); c++) {
+        const h1 = (row1[c] || "").toLowerCase().trim();
+        const h2 = (row2[c] || "").toLowerCase().trim();
+        const combined = h1 + " " + h2;
+
+        if (h1.includes("nrp")) colMap.nrp = c;
+        else if (h1.includes("name") || h1.includes("nama")) colMap.nama = c;
+        else if (h1.includes("lokasi")) colMap.lokasi = c;
+        else if (h1.includes("corpu")) colMap.corpu = c;
+        else if (h1.includes("jumlah modul")) colMap.jumlahModul = c;
+        else if (h1.includes("jabatan")) colMap.jabatan = c;
+        else if (combined.includes("coverage")) colMap.statusCoverage = c;
+        else if (combined.includes("recap") || combined.includes("participant status") || combined.includes("participation")) colMap.allRecap = c;
+        else if (combined.includes("training hour") || combined.includes("actual hour")) colMap.trainingHours = c;
+        else if (combined.includes("target hour")) colMap.targetHours = c;
+        else if (combined.includes("status target") || combined.includes("target status")) colMap.statusTarget = c;
+    }
+
+    // Default fallback jika tidak terdeteksi
+    if (colMap.nrp === -1) colMap.nrp = 1;
+    if (colMap.nama === -1) colMap.nama = 2;
+    if (colMap.lokasi === -1) colMap.lokasi = 3;
+    if (colMap.corpu === -1) colMap.corpu = 4;
+    if (colMap.jumlahModul === -1) colMap.jumlahModul = 5;
+    if (colMap.jabatan === -1) colMap.jabatan = 6;
+
+    // 2. DETEKSI KOLOM MODUL
     moduleColumns = [];
     let currentModule = "";
-    for (let colIdx = 7; colIdx < row1.length; colIdx++) {
+    for (let colIdx = 0; colIdx < row1.length; colIdx++) {
         if (row1[colIdx] && row1[colIdx].trim() !== "") {
-            currentModule = row1[colIdx].trim();
+            const h1Upper = row1[colIdx].trim();
+            // Abaikan kolom non-modul utama
+            if (!["no", "nrp", "name", "nama", "lokasi kerja update", "corpu area", "jumlah modul yg diambil", "jabatan"].includes(h1Upper.toLowerCase())) {
+                currentModule = h1Upper;
+            }
         }
+        
         const subHeader = row2[colIdx] ? row2[colIdx].toLowerCase().trim() : "";
-        if (currentModule && (subHeader.includes("pre") || subHeader.includes("post") || subHeader.includes("status"))) {
+        if (currentModule && subHeader.includes("pre test")) {
             if (!moduleColumns.find(m => m.name === currentModule)) {
                 moduleColumns.push({
                     name: currentModule,
@@ -416,36 +473,59 @@ function parseCustomCSV(text) {
         }
     }
 
-    // Parse Data Mulai Baris 3
+    // 3. PARSE DATA BARIS PESERTA (BARIS 3 KE BAWAH)
     parsedData = [];
     for (let i = 2; i < lines.length; i++) {
         const row = splitCSVLine(lines[i]);
-        if (row.length < 5) continue;
+        if (row.length < 3) continue;
 
         const item = {
-            nrp: row[1] || "",
-            nama: row[2] || "",
-            lokasi: row[3] || "",
-            corpu: row[4] || "",
-            jumlahModul: parseInt(row[5]) || 0,
-            jabatan: row[6] || "#N/A",
-            statusCoverage: row[7] || "", 
-            allRecap: row[8] || "",
-            trainingHours: parseFloat(row[9]) || 0,
-            targetHours: parseFloat(row[10]) || 0,
-            statusTarget: row[11] || "",
+            nrp: row[colMap.nrp] || "",
+            nama: row[colMap.nama] || "",
+            lokasi: row[colMap.lokasi] || "",
+            corpu: row[colMap.corpu] || "",
+            jumlahModul: parseInt(row[colMap.jumlahModul]) || 0,
+            jabatan: row[colMap.jabatan] || "#N/A",
+            statusCoverage: colMap.statusCoverage !== -1 ? row[colMap.statusCoverage] : "", 
+            allRecap: colMap.allRecap !== -1 ? row[colMap.allRecap] : "",
+            trainingHours: colMap.trainingHours !== -1 ? parseFloat(row[colMap.trainingHours]) || 0 : 0,
+            targetHours: colMap.targetHours !== -1 ? parseFloat(row[colMap.targetHours]) || 0 : 0,
+            statusTarget: colMap.statusTarget !== -1 ? row[colMap.statusTarget] : "",
             modules: {}
         };
+
+        // Fallback hitung manual jika kolom statusCoverage / recap berada di tempat lain
+        let hasAnyPicked = false;
+        let hasDoneAny = false;
+        let hasProgressAny = false;
 
         moduleColumns.forEach(mod => {
             const preVal = parseFloat(row[mod.preIdx]);
             const postVal = parseFloat(row[mod.postIdx]);
+            const modStatus = row[mod.statusIdx] || "";
+
             item.modules[mod.name] = {
                 pre: !isNaN(preVal) ? preVal : null,
                 post: !isNaN(postVal) ? postVal : null,
-                status: row[mod.statusIdx] || ""
+                status: modStatus
             };
+
+            if (modStatus && !modStatus.toLowerCase().includes("not picked") && modStatus.trim() !== "") {
+                hasAnyPicked = true;
+                if (modStatus.toLowerCase().includes("done")) hasDoneAny = true;
+                if (modStatus.toLowerCase().includes("progress")) hasProgressAny = true;
+            }
         });
+
+        // Jika kolom Status Coverage tidak ditemukan di CSV, hitung berdasarkan pilihan modul
+        if (!item.statusCoverage) {
+            item.statusCoverage = (item.jumlahModul > 0 || hasAnyPicked) ? "Tercoverage" : "Not Yet";
+        }
+        if (!item.allRecap) {
+            if (hasDoneAny) item.allRecap = "Done";
+            else if (hasProgressAny) item.allRecap = "On Progress";
+            else item.allRecap = "Not Yet";
+        }
 
         parsedData.push(item);
     }
@@ -468,6 +548,7 @@ function initLokasiFilter() {
     });
 
     const select = document.getElementById("filterLokasi");
+    select.innerHTML = '<option value="ALL">-- Semua Lokasi Kerja --</option>';
     Array.from(lokasiSet).sort().forEach(loc => {
         const opt = document.createElement("option");
         opt.value = loc;
@@ -502,11 +583,13 @@ function renderDashboard(data) {
     const modulePickCounts = {};
 
     data.forEach(d => {
-        if (d.statusCoverage === "Tercoverage") totalCovered++;
+        if (d.statusCoverage === "Tercoverage" || d.statusCoverage.toLowerCase().includes("tercoverage")) {
+            totalCovered++;
+        }
         
         moduleColumns.forEach(mod => {
             const mData = d.modules[mod.name];
-            if (mData && mData.status && !mData.status.toLowerCase().includes("not picked")) {
+            if (mData && mData.status && !mData.status.toLowerCase().includes("not picked") && mData.status.trim() !== "") {
                 modulePickCounts[mod.name] = (modulePickCounts[mod.name] || 0) + 1;
             }
         });
@@ -534,11 +617,12 @@ function renderDashboard(data) {
     jabatanList.forEach(j => coverageByJabatan[j] = { Tercoverage: 0, "Not Yet": 0 });
 
     data.forEach(d => {
-        if (d.statusCoverage === "Tercoverage") tercoverageCount++;
+        const isCov = d.statusCoverage === "Tercoverage" || d.statusCoverage.toLowerCase().includes("tercoverage");
+        if (isCov) tercoverageCount++;
         else notCoverageCount++;
 
         if (coverageByJabatan[d.jabatan]) {
-            if (d.statusCoverage === "Tercoverage") coverageByJabatan[d.jabatan]["Tercoverage"]++;
+            if (isCov) coverageByJabatan[d.jabatan]["Tercoverage"]++;
             else coverageByJabatan[d.jabatan]["Not Yet"]++;
         }
     });
@@ -574,14 +658,17 @@ function renderDashboard(data) {
     jabatanList.forEach(j => participantByJabatan[j] = { Done: 0, "On Progress": 0, "Not Yet": 0 });
 
     data.forEach(d => {
-        if (d.allRecap === "Done") doneCount++;
-        else if (d.allRecap === "On Progress") onProgressCount++;
+        const st = (d.allRecap || "").toLowerCase();
+        let statusCategory = "Not Yet";
+        if (st.includes("done")) statusCategory = "Done";
+        else if (st.includes("progress")) statusCategory = "On Progress";
+
+        if (statusCategory === "Done") doneCount++;
+        else if (statusCategory === "On Progress") onProgressCount++;
         else notYetPartCount++;
 
         if (participantByJabatan[d.jabatan]) {
-            if (d.allRecap === "Done") participantByJabatan[d.jabatan]["Done"]++;
-            else if (d.allRecap === "On Progress") participantByJabatan[d.jabatan]["On Progress"]++;
-            else participantByJabatan[d.jabatan]["Not Yet"]++;
+            participantByJabatan[d.jabatan][statusCategory]++;
         }
     });
 
@@ -617,7 +704,8 @@ function renderDashboard(data) {
     jabatanList.forEach(j => hoursByJabatan[j] = { actual: 0, target: 0 });
 
     data.forEach(d => {
-        if (d.statusTarget === "Tercapai") tercapaiCount++;
+        const stTarget = (d.statusTarget || "").toLowerCase();
+        if (stTarget.includes("tercapai") && !stTarget.includes("belum")) tercapaiCount++;
         else belumTercapaiCount++;
 
         if (hoursByJabatan[d.jabatan]) {
@@ -692,7 +780,7 @@ function renderDashboard(data) {
     chartInstances["prePostLine"] = new Chart(document.getElementById("prePostLineChart"), {
         type: "line",
         data: {
-            labels: modNames.length > 0 ? modNames : ["Modul 1", "Modul 2", "Modul 3"],
+            labels: modNames.length > 0 ? modNames : ["Modul 1", "Modul 2"],
             datasets: [
                 {
                     label: "Rata-Rata Pre-Test",
