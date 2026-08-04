@@ -279,67 +279,22 @@ body {
     position: relative;
 }
 
-/* ========================================================= */
-/* MEDIA QUERIES UNTUK TAMPILAN MOBILE (HP)                  */
-/* ========================================================= */
+/* MEDIA QUERIES UNTUK TAMPILAN MOBILE (HP) */
 @media (max-width: 768px) {
-    body {
-        padding: 8px;
-    }
-
-    .header {
-        flex-direction: column;
-        gap: 10px;
-        text-align: center;
-        padding: 12px;
-    }
-
+    body { padding: 8px; }
+    .header { flex-direction: column; gap: 10px; text-align: center; padding: 12px; }
     .logo-ut { height: 35px; }
     .logo-corpu { height: 45px; }
-
-    .title-container h1 {
-        font-size: 16px;
-    }
-
-    .filter-container {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .filter-select {
-        width: 100%;
-    }
-
-    .main-layout {
-        grid-template-columns: 1fr; /* Jadi 1 Kolom ke bawah */
-        gap: 12px;
-    }
-
-    .top-right-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .kpi-container {
-        flex-direction: column;
-        padding: 12px;
-    }
-
-    .kpi-metrics {
-        grid-template-columns: repeat(2, 1fr); /* KPI jadi 2x2 di HP */
-        gap: 12px;
-    }
-
-    .kpi-item h3 {
-        font-size: 20px;
-    }
-
-    .kpi-item p {
-        font-size: 10px;
-    }
-
-    .chart-box {
-        height: 240px; /* Sedikit ditambahkan tinggi untuk ruang legenda di HP */
-    }
+    .title-container h1 { font-size: 16px; }
+    .filter-container { flex-direction: column; align-items: stretch; }
+    .filter-select { width: 100%; }
+    .main-layout { grid-template-columns: 1fr; gap: 12px; }
+    .top-right-grid { grid-template-columns: 1fr; }
+    .kpi-container { flex-direction: column; padding: 12px; }
+    .kpi-metrics { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .kpi-item h3 { font-size: 20px; }
+    .kpi-item p { font-size: 10px; }
+    .chart-box { height: 240px; }
 }
 </style>
 </head>
@@ -497,6 +452,9 @@ Chart.register(ChartDataLabels);
 
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQk1Gnwtu-vKG24ImVYA0ytCuAuOuWeujzNpFbUPz2C-Y0jLwRxWspRCSMPqG9gj7WfcTGtXWwSlFH6/pub?gid=1260922175&single=true&output=csv";
 
+// HIRARKI JABATAN DARI TOP MANAGEMENT KE BAWAH
+const CUSTOM_JABATAN_ORDER = ["BC", "BM", "SM", "SDH", "PDH", "ADH", "SPY", "ASC"];
+
 let parsedData = [];
 let moduleColumns = [];
 let chartInstances = {};
@@ -593,7 +551,7 @@ function parseCustomCSV(text) {
             lokasi: row[colMap.lokasi] || "",
             corpu: row[colMap.corpu] || "",
             jumlahModul: parseInt(row[colMap.jumlahModul]) || 0,
-            jabatan: row[colMap.jabatan] || "#N/A",
+            jabatan: (row[colMap.jabatan] || "").trim().toUpperCase(),
             statusCoverage: colMap.statusCoverage !== -1 ? row[colMap.statusCoverage] : "", 
             allRecap: colMap.allRecap !== -1 ? row[colMap.allRecap] : "",
             trainingHours: colMap.trainingHours !== -1 ? parseFloat(row[colMap.trainingHours]) || 0 : 0,
@@ -673,14 +631,13 @@ function destroyChart(id) {
     }
 }
 
-// FORMATTER PIE CHART OPTIONS DENGAN PERSENTASE DAN LEGENDA DI KANAN
 function getPieOptions() {
     return {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
             legend: {
-                position: 'right', // LEGENDA DI SAMPING KANAN (Persis foto)
+                position: 'right',
                 labels: { font: { size: 11 } }
             },
             datalabels: {
@@ -699,8 +656,30 @@ function getPieOptions() {
     };
 }
 
+// FUNGSI UNTUK MENGURUTKAN JABATAN SESUAI HIRARKI
+function getOrderedJabatanList(data) {
+    const existingJabatan = new Set(data.map(d => d.jabatan));
+    const ordered = [];
+
+    // Tambahkan sesuai urutan hirarki kustom
+    CUSTOM_JABATAN_ORDER.forEach(j => {
+        if (existingJabatan.has(j)) {
+            ordered.push(j);
+            existingJabatan.delete(j);
+        }
+    });
+
+    // Jika ada jabatan lain di luar list standar, letakkan di akhir
+    Array.from(existingJabatan).sort().forEach(j => {
+        if(j) ordered.push(j);
+    });
+
+    return ordered;
+}
+
 function renderDashboard(data) {
-    const jabatanList = [...new Set(data.map(d => d.jabatan))].sort();
+    // MENERAPKAN URUTAN HIRARKI JABATAN
+    const jabatanList = getOrderedJabatanList(data);
 
     // -------------------------------------------------------------
     // KPI METRICS
@@ -886,8 +865,11 @@ function renderDashboard(data) {
     chartInstances["jabatanPie"] = new Chart(document.getElementById("jabatanPieChart"), {
         type: "pie",
         data: {
-            labels: Object.keys(jabatanCounts),
-            datasets: [{ data: Object.values(jabatanCounts), backgroundColor: ["#4285f4", "#f77f00", "#34a853", "#ea4335", "#a855f7", "#14b8a6", "#f59e0b", "#6366f1"] }]
+            labels: jabatanList,
+            datasets: [{ 
+                data: jabatanList.map(j => jabatanCounts[j] || 0), 
+                backgroundColor: ["#4285f4", "#f77f00", "#34a853", "#ea4335", "#a855f7", "#14b8a6", "#f59e0b", "#6366f1"] 
+            }]
         },
         options: getPieOptions()
     });
@@ -956,20 +938,20 @@ function renderDashboard(data) {
     });
 
     // -------------------------------------------------------------
-    // 6. RENDER TABEL REKAP JABATAN
+    // 6. RENDER TABEL REKAP JABATAN (URUTAN DARI TOP MANAGEMENT)
     // -------------------------------------------------------------
     const tableBody = document.getElementById("jabatanTableBody");
     tableBody.innerHTML = "";
 
-    const sortedJabatan = Object.keys(jabatanCounts).sort();
-    
-    sortedJabatan.forEach(jab => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${jab}</td>
-            <td class="count-col">${jabatanCounts[jab]}</td>
-        `;
-        tableBody.appendChild(row);
+    jabatanList.forEach(jab => {
+        if (jabatanCounts[jab]) {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${jab}</td>
+                <td class="count-col">${jabatanCounts[jab]}</td>
+            `;
+            tableBody.appendChild(row);
+        }
     });
 }
 </script>
