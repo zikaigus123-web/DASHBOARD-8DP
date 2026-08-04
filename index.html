@@ -592,7 +592,7 @@ body {
             </select>
         </div>
 
-        <a href="https://docs.google.com/spreadsheets/d/1vQk1Gnwtu-vKG24ImVYA0ytCuAuOuWeujzNpFbUPz2C-Y0jLwRxWspRCSMPqG9gj7WfcTGtXWwSlFH6/edit" target="_blank" class="btn-spreadsheet">
+        <a href="https://docs.google.com/spreadsheets/d/1dnf8Zo3a0oHPanGMNKvVUvsRt-N5SYd_-qL_QpnVq6M/edit?usp=sharing" target="_blank" class="btn-spreadsheet">
             <svg viewBox="0 0 24 24">
                 <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-2h2v2zm0-4H7v-2h2v2zm0-4H7V7h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/>
             </svg>
@@ -628,7 +628,7 @@ body {
                     </svg>
                 </div>
                 <div class="kpi-metrics">
-                    <div class="kpi-item"><h3 id="kpiTotalPart">0</h3><p>Total Participant<br>2026 (YTD)</p></div>
+                    <div class="kpi-item"><h3 id="kpiTotalPart">0</h3><p>Total Employee<br>2026 (YTD)</p></div>
                     <div class="kpi-item"><h3 id="kpiOverallCoverage">0</h3><p>Overall Coverage<br>2026 (YTD)</p></div>
                     <div class="kpi-item"><h3 id="kpiHighestModuleCount">0</h3><p>Top Chosen Count<br>2026 (YTD)</p></div>
                     <div class="kpi-item"><h3 id="kpiTopModule" style="font-size: 15px;">-</h3><p>Most Popular Module<br>2026 (YTD)</p></div>
@@ -656,14 +656,14 @@ body {
         <div class="right-column">
             <div class="top-right-grid">
                 <div class="column-card">
-                    <div class="column-header">Training Participant</div>
+                    <div class="column-header">Training Employee</div>
                     <div class="chart-wrapper">
                         <div class="sub-header">Overall Participation Status</div>
-                        <div class="chart-box"><canvas id="participantPieChart"></canvas></div>
+                        <div class="chart-box"><canvas id="EmployeePieChart"></canvas></div>
                     </div>
                     <div class="chart-wrapper">
-                        <div class="sub-header">Training Participant per Jabatan</div>
-                        <div class="chart-box"><canvas id="participantBarChart"></canvas></div>
+                        <div class="sub-header">Training Employee per Jabatan</div>
+                        <div class="chart-box"><canvas id="EmployeeBarChart"></canvas></div>
                     </div>
                 </div>
 
@@ -681,7 +681,7 @@ body {
             </div>
 
             <div class="column-card">
-                <div class="sub-header">Distribusi Total Peserta Berdasarkan Jabatan</div>
+                <div class="sub-header">Distribusi Total Employee Berdasarkan Jabatan</div>
                 <div class="chart-box" style="height: 200px;">
                     <canvas id="jabatanPieChart"></canvas>
                 </div>
@@ -776,7 +776,7 @@ function parseCustomCSV(text) {
         else if (h1.includes("jumlah modul")) colMap.jumlahModul = c;
         else if (h1.includes("jabatan")) colMap.jabatan = c;
         else if (combined.includes("coverage")) colMap.statusCoverage = c;
-        else if (combined.includes("recap") || combined.includes("participant status") || combined.includes("participation")) colMap.allRecap = c;
+        else if (combined.includes("recap") || combined.includes("Employee status") || combined.includes("participation")) colMap.allRecap = c;
         else if (combined.includes("training hour") || combined.includes("actual hour")) colMap.trainingHours = c;
         else if (combined.includes("target hour")) colMap.targetHours = c;
         else if (combined.includes("status target") || combined.includes("target status")) colMap.statusTarget = c;
@@ -1012,10 +1012,10 @@ function renderDashboard(data) {
         options: { responsive: true, maintainAspectRatio: false, plugins: { datalabels: { display: false } }, scales: { y: { beginAtZero: true } } }
     });
 
-    // 2. PARTICIPANT
+    // 2. Employee
     let doneCount = 0, onProgressCount = 0, notYetPartCount = 0;
-    const participantByJabatan = {};
-    jabatanList.forEach(j => participantByJabatan[j] = { Done: 0, "On Progress": 0, "Not Yet": 0 });
+    const EmployeeByJabatan = {};
+    jabatanList.forEach(j => EmployeeByJabatan[j] = { Done: 0, "On Progress": 0, "Not Yet": 0 });
 
     data.forEach(d => {
         const st = (d.allRecap || "").toLowerCase();
@@ -1027,27 +1027,27 @@ function renderDashboard(data) {
         else if (statusCategory === "On Progress") onProgressCount++;
         else notYetPartCount++;
 
-        if (participantByJabatan[d.jabatan]) {
-            participantByJabatan[d.jabatan][statusCategory]++;
+        if (EmployeeByJabatan[d.jabatan]) {
+            EmployeeByJabatan[d.jabatan][statusCategory]++;
         }
     });
 
     destroyChart("partPie");
-    chartInstances["partPie"] = new Chart(document.getElementById("participantPieChart"), {
+    chartInstances["partPie"] = new Chart(document.getElementById("EmployeePieChart"), {
         type: "pie",
         data: { labels: ["Not Yet", "Done", "On Progress"], datasets: [{ data: [notYetPartCount, doneCount, onProgressCount], backgroundColor: ["#4285f4", "#f77f00", "#a855f7"] }] },
         options: getPieOptions()
     });
 
     destroyChart("partBar");
-    chartInstances["partBar"] = new Chart(document.getElementById("participantBarChart"), {
+    chartInstances["partBar"] = new Chart(document.getElementById("EmployeeBarChart"), {
         type: "bar",
         data: {
             labels: jabatanList,
             datasets: [
-                { label: "Done", data: jabatanList.map(j => participantByJabatan[j]["Done"]), backgroundColor: "#f77f00" },
-                { label: "On Progress", data: jabatanList.map(j => participantByJabatan[j]["On Progress"]), backgroundColor: "#a855f7" },
-                { label: "Not Yet", data: jabatanList.map(j => participantByJabatan[j]["Not Yet"]), backgroundColor: "#4285f4" }
+                { label: "Done", data: jabatanList.map(j => EmployeeByJabatan[j]["Done"]), backgroundColor: "#f77f00" },
+                { label: "On Progress", data: jabatanList.map(j => EmployeeByJabatan[j]["On Progress"]), backgroundColor: "#a855f7" },
+                { label: "Not Yet", data: jabatanList.map(j => EmployeeByJabatan[j]["Not Yet"]), backgroundColor: "#4285f4" }
             ]
         },
         options: { responsive: true, maintainAspectRatio: false, plugins: { datalabels: { display: false } }, scales: { y: { beginAtZero: true } } }
