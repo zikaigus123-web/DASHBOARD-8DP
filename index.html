@@ -41,8 +41,9 @@ body {
     height: 45px;
 }
 
+/* PERBESAR LOGO CORPU DI SINI */
 .logo-corpu {
-    height: 65px;
+    height: 65px; 
 }
 
 .title-container {
@@ -223,7 +224,7 @@ const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQk1Gnwtu-vKG24
 let allData = [];
 let chartInstances = {};
 
-// Parse CSV Text ke Array of Objects (Versi Robust untuk Menangani Koma & Kutip)
+// Parse CSV Text ke Array of Objects
 function parseCSV(text) {
     const lines = text.split("\n").filter(l => l.trim().length > 0);
     if (lines.length === 0) return [];
@@ -349,7 +350,7 @@ function renderDashboard(data) {
         }
     });
 
-    // Coverage Bar
+    // Coverage Bar (Diberi Judul)
     destroyChart("coverageBar");
     chartInstances["coverageBar"] = new Chart(document.getElementById("coverageBarChart"), {
         type: "bar",
@@ -371,6 +372,12 @@ function renderDashboard(data) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            plugins: { 
+                title: { 
+                    display: true, 
+                    text: "Training Coverage per Jabatan" 
+                } 
+            },
             scales: { x: { stacked: false }, y: { beginAtZero: true } }
         }
     });
@@ -416,7 +423,7 @@ function renderDashboard(data) {
         }
     });
 
-    // Participant Bar
+    // Participant Bar (Diberi Judul)
     destroyChart("partBar");
     chartInstances["partBar"] = new Chart(document.getElementById("participantBarChart"), {
         type: "bar",
@@ -443,6 +450,12 @@ function renderDashboard(data) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            plugins: { 
+                title: { 
+                    display: true, 
+                    text: "Training Participant per Jabatan" 
+                } 
+            },
             scales: { x: { stacked: false }, y: { beginAtZero: true } }
         }
     });
@@ -488,7 +501,7 @@ function renderDashboard(data) {
         }
     });
 
-    // Hours Bar
+    // Hours Bar (Diberi Judul)
     destroyChart("hoursBar");
     chartInstances["hoursBar"] = new Chart(document.getElementById("hoursBarChart"), {
         type: "bar",
@@ -510,6 +523,12 @@ function renderDashboard(data) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            plugins: { 
+                title: { 
+                    display: true, 
+                    text: "Training Hours per Jabatan" 
+                } 
+            },
             scales: { y: { beginAtZero: true } }
         }
     });
