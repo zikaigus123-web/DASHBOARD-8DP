@@ -85,7 +85,7 @@ body {
     fill: #111;
 }
 
-/* BRANDING JUDUL BARU (8DP Development & Subtitle) */
+/* BRANDING JUDUL BARU */
 .brand-title {
     font-size: 24px;
     font-weight: 800;
@@ -271,6 +271,12 @@ body {
     gap: 10px;
 }
 
+.filter-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .filter-container label {
     font-weight: bold;
     font-size: 13px;
@@ -285,7 +291,8 @@ body {
     min-width: 200px;
 }
 
-.btn-spreadsheet {
+/* BUTTONS */
+.btn-action {
     background-color: #ffb703;
     color: #000;
     border: 2px solid #000;
@@ -301,15 +308,25 @@ body {
     transition: background-color 0.2s, transform 0.1s;
 }
 
-.btn-spreadsheet:hover {
+.btn-action:hover {
     background-color: #e0a200;
     transform: translateY(-1px);
 }
 
-.btn-spreadsheet svg {
+.btn-action svg {
     width: 16px;
     height: 16px;
     fill: currentColor;
+}
+
+/* ANIMASI SPINNING REFRESH ICON */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.spinning {
+    animation: spin 0.8s linear infinite;
 }
 
 /* MAIN LAYOUT SPLIT */
@@ -510,9 +527,9 @@ body {
     .login-card { padding: 20px 20px 24px 20px; }
     .header { flex-direction: column; gap: 10px; text-align: center; }
     .filter-container { flex-direction: column; align-items: stretch; }
-    .filter-left { flex-direction: column; align-items: stretch; }
+    .filter-left, .filter-right { flex-direction: column; align-items: stretch; }
     .filter-select { width: 100%; }
-    .btn-spreadsheet { justify-content: center; width: 100%; }
+    .btn-action { justify-content: center; width: 100%; }
     .main-layout { grid-template-columns: 1fr; }
     .top-right-grid { grid-template-columns: 1fr; }
     .kpi-content-wrapper { flex-direction: column; }
@@ -526,24 +543,20 @@ body {
 <div id="loginModal" class="login-overlay">
     <div class="login-card">
         
-        <!-- LOGO UT & CORPU DI POJOK ATAS KIRI & KANAN -->
         <div class="login-header-logos">
             <img src="logo ut.png" alt="United Tractors" class="login-logo-ut">
             <img src="logo corpu.png" alt="UT Corporate University" class="login-logo-corpu">
         </div>
 
-        <!-- ICON DASHBOARD -->
         <div class="login-icon-badge">
             <svg viewBox="0 0 24 24">
                 <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
             </svg>
         </div>
 
-        <!-- BRANDING JUDUL DENGAN NAMA BARU -->
         <h2 class="brand-title">8DP <span>Development</span></h2>
         <div class="brand-subtitle">DASHBOARD MONITORING DEVELOPMENT 8DP</div>
 
-        <!-- FORM LOGIN -->
         <form onsubmit="handleLogin(event)">
             <div class="login-field">
                 <label for="username">Username / NIK</label>
@@ -569,7 +582,6 @@ body {
             <div id="errorMsg" class="error-msg">Username / NIK atau Password salah!</div>
         </form>
 
-        <!-- FOOTER SECURITY BADGE -->
         <div class="login-footer">
             <svg viewBox="0 0 24 24">
                 <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
@@ -592,7 +604,7 @@ body {
         <img src="logo corpu.png" alt="UT Corporate University" class="logo-corpu">
     </div>
 
-    <!-- FILTER & SPREADSHEET BAR -->
+    <!-- FILTER & ACTION BAR -->
     <div class="filter-container">
         <div class="filter-left">
             <label for="filterLokasi">Filter Lokasi Kerja Update:</label>
@@ -601,12 +613,23 @@ body {
             </select>
         </div>
 
-        <a href="https://docs.google.com/spreadsheets/d/1dnf8Zo3a0oHPanGMNKvVUvsRt-N5SYd_-qL_QpnVq6M/edit?usp=sharing" target="_blank" class="btn-spreadsheet">
-            <svg viewBox="0 0 24 24">
-                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-2h2v2zm0-4H7v-2h2v2zm0-4H7V7h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/>
-            </svg>
-            Buka Spreadsheet Data
-        </a>
+        <div class="filter-right">
+            <!-- TOMBOL REFRESH DATA -->
+            <button class="btn-action" onclick="refreshDashboardData()">
+                <svg id="refreshIcon" viewBox="0 0 24 24">
+                    <path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                </svg>
+                Refresh Data
+            </button>
+
+            <!-- TOMBOL SPREADSHEET -->
+            <a href="https://docs.google.com/spreadsheets/d/1dnf8Zo3a0oHPanGMNKvVUvsRt-N5SYd_-qL_QpnVq6M/edit?usp=sharing" target="_blank" class="btn-action">
+                <svg viewBox="0 0 24 24">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-2h2v2zm0-4H7v-2h2v2zm0-4H7V7h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/>
+                </svg>
+                Buka Spreadsheet Data
+            </a>
+        </div>
     </div>
 
     <!-- MAIN LAYOUT -->
@@ -626,10 +649,9 @@ body {
                 </div>
             </div>
 
-            <!-- KPI SUMMARY BOX -->
+            <!-- KPI SUMMARY BOX BARU (Bebas Redundansi) -->
             <div class="kpi-container">
-                <!-- HEADER SUMMARY -->
-                <div class="sub-header" style="width: 100%; text-align: center; margin-bottom: 4px;">SUMMARY</div>
+                <div class="sub-header" style="width: 100%; text-align: center; margin-bottom: 4px;">SUMMARY KPI 2026 (YTD)</div>
                 
                 <div class="kpi-content-wrapper">
                     <div class="kpi-icon-box">
@@ -642,25 +664,28 @@ body {
                     </div>
                     
                     <div class="kpi-metrics">
-                        <!-- Kartu 1 -->
+                        <!-- Kartu 1: Total Employee -->
                         <div class="kpi-item">
                             <h3 id="kpiTotalPart">0</h3>
                             <p>Total Employee<br>2026 (YTD)</p>
                         </div>
-                        <!-- Kartu 2 -->
+                        
+                        <!-- Kartu 2: Employee Coverage -->
                         <div class="kpi-item">
                             <h3 id="kpiOverallCoverage">0</h3>
-                            <p>Total Employee Coverage<br>2026 (YTD)</p>
+                            <p>Employee Coverage<br>(Ambil Modul)</p>
                         </div>
-                        <!-- Kartu 3 -->
+
+                        <!-- Kartu 3: Done vs On Progress -->
                         <div class="kpi-item">
-                            <h3 id="kpiTotalParticipant">0</h3>
-                            <p>Total Training Participant<br>2026 (YTD)</p>
+                            <h3 id="kpiCompletionStatus">0 / 0</h3>
+                            <p>Training Progress<br><span style="font-weight:normal; font-size:9.5px; color:#555;">(Done / On Progress)</span></p>
                         </div>
-                        <!-- Kartu 4 -->
+
+                        <!-- Kartu 4: Total & Rata-Rata Jam -->
                         <div class="kpi-item">
-                            <h3 id="kpiTotalHours">0</h3>
-                            <p>Total Training Hours<br>2026 (YTD)</p>
+                            <h3 id="kpiTotalHours">0 hrs</h3>
+                            <p>Total Training Hours<br><span id="kpiAvgHours" style="font-weight:normal; font-size:9.5px; color:#555;">(Avg: 0 hrs/emp)</span></p>
                         </div>
                     </div>
                 </div>
@@ -807,7 +832,7 @@ function parseCustomCSV(text) {
         else if (h1.includes("jumlah modul")) colMap.jumlahModul = c;
         else if (h1.includes("jabatan")) colMap.jabatan = c;
         else if (combined.includes("coverage")) colMap.statusCoverage = c;
-        else if (combined.includes("recap") || combined.includes("Employee status") || combined.includes("participation")) colMap.allRecap = c;
+        else if (combined.includes("recap") || combined.includes("employee status") || combined.includes("participation")) colMap.allRecap = c;
         else if (combined.includes("training hour") || combined.includes("actual hour")) colMap.trainingHours = c;
         else if (combined.includes("target hour")) colMap.targetHours = c;
         else if (combined.includes("status target") || combined.includes("target status")) colMap.statusTarget = c;
@@ -897,17 +922,39 @@ function parseCustomCSV(text) {
 }
 
 function loadDashboardData() {
-    fetch(CSV_URL)
+    // Jalankan pemanggilan data dengan Anti-Cache Query Parameter
+    return fetch(CSV_URL + "&t=" + new Date().getTime())
         .then(res => res.text())
         .then(csvText => {
             parseCustomCSV(csvText);
             initLokasiFilter();
-            renderDashboard(parsedData);
+            
+            // Pertahankan nilai filter lokasi yang sedang dipilih pengguna saat refresh
+            const currentSelected = document.getElementById("filterLokasi").value || "ALL";
+            if (currentSelected !== "ALL" && document.querySelector(`#filterLokasi option[value="${currentSelected}"]`)) {
+                document.getElementById("filterLokasi").value = currentSelected;
+                applyFilter();
+            } else {
+                renderDashboard(parsedData);
+            }
         })
         .catch(err => console.error("Error loading CSV:", err));
 }
 
+// FUNGSI REFRESH SINKRONISASI DATA REAL-TIME
+function refreshDashboardData() {
+    const refreshIcon = document.getElementById("refreshIcon");
+    if (refreshIcon) refreshIcon.classList.add("spinning");
+
+    loadDashboardData().finally(() => {
+        setTimeout(() => {
+            if (refreshIcon) refreshIcon.classList.remove("spinning");
+        }, 500);
+    });
+}
+
 function initLokasiFilter() {
+    const currentVal = document.getElementById("filterLokasi").value;
     const lokasiSet = new Set();
     parsedData.forEach(item => { if (item.lokasi) lokasiSet.add(item.lokasi); });
 
@@ -919,6 +966,10 @@ function initLokasiFilter() {
         opt.textContent = loc;
         select.appendChild(opt);
     });
+
+    if (currentVal && Array.from(select.options).some(o => o.value === currentVal)) {
+        select.value = currentVal;
+    }
 }
 
 function applyFilter() {
@@ -978,36 +1029,44 @@ function getOrderedJabatanList(data) {
 function renderDashboard(data) {
     const jabatanList = getOrderedJabatanList(data);
 
-    // KPI METRICS CALCULATIONS
+    // KALKULASI LOGIKA SCORECARD SUMMARY KPI
     const totalPart = data.length;
     let totalCovered = 0;
-    let totalParticipantWithScore = 0;
+    let countDone = 0;
+    let countProgress = 0;
     let totalTrainingHours = 0;
 
     data.forEach(d => {
-        // 1. Total Employee Coverage
-        if (d.statusCoverage === "Tercoverage" || (d.statusCoverage && d.statusCoverage.toLowerCase().includes("tercoverage"))) {
-            totalCovered++;
+        // 1. Employee Coverage Status
+        const isCov = d.statusCoverage === "Tercoverage" || (d.statusCoverage && d.statusCoverage.toLowerCase().includes("tercoverage"));
+        if (isCov) totalCovered++;
+
+        // 2. Training Progress Status (Done vs On Progress)
+        const st = (d.allRecap || "").toLowerCase();
+        if (st.includes("done")) {
+            countDone++;
+        } else if (st.includes("progress")) {
+            countProgress++;
         }
 
-        // 2. Total Training Participant (Sudah bernilai / status Done)
-        if (d.allRecap && d.allRecap.toLowerCase().includes("done")) {
-            totalParticipantWithScore++;
-        }
-
-        // 3. Total Training Hours (Akumulasi jam)
+        // 3. Training Hours
         if (d.trainingHours) {
             totalTrainingHours += parseFloat(d.trainingHours) || 0;
         }
     });
 
+    // Kalkulasi Persentase & Rata-rata Jam
+    const coveragePct = totalPart > 0 ? ((totalCovered / totalPart) * 100).toFixed(1) : 0;
+    const avgHours = totalCovered > 0 ? (totalTrainingHours / totalCovered).toFixed(1) : 0;
+
     // UPDATE DISPLAY KE SCORECARD SUMMARY
     document.getElementById("kpiTotalPart").textContent = totalPart;
-    document.getElementById("kpiOverallCoverage").textContent = totalCovered;
-    document.getElementById("kpiTotalParticipant").textContent = totalParticipantWithScore;
-    document.getElementById("kpiTotalHours").textContent = totalTrainingHours.toLocaleString("id-ID");
+    document.getElementById("kpiOverallCoverage").innerHTML = `${totalCovered} <span style="font-size:11px; color:#555;">(${coveragePct}%)</span>`;
+    document.getElementById("kpiCompletionStatus").innerHTML = `<span style="color:#2e7d32;">${countDone}</span> / <span style="color:#ed6c02;">${countProgress}</span>`;
+    document.getElementById("kpiTotalHours").textContent = `${totalTrainingHours.toLocaleString("id-ID")} hrs`;
+    document.getElementById("kpiAvgHours").textContent = `(Avg: ${avgHours} hrs/emp)`;
 
-    // 1. COVERAGE
+    // 1. COVERAGE CHARTS
     let tercoverageCount = 0, notCoverageCount = 0;
     const coverageByJabatan = {};
     jabatanList.forEach(j => coverageByJabatan[j] = { Tercoverage: 0, "Not Yet": 0 });
@@ -1041,7 +1100,7 @@ function renderDashboard(data) {
         options: { responsive: true, maintainAspectRatio: false, plugins: { datalabels: { display: false } }, scales: { y: { beginAtZero: true } } }
     });
 
-    // 2. Employee Participation
+    // 2. PARTICIPATION CHARTS
     let doneCount = 0, onProgressCount = 0, notYetPartCount = 0;
     const EmployeeByJabatan = {};
     jabatanList.forEach(j => EmployeeByJabatan[j] = { Done: 0, "On Progress": 0, "Not Yet": 0 });
@@ -1082,7 +1141,7 @@ function renderDashboard(data) {
         options: { responsive: true, maintainAspectRatio: false, plugins: { datalabels: { display: false } }, scales: { y: { beginAtZero: true } } }
     });
 
-    // 3. HOURS
+    // 3. HOURS CHARTS
     let tercapaiCount = 0, belumTercapaiCount = 0;
     const hoursByJabatan = {};
     jabatanList.forEach(j => hoursByJabatan[j] = { actual: 0, target: 0 });
@@ -1118,7 +1177,7 @@ function renderDashboard(data) {
         options: { responsive: true, maintainAspectRatio: false, plugins: { datalabels: { display: false } }, scales: { y: { beginAtZero: true } } }
     });
 
-    // 4. DISTRIBUSI JABATAN
+    // 4. DISTRIBUSI JABATAN CHART
     const jabatanCounts = {};
     data.forEach(d => { jabatanCounts[d.jabatan] = (jabatanCounts[d.jabatan] || 0) + 1; });
 
@@ -1170,7 +1229,7 @@ function renderDashboard(data) {
         }
     });
 
-    // 6. TABEL REKAP
+    // 6. TABEL REKAP JABATAN
     const tableBody = document.getElementById("jabatanTableBody");
     tableBody.innerHTML = "";
 
