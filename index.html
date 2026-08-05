@@ -55,7 +55,6 @@ body {
     border-top: 6px solid #ffc107;
 }
 
-/* LOGO KIRI DAN KANAN ATAS */
 .login-header-logos {
     display: flex;
     justify-content: space-between;
@@ -66,7 +65,6 @@ body {
 .login-logo-ut { height: 32px; object-fit: contain; }
 .login-logo-corpu { height: 40px; object-fit: contain; }
 
-/* ICON DASHBOARD BARU */
 .login-icon-badge {
     background-color: #ffc107;
     width: 56px;
@@ -85,7 +83,6 @@ body {
     fill: #111;
 }
 
-/* BRANDING JUDUL BARU */
 .brand-title {
     font-size: 24px;
     font-weight: 800;
@@ -108,7 +105,6 @@ body {
     line-height: 1.3;
 }
 
-/* INPUT FIELD STYLES */
 .login-field {
     margin-bottom: 16px;
     text-align: left;
@@ -155,12 +151,6 @@ body {
     box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.2);
 }
 
-.login-field input:focus + svg,
-.login-field input:focus ~ svg {
-    fill: #ffc107;
-}
-
-/* BUTTON MASUK */
 .login-btn {
     width: 100%;
     background: #ffc107;
@@ -180,11 +170,6 @@ body {
 .login-btn:hover {
     background: #e0a800;
     transform: translateY(-1px);
-    box-shadow: 0 6px 15px rgba(255, 193, 7, 0.35);
-}
-
-.login-btn:active {
-    transform: translateY(0);
 }
 
 .error-msg {
@@ -199,7 +184,6 @@ body {
     display: none;
 }
 
-/* FOOTER SECURITY BADGE */
 .login-footer {
     margin-top: 22px;
     padding-top: 14px;
@@ -220,13 +204,21 @@ body {
 }
 
 /* ==========================================
-   DASHBOARD STYLES
+   DASHBOARD STYLES & ANIMATION
    ========================================== */
 .dashboard-container {
     display: none;
     padding: 15px;
     background-color: #e5e7eb;
     min-height: 100vh;
+    opacity: 0;
+    transform: scale(0.98);
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dashboard-container.animate-show {
+    opacity: 1;
+    transform: scale(1);
 }
 
 /* HEADER SECTION */
@@ -265,13 +257,7 @@ body {
     gap: 10px;
 }
 
-.filter-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.filter-right {
+.filter-left, .filter-right {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -329,12 +315,13 @@ body {
     animation: spin 0.8s linear infinite;
 }
 
-/* MAIN LAYOUT SPLIT */
+/* MAIN LAYOUT SPLIT (SIMETRIS) */
 .main-layout {
     display: grid;
     grid-template-columns: 1fr 2fr;
     gap: 15px;
     margin-bottom: 15px;
+    align-items: stretch;
 }
 
 .left-column, .right-column {
@@ -349,7 +336,7 @@ body {
     gap: 15px;
 }
 
-/* CARDS */
+/* CARDS SIMETRIS */
 .column-card {
     background: #ffffff;
     border: 2px solid #000;
@@ -358,6 +345,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    height: 100%;
 }
 
 .column-header, .sub-header {
@@ -378,6 +366,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    flex: 1;
 }
 
 .chart-box {
@@ -389,7 +378,7 @@ body {
     position: relative;
 }
 
-/* KPI BOX & SUMMARY STYLES */
+/* KPI BOX & SUMMARY STYLES (SIMETRIS & PRESISI) */
 .kpi-container {
     background: #ffffff;
     border: 2px solid #000;
@@ -403,10 +392,10 @@ body {
 }
 
 .kpi-content-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: 60px 1fr;
     gap: 15px;
+    align-items: center;
     width: 100%;
 }
 
@@ -420,7 +409,6 @@ body {
     justify-content: center;
     width: 60px;
     height: 60px;
-    flex-shrink: 0;
 }
 
 .kpi-icon-box svg {
@@ -434,7 +422,7 @@ body {
     grid-template-columns: repeat(4, 1fr);
     gap: 10px;
     width: 100%;
-    align-items: flex-start;
+    align-items: center;
 }
 
 .kpi-item {
@@ -442,14 +430,15 @@ body {
     flex-direction: column;
     align-items: center;
     text-align: center;
+    justify-content: center;
 }
 
 .kpi-item h3 {
     font-size: 20px;
     font-weight: 800;
     color: #000;
-    line-height: 1;
-    margin-bottom: 6px;
+    line-height: 1.2;
+    margin-bottom: 4px;
     width: 100%;
 }
 
@@ -467,10 +456,7 @@ body {
     border: 2px solid #000;
     border-radius: 4px;
     padding: 10px;
-}
-
-.jabatan-table-container .sub-header {
-    margin-bottom: 8px;
+    flex: 1;
 }
 
 .table-wrapper {
@@ -498,14 +484,8 @@ body {
     top: 0;
 }
 
-.jabatan-table tr:nth-child(even) {
-    background-color: #f9fafb;
-}
-
-.jabatan-table td.count-col {
-    text-align: center;
-    font-weight: bold;
-}
+.jabatan-table tr:nth-child(even) { background-color: #f9fafb; }
+.jabatan-table td.count-col { text-align: center; font-weight: bold; }
 
 /* BOTTOM SECTION */
 .bottom-section {
@@ -523,26 +503,63 @@ body {
     position: relative;
 }
 
+/* TOAST POPUP NOTIFICATION */
+.toast-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #10b981;
+    color: #ffffff;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 10000;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    border: 2px solid #047857;
+}
+
+.toast-notification.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast-notification svg {
+    width: 20px;
+    height: 20px;
+    fill: #ffffff;
+}
+
 @media (max-width: 768px) {
-    .login-card { padding: 20px 20px 24px 20px; }
+    .login-card { padding: 20px; }
     .header { flex-direction: column; gap: 10px; text-align: center; }
-    .filter-container { flex-direction: column; align-items: stretch; }
-    .filter-left, .filter-right { flex-direction: column; align-items: stretch; }
-    .filter-select { width: 100%; }
-    .btn-action { justify-content: center; width: 100%; }
-    .main-layout { grid-template-columns: 1fr; }
-    .top-right-grid { grid-template-columns: 1fr; }
-    .kpi-content-wrapper { flex-direction: column; }
+    .filter-container, .filter-left, .filter-right { flex-direction: column; align-items: stretch; }
+    .filter-select, .btn-action { width: 100%; justify-content: center; }
+    .main-layout, .top-right-grid { grid-template-columns: 1fr; }
+    .kpi-content-wrapper { grid-template-columns: 1fr; }
     .kpi-metrics { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
 </head>
 <body>
 
+<!-- TOAST POP-UP NOTIFIKASI -->
+<div id="toastNotif" class="toast-notification">
+    <svg viewBox="0 0 24 24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+    </svg>
+    <span id="toastMsg">Data berhasil diperbarui!</span>
+</div>
+
 <!-- MODAL LOGIN SECURITY -->
 <div id="loginModal" class="login-overlay">
     <div class="login-card">
-        
         <div class="login-header-logos">
             <img src="logo ut.png" alt="United Tractors" class="login-logo-ut">
             <img src="logo corpu.png" alt="UT Corporate University" class="login-logo-corpu">
@@ -588,7 +605,6 @@ body {
             </svg>
             Secure Enterprise Portal
         </div>
-
     </div>
 </div>
 
@@ -614,7 +630,6 @@ body {
         </div>
 
         <div class="filter-right">
-            <!-- TOMBOL REFRESH DATA -->
             <button class="btn-action" onclick="refreshDashboardData()">
                 <svg id="refreshIcon" viewBox="0 0 24 24">
                     <path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
@@ -622,7 +637,6 @@ body {
                 Refresh Data
             </button>
 
-            <!-- TOMBOL SPREADSHEET -->
             <a href="https://docs.google.com/spreadsheets/d/1dnf8Zo3a0oHPanGMNKvVUvsRt-N5SYd_-qL_QpnVq6M/edit?usp=sharing" target="_blank" class="btn-action">
                 <svg viewBox="0 0 24 24">
                     <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-2h2v2zm0-4H7v-2h2v2zm0-4H7V7h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/>
@@ -649,7 +663,7 @@ body {
                 </div>
             </div>
 
-            <!-- KPI SUMMARY BOX BARU (Bebas Redundansi) -->
+            <!-- KPI SUMMARY BOX (SIMETRIS, PRESISI & REVISI REKAP) -->
             <div class="kpi-container">
                 <div class="sub-header" style="width: 100%; text-align: center; margin-bottom: 4px;">SUMMARY KPI 2026 (YTD)</div>
                 
@@ -670,22 +684,22 @@ body {
                             <p>Total Employee<br>2026 (YTD)</p>
                         </div>
                         
-                        <!-- Kartu 2: Employee Coverage -->
+                        <!-- Kartu 2: Employee Coverage (REVISI JUDUL) -->
                         <div class="kpi-item">
                             <h3 id="kpiOverallCoverage">0</h3>
-                            <p>Employee Coverage<br>(Ambil Modul)</p>
+                            <p>Employee Coverage<br>(Assigned & Completed)</p>
                         </div>
 
-                        <!-- Kartu 3: Done vs On Progress -->
+                        <!-- Kartu 3: Progress Training -->
                         <div class="kpi-item">
                             <h3 id="kpiCompletionStatus">0 / 0</h3>
                             <p>Training Progress<br><span style="font-weight:normal; font-size:9.5px; color:#555;">(Done / On Progress)</span></p>
                         </div>
 
-                        <!-- Kartu 4: Total & Rata-Rata Jam -->
+                        <!-- Kartu 4: Target Hours Achievement Status (REVISI METRIK) -->
                         <div class="kpi-item">
-                            <h3 id="kpiTotalHours">0 hrs</h3>
-                            <p>Total Training Hours<br><span id="kpiAvgHours" style="font-weight:normal; font-size:9.5px; color:#555;">(Avg: 0 hrs/emp)</span></p>
+                            <h3 id="kpiTargetHoursStatus">0 / 0</h3>
+                            <p>Target Hours Status<br><span style="font-weight:normal; font-size:9.5px; color:#555;">(Tercapai / Belum)</span></p>
                         </div>
                     </div>
                 </div>
@@ -693,7 +707,7 @@ body {
 
             <!-- TABEL REKAP -->
             <div class="jabatan-table-container">
-                <div class="sub-header">Rekap Jumlah Pegawai per Jabatan</div>
+                <div class="sub-header" style="margin-bottom:8px;">Rekap Jumlah Pegawai per Jabatan</div>
                 <div class="table-wrapper">
                     <table class="jabatan-table">
                         <thead>
@@ -771,8 +785,16 @@ function handleLogin(event) {
 
     if (userInput === CORRECT_USER && passInput === CORRECT_PASS) {
         document.getElementById("loginModal").style.display = "none";
-        document.getElementById("dashboardContent").style.display = "block";
-        loadDashboardData();
+        
+        const dash = document.getElementById("dashboardContent");
+        dash.style.display = "block";
+        
+        // Trigger animasi Entry Smooth
+        setTimeout(() => {
+            dash.classList.add("animate-show");
+        }, 50);
+
+        loadDashboardData(true);
     } else {
         errorMsg.style.display = "block";
     }
@@ -787,6 +809,17 @@ let parsedData = [];
 let moduleColumns = [];
 let chartInstances = {};
 let colMap = {};
+
+function showToast(message) {
+    const toast = document.getElementById("toastNotif");
+    const toastMsg = document.getElementById("toastMsg");
+    toastMsg.textContent = message;
+    toast.classList.add("show");
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 3500);
+}
 
 function parseCustomCSV(text) {
     const lines = text.split("\n").filter(l => l.trim().length > 0);
@@ -921,15 +954,13 @@ function parseCustomCSV(text) {
     }
 }
 
-function loadDashboardData() {
-    // Jalankan pemanggilan data dengan Anti-Cache Query Parameter
+function loadDashboardData(isInitial = false) {
     return fetch(CSV_URL + "&t=" + new Date().getTime())
         .then(res => res.text())
         .then(csvText => {
             parseCustomCSV(csvText);
             initLokasiFilter();
             
-            // Pertahankan nilai filter lokasi yang sedang dipilih pengguna saat refresh
             const currentSelected = document.getElementById("filterLokasi").value || "ALL";
             if (currentSelected !== "ALL" && document.querySelector(`#filterLokasi option[value="${currentSelected}"]`)) {
                 document.getElementById("filterLokasi").value = currentSelected;
@@ -937,18 +968,32 @@ function loadDashboardData() {
             } else {
                 renderDashboard(parsedData);
             }
+
+            if (!isInitial) {
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                showToast(`Data berhasil diperbarui! Last Updated: ${timeStr} WIB`);
+            }
         })
         .catch(err => console.error("Error loading CSV:", err));
 }
 
-// FUNGSI REFRESH SINKRONISASI DATA REAL-TIME
+// FUNGSI REFRESH SINKRONISASI DATA + ANIMASI MOTION RE-RENDER
 function refreshDashboardData() {
     const refreshIcon = document.getElementById("refreshIcon");
+    const dash = document.getElementById("dashboardContent");
+    
     if (refreshIcon) refreshIcon.classList.add("spinning");
+    
+    // Animasikan Smooth Out/In saat refresh
+    dash.style.opacity = "0.4";
+    dash.style.transform = "scale(0.99)";
 
-    loadDashboardData().finally(() => {
+    loadDashboardData(false).finally(() => {
         setTimeout(() => {
             if (refreshIcon) refreshIcon.classList.remove("spinning");
+            dash.style.opacity = "1";
+            dash.style.transform = "scale(1)";
         }, 500);
     });
 }
@@ -991,6 +1036,10 @@ function getPieOptions() {
     return {
         responsive: true,
         maintainAspectRatio: false,
+        animation: {
+            duration: 1000,
+            easing: 'easeOutQuart'
+        },
         plugins: {
             legend: { position: 'right', labels: { font: { size: 11 } } },
             datalabels: {
@@ -1005,6 +1054,19 @@ function getPieOptions() {
                 font: { weight: 'bold', size: 11 }
             }
         }
+    };
+}
+
+function getBarOptions() {
+    return {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+            duration: 1000,
+            easing: 'easeOutQuart'
+        },
+        plugins: { datalabels: { display: false } },
+        scales: { y: { beginAtZero: true } }
     };
 }
 
@@ -1034,14 +1096,15 @@ function renderDashboard(data) {
     let totalCovered = 0;
     let countDone = 0;
     let countProgress = 0;
-    let totalTrainingHours = 0;
+    let countTargetTercapai = 0;
+    let countTargetBelum = 0;
 
     data.forEach(d => {
-        // 1. Employee Coverage Status
+        // 1. Employee Coverage
         const isCov = d.statusCoverage === "Tercoverage" || (d.statusCoverage && d.statusCoverage.toLowerCase().includes("tercoverage"));
         if (isCov) totalCovered++;
 
-        // 2. Training Progress Status (Done vs On Progress)
+        // 2. Training Progress (Done vs On Progress)
         const st = (d.allRecap || "").toLowerCase();
         if (st.includes("done")) {
             countDone++;
@@ -1049,22 +1112,22 @@ function renderDashboard(data) {
             countProgress++;
         }
 
-        // 3. Training Hours
-        if (d.trainingHours) {
-            totalTrainingHours += parseFloat(d.trainingHours) || 0;
+        // 3. Target Hours Achievement (Tercapai vs Belum)
+        const stTarget = (d.statusTarget || "").toLowerCase();
+        if (stTarget.includes("tercapai") && !stTarget.includes("belum")) {
+            countTargetTercapai++;
+        } else {
+            countTargetBelum++;
         }
     });
 
-    // Kalkulasi Persentase & Rata-rata Jam
     const coveragePct = totalPart > 0 ? ((totalCovered / totalPart) * 100).toFixed(1) : 0;
-    const avgHours = totalCovered > 0 ? (totalTrainingHours / totalCovered).toFixed(1) : 0;
 
-    // UPDATE DISPLAY KE SCORECARD SUMMARY
+    // UPDATE DISPLAY SCORECARD KPI BARU
     document.getElementById("kpiTotalPart").textContent = totalPart;
     document.getElementById("kpiOverallCoverage").innerHTML = `${totalCovered} <span style="font-size:11px; color:#555;">(${coveragePct}%)</span>`;
     document.getElementById("kpiCompletionStatus").innerHTML = `<span style="color:#2e7d32;">${countDone}</span> / <span style="color:#ed6c02;">${countProgress}</span>`;
-    document.getElementById("kpiTotalHours").textContent = `${totalTrainingHours.toLocaleString("id-ID")} hrs`;
-    document.getElementById("kpiAvgHours").textContent = `(Avg: ${avgHours} hrs/emp)`;
+    document.getElementById("kpiTargetHoursStatus").innerHTML = `<span style="color:#2e7d32;">${countTargetTercapai}</span> / <span style="color:#d32f2f;">${countTargetBelum}</span>`;
 
     // 1. COVERAGE CHARTS
     let tercoverageCount = 0, notCoverageCount = 0;
@@ -1097,7 +1160,7 @@ function renderDashboard(data) {
                 { label: "Not Yet", data: jabatanList.map(j => coverageByJabatan[j]["Not Yet"]), backgroundColor: "#4285f4" }
             ]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { datalabels: { display: false } }, scales: { y: { beginAtZero: true } } }
+        options: getBarOptions()
     });
 
     // 2. PARTICIPATION CHARTS
@@ -1138,7 +1201,7 @@ function renderDashboard(data) {
                 { label: "Not Yet", data: jabatanList.map(j => EmployeeByJabatan[j]["Not Yet"]), backgroundColor: "#4285f4" }
             ]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { datalabels: { display: false } }, scales: { y: { beginAtZero: true } } }
+        options: getBarOptions()
     });
 
     // 3. HOURS CHARTS
@@ -1174,7 +1237,7 @@ function renderDashboard(data) {
                 { label: "Target Hours", data: jabatanList.map(j => hoursByJabatan[j].target), backgroundColor: "#ffb703" }
             ]
         },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { datalabels: { display: false } }, scales: { y: { beginAtZero: true } } }
+        options: getBarOptions()
     });
 
     // 4. DISTRIBUSI JABATAN CHART
@@ -1224,6 +1287,7 @@ function renderDashboard(data) {
         },
         options: {
             responsive: true, maintainAspectRatio: false,
+            animation: { duration: 1000, easing: 'easeOutQuart' },
             plugins: { datalabels: { display: false } },
             scales: { y: { beginAtZero: true, max: 100, title: { display: true, text: "Nilai (0 - 100)" } } }
         }
