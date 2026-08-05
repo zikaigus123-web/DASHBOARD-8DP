@@ -221,6 +221,16 @@ body {
     transform: scale(1);
 }
 
+/* STYLING MODE FULLSCREEN / TV DISPLAY */
+:fullscreen .dashboard-container,
+:-webkit-full-screen .dashboard-container,
+:-moz-full-screen .dashboard-container {
+    height: 100vh;
+    overflow-y: auto;
+    padding: 12px;
+    background-color: #e5e7eb;
+}
+
 /* HEADER SECTION */
 .header {
     background: #ffffff;
@@ -346,7 +356,7 @@ body {
     flex-direction: column;
     gap: 10px;
     height: 100%;
-    width: 100%; /* Menjamin wadah melebar penuh */
+    width: 100%;
     flex: 1;
 }
 
@@ -632,6 +642,14 @@ body {
         </div>
 
         <div class="filter-right">
+            <!-- TOMBOL FITUR FULLSCREEN / TV MODE -->
+            <button class="btn-action" onclick="toggleFullScreen()">
+                <svg viewBox="0 0 24 24">
+                    <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                </svg>
+                <span id="fullscreenText">TV / Fullscreen</span>
+            </button>
+
             <button class="btn-action" onclick="refreshDashboardData()">
                 <svg id="refreshIcon" viewBox="0 0 24 24">
                     <path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
@@ -799,6 +817,52 @@ function handleLogin(event) {
         loadDashboardData(true);
     } else {
         errorMsg.style.display = "block";
+    }
+}
+
+// ==========================================
+// FUNGSI TOGGLE FULLSCREEN / TV MODE
+// ==========================================
+function toggleFullScreen() {
+    const elem = document.documentElement;
+
+    if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.msRequestFullscreen) {
+            elem.msRequestFullscreen();
+        } else if (elem.mozRequestFullScreen) {
+            elem.mozRequestFullScreen();
+        } else if (elem.webkitRequestFullscreen) {
+            elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+        }
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        }
+    }
+}
+
+// DETEKSI PERUBAHAN STATUS FULLSCREEN (UNTUK ESC / REMOTE TV)
+document.addEventListener("fullscreenchange", updateFullscreenBtnText);
+document.addEventListener("webkitfullscreenchange", updateFullscreenBtnText);
+document.addEventListener("mozfullscreenchange", updateFullscreenBtnText);
+document.addEventListener("MSFullscreenChange", updateFullscreenBtnText);
+
+function updateFullscreenBtnText() {
+    const fsText = document.getElementById("fullscreenText");
+    if (!fsText) return;
+    
+    if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+        fsText.textContent = "Keluar Fullscreen";
+    } else {
+        fsText.textContent = "TV / Fullscreen";
     }
 }
 
@@ -1246,49 +1310,49 @@ function renderDashboard(data) {
     const jabatanCounts = {};
     data.forEach(d => { jabatanCounts[d.jabatan] = (jabatanCounts[d.jabatan] || 0) + 1; });
 
-   destroyChart("jabatanPie");
-chartInstances["jabatanPie"] = new Chart(document.getElementById("jabatanPieChart"), {
-    type: "pie",
-    data: {
-        labels: jabatanList,
-        datasets: [{ 
-            data: jabatanList.map(j => jabatanCounts[j] || 0), 
-            backgroundColor: ["#4285f4", "#f77f00", "#34a853", "#ea4335", "#a855f7", "#14b8a6", "#f59e0b", "#6366f1"] 
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false, // <-- PENTING: Supaya chart mau membesar mengikuti wadah
-        layout: {
-            padding: 10
+    destroyChart("jabatanPie");
+    chartInstances["jabatanPie"] = new Chart(document.getElementById("jabatanPieChart"), {
+        type: "pie",
+        data: {
+            labels: jabatanList,
+            datasets: [{ 
+                data: jabatanList.map(j => jabatanCounts[j] || 0), 
+                backgroundColor: ["#4285f4", "#f77f00", "#34a853", "#ea4335", "#a855f7", "#14b8a6", "#f59e0b", "#6366f1"] 
+            }]
         },
-        animation: {
-            duration: 1000,
-            easing: 'easeOutQuart'
-        },
-        plugins: {
-            legend: { 
-                position: 'right',
-                labels: { 
-                    font: { size: 12, weight: 'bold' },
-                    boxWidth: 15,
-                    padding: 12
-                } 
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: {
+                padding: 10
             },
-            datalabels: {
-                formatter: (value, ctx) => {
-                    let sum = 0;
-                    let dataArr = ctx.chart.data.datasets[0].data;
-                    dataArr.map(data => { sum += data; });
-                    if (sum === 0) return "0%";
-                    return (value * 100 / sum).toFixed(1) + "%";
+            animation: {
+                duration: 1000,
+                easing: 'easeOutQuart'
+            },
+            plugins: {
+                legend: { 
+                    position: 'right',
+                    labels: { 
+                        font: { size: 12, weight: 'bold' },
+                        boxWidth: 15,
+                        padding: 12
+                    } 
                 },
-                color: '#000',
-                font: { weight: 'bold', size: 12 }
+                datalabels: {
+                    formatter: (value, ctx) => {
+                        let sum = 0;
+                        let dataArr = ctx.chart.data.datasets[0].data;
+                        dataArr.map(data => { sum += data; });
+                        if (sum === 0) return "0%";
+                        return (value * 100 / sum).toFixed(1) + "%";
+                    },
+                    color: '#000',
+                    font: { weight: 'bold', size: 12 }
+                }
             }
         }
-    }
-});
+    });
 
     // 5. LINE CHART PRE VS POST
     const modNames = moduleColumns.map(m => m.name);
