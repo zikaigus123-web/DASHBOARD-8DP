@@ -752,7 +752,7 @@ body {
 
             <div class="column-card">
                 <div class="sub-header">Distribusi Total Employee Berdasarkan Jabatan</div>
-                <div class="chart-box" style="height: 200px;">
+                <div class="chart-box" style="height: 320px;">
                     <canvas id="jabatanPieChart"></canvas>
                 </div>
             </div>
@@ -1244,15 +1244,49 @@ function renderDashboard(data) {
     const jabatanCounts = {};
     data.forEach(d => { jabatanCounts[d.jabatan] = (jabatanCounts[d.jabatan] || 0) + 1; });
 
-    destroyChart("jabatanPie");
-    chartInstances["jabatanPie"] = new Chart(document.getElementById("jabatanPieChart"), {
-        type: "pie",
-        data: {
-            labels: jabatanList,
-            datasets: [{ data: jabatanList.map(j => jabatanCounts[j] || 0), backgroundColor: ["#4285f4", "#f77f00", "#34a853", "#ea4335", "#a855f7", "#14b8a6", "#f59e0b", "#6366f1"] }]
+   destroyChart("jabatanPie");
+chartInstances["jabatanPie"] = new Chart(document.getElementById("jabatanPieChart"), {
+    type: "pie",
+    data: {
+        labels: jabatanList,
+        datasets: [{ 
+            data: jabatanList.map(j => jabatanCounts[j] || 0), 
+            backgroundColor: ["#4285f4", "#f77f00", "#34a853", "#ea4335", "#a855f7", "#14b8a6", "#f59e0b", "#6366f1"] 
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false, // <-- PENTING: Supaya chart mau membesar mengikuti wadah
+        layout: {
+            padding: 10
         },
-        options: getPieOptions()
-    });
+        animation: {
+            duration: 1000,
+            easing: 'easeOutQuart'
+        },
+        plugins: {
+            legend: { 
+                position: 'right',
+                labels: { 
+                    font: { size: 12, weight: 'bold' },
+                    boxWidth: 15,
+                    padding: 12
+                } 
+            },
+            datalabels: {
+                formatter: (value, ctx) => {
+                    let sum = 0;
+                    let dataArr = ctx.chart.data.datasets[0].data;
+                    dataArr.map(data => { sum += data; });
+                    if (sum === 0) return "0%";
+                    return (value * 100 / sum).toFixed(1) + "%";
+                },
+                color: '#000',
+                font: { weight: 'bold', size: 12 }
+            }
+        }
+    }
+});
 
     // 5. LINE CHART PRE VS POST
     const modNames = moduleColumns.map(m => m.name);
