@@ -91,9 +91,7 @@ body {
     margin-bottom: 4px;
 }
 
-.brand-title span {
-    color: #ffc107;
-}
+.brand-title span { color: #ffc107; }
 
 .brand-subtitle {
     font-size: 10.5px;
@@ -197,18 +195,14 @@ body {
     font-weight: 500;
 }
 
-.login-footer svg {
-    width: 14px;
-    height: 14px;
-    fill: #94a3b8;
-}
+.login-footer svg { width: 14px; height: 14px; fill: #94a3b8; }
 
 /* ==========================================
    DASHBOARD STYLES & ANIMATION
    ========================================== */
 .dashboard-container {
     display: none;
-    padding: 15px;
+    padding: 10px;
     background-color: #e5e7eb;
     min-height: 100vh;
     opacity: 0;
@@ -221,33 +215,129 @@ body {
     transform: scale(1);
 }
 
-/* STYLING MODE FULLSCREEN / TV DISPLAY */
+/* ==========================================
+   STYLING KHUSUS MODE TV / FULLSCREEN (AUTO FIT 100vh)
+   ========================================== */
 :fullscreen .dashboard-container,
 :-webkit-full-screen .dashboard-container,
 :-moz-full-screen .dashboard-container {
     height: 100vh;
-    overflow-y: auto;
-    padding: 12px;
-    background-color: #e5e7eb;
+    width: 100vw;
+    overflow: hidden !important; /* Paksa Tanpa Scroll */
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+:fullscreen .header, :-webkit-full-screen .header, :-moz-full-screen .header {
+    margin-bottom: 6px;
+    padding: 4px 15px;
+}
+
+:fullscreen .logo-ut, :-webkit-full-screen .logo-ut, :-moz-full-screen .logo-ut { height: 32px; }
+:fullscreen .logo-corpu, :-webkit-full-screen .logo-corpu, :-moz-full-screen .logo-corpu { height: 42px; }
+:fullscreen .title-container h1, :-webkit-full-screen .title-container h1, :-moz-full-screen .title-container h1 { font-size: 18px; }
+
+:fullscreen .filter-container, :-webkit-full-screen .filter-container, :-moz-full-screen .filter-container {
+    margin-bottom: 8px;
+    padding: 4px 10px;
+}
+
+:fullscreen .main-layout, :-webkit-full-screen .main-layout, :-moz-full-screen .main-layout {
+    margin-bottom: 8px;
+    gap: 8px;
+    flex: 1;
+    min-height: 0; /* PENTING agar child mau menciut */
+}
+
+:fullscreen .left-column, :-webkit-full-screen .left-column, :-moz-full-screen .left-column,
+:fullscreen .right-column, :-webkit-full-screen .right-column, :-moz-full-screen .right-column {
+    gap: 8px;
+    min-height: 0;
+}
+
+:fullscreen .top-right-grid, :-webkit-full-screen .top-right-grid, :-moz-full-screen .top-right-grid {
+    gap: 8px;
+    min-height: 0;
+    flex: 2;
+}
+
+:fullscreen .column-card, :-webkit-full-screen .column-card, :-moz-full-screen .column-card {
+    padding: 6px;
+    gap: 6px;
+    min-height: 0;
+}
+
+:fullscreen .column-header, :-webkit-full-screen .column-header, :-moz-full-screen .column-header { font-size: 13px; padding: 3px; }
+:fullscreen .sub-header, :-webkit-full-screen .sub-header, :-moz-full-screen .sub-header { font-size: 10px; padding: 2px; }
+
+:fullscreen .chart-box, :-webkit-full-screen .chart-box, :-moz-full-screen .chart-box {
+    height: 100% !important;
+    min-height: 0 !important;
+    padding: 4px;
+}
+
+:fullscreen .kpi-container, :-webkit-full-screen .kpi-container, :-moz-full-screen .kpi-container {
+    padding: 6px 10px;
+    gap: 4px;
+}
+
+:fullscreen .kpi-icon-box, :-webkit-full-screen .kpi-icon-box, :-moz-full-screen .kpi-icon-box {
+    width: 42px;
+    height: 42px;
+    padding: 4px;
+}
+
+:fullscreen .kpi-icon-box svg, :-webkit-full-screen .kpi-icon-box svg, :-moz-full-screen .kpi-icon-box svg {
+    width: 24px;
+    height: 24px;
+}
+
+:fullscreen .kpi-item h3, :-webkit-full-screen .kpi-item h3, :-moz-full-screen .kpi-item h3 { font-size: 15px; margin-bottom: 2px; }
+:fullscreen .kpi-item p, :-webkit-full-screen .kpi-item p, :-moz-full-screen .kpi-item p { font-size: 9px; }
+
+:fullscreen .jabatan-table-container, :-webkit-full-screen .jabatan-table-container, :-moz-full-screen .jabatan-table-container {
+    padding: 6px;
+    min-height: 0;
+}
+
+:fullscreen .table-wrapper, :-webkit-full-screen .table-wrapper, :-moz-full-screen .table-wrapper {
+    max-height: 110px;
+}
+
+:fullscreen .jabatan-table, :-webkit-full-screen .jabatan-table, :-moz-full-screen .jabatan-table { font-size: 10px; }
+:fullscreen .jabatan-table th, :-webkit-full-screen .jabatan-table th, 
+:fullscreen .jabatan-table td, :-webkit-full-screen .jabatan-table td { padding: 3px 6px; }
+
+:fullscreen .bottom-section, :-webkit-full-screen .bottom-section, :-moz-full-screen .bottom-section {
+    padding: 6px;
+    gap: 4px;
+    height: 160px;
+    flex-shrink: 0;
+}
+
+:fullscreen .bottom-chart-box, :-webkit-full-screen .bottom-chart-box, :-moz-full-screen .bottom-chart-box {
+    height: calc(100% - 22px) !important;
 }
 
 /* HEADER SECTION */
 .header {
     background: #ffffff;
     border: 2px solid #000;
-    padding: 10px 20px;
+    padding: 8px 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-.logo-ut { height: 45px; }
-.logo-corpu { height: 60px; }
+.logo-ut { height: 40px; }
+.logo-corpu { height: 50px; }
 
 .title-container h1 {
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 800;
     font-style: italic;
     color: #111;
@@ -259,8 +349,8 @@ body {
     background: #ffffff;
     border: 2px solid #000;
     border-radius: 4px;
-    padding: 8px 15px;
-    margin-bottom: 15px;
+    padding: 6px 12px;
+    margin-bottom: 10px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -270,21 +360,21 @@ body {
 .filter-left, .filter-right {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .filter-container label {
     font-weight: bold;
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .filter-select {
-    padding: 6px 8px;
-    font-size: 13px;
+    padding: 4px 8px;
+    font-size: 12px;
     border-radius: 4px;
     border: 1px solid #aaa;
     outline: none;
-    min-width: 200px;
+    min-width: 180px;
 }
 
 /* BUTTONS */
@@ -292,15 +382,15 @@ body {
     background-color: #ffb703;
     color: #000;
     border: 2px solid #000;
-    padding: 6px 14px;
-    font-size: 13px;
+    padding: 4px 10px;
+    font-size: 12px;
     font-weight: bold;
     border-radius: 4px;
     cursor: pointer;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     transition: background-color 0.2s, transform 0.1s;
 }
 
@@ -309,41 +399,30 @@ body {
     transform: translateY(-1px);
 }
 
-.btn-action svg {
-    width: 16px;
-    height: 16px;
-    fill: currentColor;
-}
+.btn-action svg { width: 14px; height: 14px; fill: currentColor; }
 
-/* ANIMASI SPINNING REFRESH ICON */
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.spinning {
-    animation: spin 0.8s linear infinite;
-}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.spinning { animation: spin 0.8s linear infinite; }
 
 /* MAIN LAYOUT SPLIT (SIMETRIS) */
 .main-layout {
     display: grid;
     grid-template-columns: 1fr 2fr;
-    gap: 15px;
-    margin-bottom: 15px;
+    gap: 10px;
+    margin-bottom: 10px;
     align-items: stretch;
 }
 
 .left-column, .right-column {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 10px;
 }
 
 .top-right-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 15px;
+    gap: 10px;
 }
 
 /* CARDS SIMETRIS */
@@ -351,10 +430,10 @@ body {
     background: #ffffff;
     border: 2px solid #000;
     border-radius: 4px;
-    padding: 10px;
+    padding: 8px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
     height: 100%;
     width: 100%;
     flex: 1;
@@ -363,7 +442,7 @@ body {
 .column-header, .sub-header {
     background: #ffb703;
     border: 2px solid #000;
-    padding: 6px;
+    padding: 4px;
     text-align: center;
     font-weight: bold;
     font-style: italic;
@@ -371,42 +450,44 @@ body {
     border-radius: 4px;
 }
 
-.column-header { font-size: 16px; }
-.sub-header { font-size: 12px; padding: 4px; }
+.column-header { font-size: 15px; }
+.sub-header { font-size: 11px; padding: 3px; }
 
 .chart-wrapper {
     display: flex;
     flex-direction: column;
     gap: 4px;
     flex: 1;
+    min-height: 0;
 }
 
 .chart-box {
     background: #ffffff;
     border: 1px solid #ccc;
     border-radius: 4px;
-    padding: 8px;
-    height: 220px;
+    padding: 6px;
+    height: 200px;
     position: relative;
+    flex: 1;
 }
 
-/* KPI BOX & SUMMARY STYLES (SIMETRIS & PRESISI) */
+/* KPI BOX & SUMMARY STYLES */
 .kpi-container {
     background: #ffffff;
     border: 2px solid #000;
     border-radius: 4px;
-    padding: 12px 15px;
+    padding: 10px 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .kpi-content-wrapper {
     display: grid;
-    grid-template-columns: 60px 1fr;
-    gap: 15px;
+    grid-template-columns: 50px 1fr;
+    gap: 12px;
     align-items: center;
     width: 100%;
 }
@@ -415,24 +496,20 @@ body {
     background: #ffb703;
     border: 2px solid #000;
     border-radius: 8px;
-    padding: 8px;
+    padding: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
 }
 
-.kpi-icon-box svg {
-    width: 36px;
-    height: 36px;
-    stroke: #000;
-}
+.kpi-icon-box svg { width: 30px; height: 30px; stroke: #000; }
 
 .kpi-metrics {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+    gap: 8px;
     width: 100%;
     align-items: center;
 }
@@ -446,19 +523,19 @@ body {
 }
 
 .kpi-item h3 {
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 800;
     color: #000;
-    line-height: 1.2;
-    margin-bottom: 4px;
+    line-height: 1.1;
+    margin-bottom: 2px;
     width: 100%;
 }
 
 .kpi-item p {
-    font-size: 10.5px;
+    font-size: 10px;
     font-weight: bold;
     color: #444;
-    line-height: 1.3;
+    line-height: 1.2;
     margin: 0;
 }
 
@@ -467,24 +544,24 @@ body {
     background: #ffffff;
     border: 2px solid #000;
     border-radius: 4px;
-    padding: 10px;
+    padding: 8px;
     flex: 1;
 }
 
 .table-wrapper {
-    max-height: 180px;
+    max-height: 160px;
     overflow-y: auto;
 }
 
 .jabatan-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 12px;
+    font-size: 11px;
 }
 
 .jabatan-table th, .jabatan-table td {
     border: 1px solid #ccc;
-    padding: 6px 10px;
+    padding: 4px 8px;
     text-align: left;
 }
 
@@ -504,14 +581,14 @@ body {
     background: #ffffff;
     border: 2px solid #000;
     border-radius: 4px;
-    padding: 12px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
 }
 
 .bottom-chart-box {
-    height: 280px;
+    height: 220px;
     position: relative;
 }
 
@@ -537,16 +614,8 @@ body {
     border: 2px solid #047857;
 }
 
-.toast-notification.show {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.toast-notification svg {
-    width: 20px;
-    height: 20px;
-    fill: #ffffff;
-}
+.toast-notification.show { opacity: 1; transform: translateY(0); }
+.toast-notification svg { width: 20px; height: 20px; fill: #ffffff; }
 
 @media (max-width: 768px) {
     .login-card { padding: 20px; }
@@ -683,9 +752,9 @@ body {
                 </div>
             </div>
 
-            <!-- KPI SUMMARY BOX (SIMETRIS, PRESISI & REVISI REKAP) -->
+            <!-- KPI SUMMARY BOX -->
             <div class="kpi-container">
-                <div class="sub-header" style="width: 100%; text-align: center; margin-bottom: 4px;">SUMMARY KPI 2026 (YTD)</div>
+                <div class="sub-header" style="width: 100%; text-align: center; margin-bottom: 2px;">SUMMARY KPI 2026 (YTD)</div>
                 
                 <div class="kpi-content-wrapper">
                     <div class="kpi-icon-box">
@@ -698,28 +767,24 @@ body {
                     </div>
                     
                     <div class="kpi-metrics">
-                        <!-- Kartu 1: Total Employee -->
                         <div class="kpi-item">
                             <h3 id="kpiTotalPart">0</h3>
                             <p>Total Employee<br>2026 (YTD)</p>
                         </div>
                         
-                        <!-- Kartu 2: Employee Coverage (REVISI JUDUL) -->
                         <div class="kpi-item">
                             <h3 id="kpiOverallCoverage">0</h3>
                             <p>Employee Coverage<br>(Assigned & Completed)</p>
                         </div>
 
-                        <!-- Kartu 3: Progress Training -->
                         <div class="kpi-item">
                             <h3 id="kpiCompletionStatus">0 / 0</h3>
-                            <p>Training Progress<br><span style="font-weight:normal; font-size:9.5px; color:#555;">(Done / On Progress)</span></p>
+                            <p>Training Progress<br><span style="font-weight:normal; font-size:8.5px; color:#555;">(Done / On Progress)</span></p>
                         </div>
 
-                        <!-- Kartu 4: Target Hours Achievement Status (REVISI METRIK) -->
                         <div class="kpi-item">
                             <h3 id="kpiTargetHoursStatus">0 / 0</h3>
-                            <p>Target Hours Status<br><span style="font-weight:normal; font-size:9.5px; color:#555;">(Tercapai / Belum)</span></p>
+                            <p>Target Hours Status<br><span style="font-weight:normal; font-size:8.5px; color:#555;">(Tercapai / Belum)</span></p>
                         </div>
                     </div>
                 </div>
@@ -727,13 +792,13 @@ body {
 
             <!-- TABEL REKAP -->
             <div class="jabatan-table-container">
-                <div class="sub-header" style="margin-bottom:8px;">Rekap Jumlah Pegawai per Jabatan</div>
+                <div class="sub-header" style="margin-bottom:4px;">Rekap Jumlah Pegawai per Jabatan</div>
                 <div class="table-wrapper">
                     <table class="jabatan-table">
                         <thead>
                             <tr>
                                 <th>Jabatan</th>
-                                <th style="width: 110px; text-align: center;">Total Pegawai</th>
+                                <th style="width: 100px; text-align: center;">Total Pegawai</th>
                             </tr>
                         </thead>
                         <tbody id="jabatanTableBody"></tbody>
@@ -770,9 +835,9 @@ body {
                 </div>
             </div>
 
-            <div class="column-card">
+            <div class="column-card" style="flex: 1;">
                 <div class="sub-header">Distribusi Total Employee Berdasarkan Jabatan</div>
-                <div class="chart-box" style="height: 320px;">
+                <div class="chart-box">
                     <canvas id="jabatanPieChart"></canvas>
                 </div>
             </div>
@@ -807,9 +872,9 @@ function handleLogin(event) {
         document.getElementById("loginModal").style.display = "none";
         
         const dash = document.getElementById("dashboardContent");
-        dash.style.display = "block";
+        dash.style.display = "flex";
+        dash.style.flexDirection = "column";
         
-        // Trigger animasi Entry Smooth
         setTimeout(() => {
             dash.classList.add("animate-show");
         }, 50);
@@ -849,7 +914,6 @@ function toggleFullScreen() {
     }
 }
 
-// DETEKSI PERUBAHAN STATUS FULLSCREEN (UNTUK ESC / REMOTE TV)
 document.addEventListener("fullscreenchange", updateFullscreenBtnText);
 document.addEventListener("webkitfullscreenchange", updateFullscreenBtnText);
 document.addEventListener("mozfullscreenchange", updateFullscreenBtnText);
@@ -858,6 +922,13 @@ document.addEventListener("MSFullscreenChange", updateFullscreenBtnText);
 function updateFullscreenBtnText() {
     const fsText = document.getElementById("fullscreenText");
     if (!fsText) return;
+
+    // Resize Chart ketika mode fullscreen berganti agar ter-render ulang presisi
+    setTimeout(() => {
+        Object.keys(chartInstances).forEach(key => {
+            if (chartInstances[key]) chartInstances[key].resize();
+        });
+    }, 100);
     
     if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
         fsText.textContent = "Keluar Fullscreen";
@@ -1044,14 +1115,12 @@ function loadDashboardData(isInitial = false) {
         .catch(err => console.error("Error loading CSV:", err));
 }
 
-// FUNGSI REFRESH SINKRONISASI DATA + ANIMASI MOTION RE-RENDER
 function refreshDashboardData() {
     const refreshIcon = document.getElementById("refreshIcon");
     const dash = document.getElementById("dashboardContent");
     
     if (refreshIcon) refreshIcon.classList.add("spinning");
     
-    // Animasikan Smooth Out/In saat refresh
     dash.style.opacity = "0.4";
     dash.style.transform = "scale(0.99)";
 
@@ -1102,12 +1171,9 @@ function getPieOptions() {
     return {
         responsive: true,
         maintainAspectRatio: false,
-        animation: {
-            duration: 1000,
-            easing: 'easeOutQuart'
-        },
+        animation: { duration: 800, easing: 'easeOutQuart' },
         plugins: {
-            legend: { position: 'right', labels: { font: { size: 11 } } },
+            legend: { position: 'right', labels: { font: { size: 10 }, boxWidth: 12 } },
             datalabels: {
                 formatter: (value, ctx) => {
                     let sum = 0;
@@ -1117,7 +1183,7 @@ function getPieOptions() {
                     return (value * 100 / sum).toFixed(1) + "%";
                 },
                 color: '#000',
-                font: { weight: 'bold', size: 11 }
+                font: { weight: 'bold', size: 10 }
             }
         }
     };
@@ -1127,12 +1193,12 @@ function getBarOptions() {
     return {
         responsive: true,
         maintainAspectRatio: false,
-        animation: {
-            duration: 1000,
-            easing: 'easeOutQuart'
-        },
+        animation: { duration: 800, easing: 'easeOutQuart' },
         plugins: { datalabels: { display: false } },
-        scales: { y: { beginAtZero: true } }
+        scales: { 
+            x: { ticks: { font: { size: 9 } } },
+            y: { beginAtZero: true, ticks: { font: { size: 9 } } } 
+        }
     };
 }
 
@@ -1157,7 +1223,6 @@ function getOrderedJabatanList(data) {
 function renderDashboard(data) {
     const jabatanList = getOrderedJabatanList(data);
 
-    // KALKULASI LOGIKA SCORECARD SUMMARY KPI
     const totalPart = data.length;
     let totalCovered = 0;
     let countDone = 0;
@@ -1166,32 +1231,22 @@ function renderDashboard(data) {
     let countTargetBelum = 0;
 
     data.forEach(d => {
-        // 1. Employee Coverage
         const isCov = d.statusCoverage === "Tercoverage" || (d.statusCoverage && d.statusCoverage.toLowerCase().includes("tercoverage"));
         if (isCov) totalCovered++;
 
-        // 2. Training Progress (Done vs On Progress)
         const st = (d.allRecap || "").toLowerCase();
-        if (st.includes("done")) {
-            countDone++;
-        } else if (st.includes("progress")) {
-            countProgress++;
-        }
+        if (st.includes("done")) countDone++;
+        else if (st.includes("progress")) countProgress++;
 
-        // 3. Target Hours Achievement (Tercapai vs Belum)
         const stTarget = (d.statusTarget || "").toLowerCase();
-        if (stTarget.includes("tercapai") && !stTarget.includes("belum")) {
-            countTargetTercapai++;
-        } else {
-            countTargetBelum++;
-        }
+        if (stTarget.includes("tercapai") && !stTarget.includes("belum")) countTargetTercapai++;
+        else countTargetBelum++;
     });
 
     const coveragePct = totalPart > 0 ? ((totalCovered / totalPart) * 100).toFixed(1) : 0;
 
-    // UPDATE DISPLAY SCORECARD KPI BARU
     document.getElementById("kpiTotalPart").textContent = totalPart;
-    document.getElementById("kpiOverallCoverage").innerHTML = `${totalCovered} <span style="font-size:11px; color:#555;">(${coveragePct}%)</span>`;
+    document.getElementById("kpiOverallCoverage").innerHTML = `${totalCovered} <span style="font-size:10px; color:#555;">(${coveragePct}%)</span>`;
     document.getElementById("kpiCompletionStatus").innerHTML = `<span style="color:#2e7d32;">${countDone}</span> / <span style="color:#ed6c02;">${countProgress}</span>`;
     document.getElementById("kpiTargetHoursStatus").innerHTML = `<span style="color:#2e7d32;">${countTargetTercapai}</span> / <span style="color:#d32f2f;">${countTargetBelum}</span>`;
 
@@ -1323,22 +1378,8 @@ function renderDashboard(data) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            layout: {
-                padding: 10
-            },
-            animation: {
-                duration: 1000,
-                easing: 'easeOutQuart'
-            },
             plugins: {
-                legend: { 
-                    position: 'right',
-                    labels: { 
-                        font: { size: 12, weight: 'bold' },
-                        boxWidth: 15,
-                        padding: 12
-                    } 
-                },
+                legend: { position: 'right', labels: { font: { size: 10, weight: 'bold' }, boxWidth: 12, padding: 8 } },
                 datalabels: {
                     formatter: (value, ctx) => {
                         let sum = 0;
@@ -1348,7 +1389,7 @@ function renderDashboard(data) {
                         return (value * 100 / sum).toFixed(1) + "%";
                     },
                     color: '#000',
-                    font: { weight: 'bold', size: 12 }
+                    font: { weight: 'bold', size: 10 }
                 }
             }
         }
@@ -1381,15 +1422,14 @@ function renderDashboard(data) {
         data: {
             labels: modNames.length > 0 ? modNames : ["Modul 1", "Modul 2"],
             datasets: [
-                { label: "Rata-Rata Pre-Test", data: avgPreList, borderColor: "#ea4335", backgroundColor: "#ea4335", tension: 0.3, borderWidth: 3, pointRadius: 5 },
-                { label: "Rata-Rata Post-Test", data: avgPostList, borderColor: "#34a853", backgroundColor: "#34a853", tension: 0.3, borderWidth: 3, pointRadius: 5 }
+                { label: "Rata-Rata Pre-Test", data: avgPreList, borderColor: "#ea4335", backgroundColor: "#ea4335", tension: 0.3, borderWidth: 2, pointRadius: 3 },
+                { label: "Rata-Rata Post-Test", data: avgPostList, borderColor: "#34a853", backgroundColor: "#34a853", tension: 0.3, borderWidth: 2, pointRadius: 3 }
             ]
         },
         options: {
             responsive: true, maintainAspectRatio: false,
-            animation: { duration: 1000, easing: 'easeOutQuart' },
             plugins: { datalabels: { display: false } },
-            scales: { y: { beginAtZero: true, max: 100, title: { display: true, text: "Nilai (0 - 100)" } } }
+            scales: { y: { beginAtZero: true, max: 100, ticks: { font: { size: 9 } } }, x: { ticks: { font: { size: 9 } } } }
         }
     });
 
