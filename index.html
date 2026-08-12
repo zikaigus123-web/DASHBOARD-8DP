@@ -223,7 +223,7 @@ body {
 :-moz-full-screen .dashboard-container {
     height: 100vh;
     width: 100vw;
-    overflow: hidden !important; /* Paksa Tanpa Scroll */
+    overflow: hidden !important;
     padding: 8px;
     display: flex;
     flex-direction: column;
@@ -248,7 +248,7 @@ body {
     margin-bottom: 8px;
     gap: 8px;
     flex: 1;
-    min-height: 0; /* PENTING agar child mau menciut */
+    min-height: 0;
 }
 
 :fullscreen .left-column, :-webkit-full-screen .left-column, :-moz-full-screen .left-column,
@@ -923,7 +923,6 @@ function updateFullscreenBtnText() {
     const fsText = document.getElementById("fullscreenText");
     if (!fsText) return;
 
-    // Resize Chart ketika mode fullscreen berganti agar ter-render ulang presisi
     setTimeout(() => {
         Object.keys(chartInstances).forEach(key => {
             if (chartInstances[key]) chartInstances[key].resize();
@@ -942,26 +941,26 @@ Chart.register(ChartDataLabels);
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQk1Gnwtu-vKG24ImVYA0ytCuAuOuWeujzNpFbUPz2C-Y0jLwRxWspRCSMPqG9gj7WfcTGtXWwSlFH6/pub?gid=1260922175&single=true&output=csv";
 
 // ==========================================
-// STEP 1, 2, 3: MASTER WARNA & HELPER JABATAN
+// MASTER WARNA & URUTAN JABATAN REVISI
 // ==========================================
 const JABATAN_COLORS = {
     "BC": "#4285f4",
     "BM": "#f77f00",
     "SM": "#34a853",
     "SDH": "#ea4335",
-    "ASE": "#a855f7",
-    "ADH": "#14b8a6",
     "PDH": "#f59e0b",
-    "SPV": "#6366f1"
+    "ADH": "#14b8a6",
+    "SPV": "#6366f1",
+    "ASE": "#a855f7"
 };
 
-const CUSTOM_JABATAN_ORDER = ["BC", "BM", "SM", "SDH", "ADH", "ASE", "PDH", "SPV"];
+// URUTAN SESUAI PERMINTAAN REVISI: 1.BC 2.BM 3.SM 4.SDH 5.PDH 6.ADH 7.SPV 8.ASE
+const CUSTOM_JABATAN_ORDER = ["BC", "BM", "SM", "SDH", "PDH", "ADH", "SPV", "ASE"];
 
 function getJabatanColor(jabatan) {
     return JABATAN_COLORS[jabatan] || "#999999";
 }
 
-// Helper untuk konversi HEX ke RGBA transparansi
 function hexToRgba(hex, alpha) {
     if (!hex || hex[0] !== '#') return `rgba(153, 153, 153, ${alpha})`;
     let c = hex.replace('#', '');
@@ -970,7 +969,6 @@ function hexToRgba(hex, alpha) {
     return `rgba(${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}, ${alpha})`;
 }
 
-// Helper untuk membuat Pattern Diagonal Stripe kompatibel dengan Canvas Chart.js
 function getStripePattern(colorStr) {
     const patternCanvas = document.createElement('canvas');
     patternCanvas.width = 10;
@@ -1237,7 +1235,6 @@ function getPieOptions() {
     };
 }
 
-// STEP 7: Helper Opsi Bar Chart dengan Legend Indikator Status
 function getBarOptionsWithStatusLegend() {
     return {
         responsive: true,
@@ -1330,9 +1327,7 @@ function renderDashboard(data) {
     document.getElementById("kpiCompletionStatus").innerHTML = `<span style="color:#2e7d32;">${countDone}</span> / <span style="color:#ed6c02;">${countProgress}</span>`;
     document.getElementById("kpiTargetHoursStatus").innerHTML = `<span style="color:#2e7d32;">${countTargetTercapai}</span> / <span style="color:#d32f2f;">${countTargetBelum}</span>`;
 
-    // ==========================================
-    // 1. COVERAGE CHARTS (STEP 4 & STEP 9)
-    // ==========================================
+    // 1. COVERAGE CHARTS
     let tercoverageCount = 0, notCoverageCount = 0;
     const coverageByJabatan = {};
     jabatanList.forEach(j => coverageByJabatan[j] = { Tercoverage: 0, "Not Yet": 0 });
@@ -1378,9 +1373,7 @@ function renderDashboard(data) {
         options: getBarOptionsWithStatusLegend()
     });
 
-    // ==========================================
-    // 2. PARTICIPATION CHARTS (STEP 5 & STEP 6)
-    // ==========================================
+    // 2. PARTICIPATION CHARTS
     let doneCount = 0, onProgressCount = 0, notYetPartCount = 0;
     const EmployeeByJabatan = {};
     jabatanList.forEach(j => EmployeeByJabatan[j] = { Done: 0, "On Progress": 0, "Not Yet": 0 });
@@ -1439,9 +1432,7 @@ function renderDashboard(data) {
         options: getBarOptionsWithStatusLegend()
     });
 
-    // ==========================================
-    // 3. HOURS CHARTS (STEP 8)
-    // ==========================================
+    // 3. HOURS CHARTS
     let tercapaiCount = 0, belumTercapaiCount = 0;
     const hoursByJabatan = {};
     jabatanList.forEach(j => hoursByJabatan[j] = { actual: 0, target: 0 });
@@ -1489,9 +1480,7 @@ function renderDashboard(data) {
         options: getBarOptionsWithStatusLegend()
     });
 
-    // ==========================================
-    // 4. DISTRIBUSI JABATAN CHART (STEP 10)
-    // ==========================================
+    // 4. DISTRIBUSI JABATAN CHART
     const jabatanCounts = {};
     data.forEach(d => { jabatanCounts[d.jabatan] = (jabatanCounts[d.jabatan] || 0) + 1; });
 
@@ -1525,9 +1514,7 @@ function renderDashboard(data) {
         }
     });
 
-    // ==========================================
     // 5. LINE CHART PRE VS POST
-    // ==========================================
     const modNames = moduleColumns.map(m => m.name);
     const avgPreList = [];
     const avgPostList = [];
@@ -1565,9 +1552,7 @@ function renderDashboard(data) {
         }
     });
 
-    // ==========================================
-    // 6. TABEL REKAP JABATAN
-    // ==========================================
+    // 6. TABEL REKAP JABATAN (MENGIKUTI URUTAN REVISI)
     const tableBody = document.getElementById("jabatanTableBody");
     tableBody.innerHTML = "";
 
