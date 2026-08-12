@@ -940,7 +940,55 @@ function updateFullscreenBtnText() {
 Chart.register(ChartDataLabels);
 
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQk1Gnwtu-vKG24ImVYA0ytCuAuOuWeujzNpFbUPz2C-Y0jLwRxWspRCSMPqG9gj7WfcTGtXWwSlFH6/pub?gid=1260922175&single=true&output=csv";
-const CUSTOM_JABATAN_ORDER = ["BC", "BM", "SM", "SDH", "PDH", "ADH", "SPY", "ASC"];
+
+// ==========================================
+// STEP 1, 2, 3: MASTER WARNA & HELPER JABATAN
+// ==========================================
+const JABATAN_COLORS = {
+    "BC": "#4285f4",
+    "BM": "#f77f00",
+    "SM": "#34a853",
+    "SDH": "#ea4335",
+    "ASE": "#a855f7",
+    "ADH": "#14b8a6",
+    "DDH": "#f59e0b",
+    "SPV": "#6366f1"
+};
+
+const CUSTOM_JABATAN_ORDER = ["BC", "BM", "SM", "SDH", "ADH", "ASE", "DDH", "SPV"];
+
+function getJabatanColor(jabatan) {
+    return JABATAN_COLORS[jabatan] || "#999999";
+}
+
+// Helper untuk konversi HEX ke RGBA transparansi
+function hexToRgba(hex, alpha) {
+    if (!hex || hex[0] !== '#') return `rgba(153, 153, 153, ${alpha})`;
+    let c = hex.replace('#', '');
+    if (c.length === 3) c = c.split('').map(x => x + x).join('');
+    const num = parseInt(c, 16);
+    return `rgba(${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}, ${alpha})`;
+}
+
+// Helper untuk membuat Pattern Diagonal Stripe kompatibel dengan Canvas Chart.js
+function getStripePattern(colorStr) {
+    const patternCanvas = document.createElement('canvas');
+    patternCanvas.width = 10;
+    patternCanvas.height = 10;
+    const pctx = patternCanvas.getContext('2d');
+
+    pctx.fillStyle = hexToRgba(colorStr, 0.25);
+    pctx.fillRect(0, 0, 10, 10);
+
+    pctx.strokeStyle = colorStr;
+    pctx.lineWidth = 2;
+    pctx.beginPath();
+    pctx.moveTo(0, 10);
+    pctx.lineTo(10, 0);
+    pctx.stroke();
+
+    return pctx.createPattern(patternCanvas, 'repeat');
+}
 
 let parsedData = [];
 let moduleColumns = [];
@@ -1189,12 +1237,44 @@ function getPieOptions() {
     };
 }
 
-function getBarOptions() {
+// STEP 7: Helper Opsi Bar Chart dengan Legend Indikator Status
+function getBarOptionsWithStatusLegend() {
     return {
         responsive: true,
         maintainAspectRatio: false,
         animation: { duration: 800, easing: 'easeOutQuart' },
-        plugins: { datalabels: { display: false } },
+        plugins: { 
+            datalabels: { display: false },
+            legend: {
+                display: true,
+                position: 'top',
+                labels: {
+                    font: { size: 9 },
+                    boxWidth: 12,
+                    boxHeight: 12,
+                    generateLabels: function(chart) {
+                        const original = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+                        original.forEach((label) => {
+                            const textLower = label.text.toLowerCase();
+                            if (textLower.includes("done") || textLower.includes("tercoverage") || textLower === "training hours") {
+                                label.fillStyle = "#444444";
+                                label.strokeStyle = "#444444";
+                                label.lineWidth = 1;
+                            } else if (textLower.includes("progress")) {
+                                label.fillStyle = getStripePattern("#444444");
+                                label.strokeStyle = "#444444";
+                                label.lineWidth = 1;
+                            } else if (textLower.includes("not") || textLower.includes("target")) {
+                                label.fillStyle = "rgba(68, 68, 68, 0.15)";
+                                label.strokeStyle = "#444444";
+                                label.lineWidth = 1.5;
+                            }
+                        });
+                        return original;
+                    }
+                }
+            }
+        },
         scales: { 
             x: { ticks: { font: { size: 9 } } },
             y: { beginAtZero: true, ticks: { font: { size: 9 } } } 
@@ -1250,7 +1330,9 @@ function renderDashboard(data) {
     document.getElementById("kpiCompletionStatus").innerHTML = `<span style="color:#2e7d32;">${countDone}</span> / <span style="color:#ed6c02;">${countProgress}</span>`;
     document.getElementById("kpiTargetHoursStatus").innerHTML = `<span style="color:#2e7d32;">${countTargetTercapai}</span> / <span style="color:#d32f2f;">${countTargetBelum}</span>`;
 
-    // 1. COVERAGE CHARTS
+    // ==========================================
+    // 1. COVERAGE CHARTS (STEP 4 & STEP 9)
+    // ==========================================
     let tercoverageCount = 0, notCoverageCount = 0;
     const coverageByJabatan = {};
     jabatanList.forEach(j => coverageByJabatan[j] = { Tercoverage: 0, "Not Yet": 0 });
@@ -1277,14 +1359,28 @@ function renderDashboard(data) {
         data: {
             labels: jabatanList,
             datasets: [
-                { label: "Tercoverage", data: jabatanList.map(j => coverageByJabatan[j]["Tercoverage"]), backgroundColor: "#f77f00" },
-                { label: "Not Yet", data: jabatanList.map(j => coverageByJabatan[j]["Not Yet"]), backgroundColor: "#4285f4" }
+                { 
+                    label: "Tercoverage", 
+                    data: jabatanList.map(j => coverageByJabatan[j]["Tercoverage"]), 
+                    backgroundColor: jabatanList.map(j => getJabatanColor(j)),
+                    borderColor: jabatanList.map(j => getJabatanColor(j)),
+                    borderWidth: 1
+                },
+                { 
+                    label: "Not Yet", 
+                    data: jabatanList.map(j => coverageByJabatan[j]["Not Yet"]), 
+                    backgroundColor: jabatanList.map(j => hexToRgba(getJabatanColor(j), 0.2)),
+                    borderColor: jabatanList.map(j => getJabatanColor(j)),
+                    borderWidth: 1.5
+                }
             ]
         },
-        options: getBarOptions()
+        options: getBarOptionsWithStatusLegend()
     });
 
-    // 2. PARTICIPATION CHARTS
+    // ==========================================
+    // 2. PARTICIPATION CHARTS (STEP 5 & STEP 6)
+    // ==========================================
     let doneCount = 0, onProgressCount = 0, notYetPartCount = 0;
     const EmployeeByJabatan = {};
     jabatanList.forEach(j => EmployeeByJabatan[j] = { Done: 0, "On Progress": 0, "Not Yet": 0 });
@@ -1317,15 +1413,35 @@ function renderDashboard(data) {
         data: {
             labels: jabatanList,
             datasets: [
-                { label: "Done", data: jabatanList.map(j => EmployeeByJabatan[j]["Done"]), backgroundColor: "#f77f00" },
-                { label: "On Progress", data: jabatanList.map(j => EmployeeByJabatan[j]["On Progress"]), backgroundColor: "#a855f7" },
-                { label: "Not Yet", data: jabatanList.map(j => EmployeeByJabatan[j]["Not Yet"]), backgroundColor: "#4285f4" }
+                { 
+                    label: "Done", 
+                    data: jabatanList.map(j => EmployeeByJabatan[j]["Done"]), 
+                    backgroundColor: jabatanList.map(j => getJabatanColor(j)),
+                    borderColor: jabatanList.map(j => getJabatanColor(j)),
+                    borderWidth: 1
+                },
+                { 
+                    label: "On Progress", 
+                    data: jabatanList.map(j => EmployeeByJabatan[j]["On Progress"]), 
+                    backgroundColor: jabatanList.map(j => getStripePattern(getJabatanColor(j))),
+                    borderColor: jabatanList.map(j => getJabatanColor(j)),
+                    borderWidth: 1.5
+                },
+                { 
+                    label: "Not Yet", 
+                    data: jabatanList.map(j => EmployeeByJabatan[j]["Not Yet"]), 
+                    backgroundColor: jabatanList.map(j => hexToRgba(getJabatanColor(j), 0.15)),
+                    borderColor: jabatanList.map(j => getJabatanColor(j)),
+                    borderWidth: 1.5
+                }
             ]
         },
-        options: getBarOptions()
+        options: getBarOptionsWithStatusLegend()
     });
 
-    // 3. HOURS CHARTS
+    // ==========================================
+    // 3. HOURS CHARTS (STEP 8)
+    // ==========================================
     let tercapaiCount = 0, belumTercapaiCount = 0;
     const hoursByJabatan = {};
     jabatanList.forEach(j => hoursByJabatan[j] = { actual: 0, target: 0 });
@@ -1354,14 +1470,28 @@ function renderDashboard(data) {
         data: {
             labels: jabatanList,
             datasets: [
-                { label: "Training Hours", data: jabatanList.map(j => hoursByJabatan[j].actual), backgroundColor: "#4285f4" },
-                { label: "Target Hours", data: jabatanList.map(j => hoursByJabatan[j].target), backgroundColor: "#ffb703" }
+                { 
+                    label: "Training Hours", 
+                    data: jabatanList.map(j => hoursByJabatan[j].actual), 
+                    backgroundColor: jabatanList.map(j => getJabatanColor(j)),
+                    borderColor: jabatanList.map(j => getJabatanColor(j)),
+                    borderWidth: 1
+                },
+                { 
+                    label: "Target Hours", 
+                    data: jabatanList.map(j => hoursByJabatan[j].target), 
+                    backgroundColor: jabatanList.map(j => hexToRgba(getJabatanColor(j), 0.2)),
+                    borderColor: jabatanList.map(j => getJabatanColor(j)),
+                    borderWidth: 1.5
+                }
             ]
         },
-        options: getBarOptions()
+        options: getBarOptionsWithStatusLegend()
     });
 
-    // 4. DISTRIBUSI JABATAN CHART
+    // ==========================================
+    // 4. DISTRIBUSI JABATAN CHART (STEP 10)
+    // ==========================================
     const jabatanCounts = {};
     data.forEach(d => { jabatanCounts[d.jabatan] = (jabatanCounts[d.jabatan] || 0) + 1; });
 
@@ -1372,7 +1502,7 @@ function renderDashboard(data) {
             labels: jabatanList,
             datasets: [{ 
                 data: jabatanList.map(j => jabatanCounts[j] || 0), 
-                backgroundColor: ["#4285f4", "#f77f00", "#34a853", "#ea4335", "#a855f7", "#14b8a6", "#f59e0b", "#6366f1"] 
+                backgroundColor: jabatanList.map(j => getJabatanColor(j)) 
             }]
         },
         options: {
@@ -1395,7 +1525,9 @@ function renderDashboard(data) {
         }
     });
 
+    // ==========================================
     // 5. LINE CHART PRE VS POST
+    // ==========================================
     const modNames = moduleColumns.map(m => m.name);
     const avgPreList = [];
     const avgPostList = [];
@@ -1433,7 +1565,9 @@ function renderDashboard(data) {
         }
     });
 
+    // ==========================================
     // 6. TABEL REKAP JABATAN
+    // ==========================================
     const tableBody = document.getElementById("jabatanTableBody");
     tableBody.innerHTML = "";
 
