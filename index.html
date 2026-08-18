@@ -5,8 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard Monitoring Development 8 DP</title>
 
+<!-- Favicon -->
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 
+<!-- Chart.js CDN & Plugin DataLabels -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
@@ -628,6 +630,7 @@ body {
 </head>
 <body>
 
+<!-- TOAST POP-UP NOTIFIKASI -->
 <div id="toastNotif" class="toast-notification">
     <svg viewBox="0 0 24 24">
         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
@@ -635,6 +638,7 @@ body {
     <span id="toastMsg">Data berhasil diperbarui!</span>
 </div>
 
+<!-- MODAL LOGIN SECURITY -->
 <div id="loginModal" class="login-overlay">
     <div class="login-card">
         <div class="login-header-logos">
@@ -685,8 +689,10 @@ body {
     </div>
 </div>
 
+<!-- DASHBOARD CONTAINER -->
 <div id="dashboardContent" class="dashboard-container">
 
+    <!-- HEADER -->
     <div class="header">
         <img src="logo ut.png" alt="United Tractors" class="logo-ut">
         <div class="title-container">
@@ -695,6 +701,7 @@ body {
         <img src="logo corpu.png" alt="UT Corporate University" class="logo-corpu">
     </div>
 
+    <!-- FILTER & ACTION BAR -->
     <div class="filter-container">
         <div class="filter-left">
             <label for="filterLokasi">Filter Lokasi Kerja Update:</label>
@@ -704,6 +711,7 @@ body {
         </div>
 
         <div class="filter-right">
+            <!-- TOMBOL FITUR FULLSCREEN / TV MODE -->
             <button class="btn-action" onclick="toggleFullScreen()">
                 <svg viewBox="0 0 24 24">
                     <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
@@ -727,8 +735,10 @@ body {
         </div>
     </div>
 
+    <!-- MAIN LAYOUT -->
     <div class="main-layout">
 
+        <!-- LEFT COLUMN -->
         <div class="left-column">
             <div class="column-card">
                 <div class="column-header">Training Coverage</div>
@@ -742,6 +752,7 @@ body {
                 </div>
             </div>
 
+            <!-- KPI SUMMARY BOX -->
             <div class="kpi-container">
                 <div class="sub-header" style="width: 100%; text-align: center; margin-bottom: 2px;">SUMMARY KPI 2026 (YTD)</div>
                 
@@ -779,6 +790,7 @@ body {
                 </div>
             </div>
 
+            <!-- TABEL REKAP -->
             <div class="jabatan-table-container">
                 <div class="sub-header" style="margin-bottom:4px;">Rekap Jumlah Pegawai per Jabatan</div>
                 <div class="table-wrapper">
@@ -795,6 +807,7 @@ body {
             </div>
         </div>
 
+        <!-- RIGHT COLUMN -->
         <div class="right-column">
             <div class="top-right-grid">
                 <div class="column-card">
@@ -832,6 +845,7 @@ body {
 
     </div>
 
+    <!-- BOTTOM SECTION -->
     <div class="bottom-section">
         <div class="sub-header">Rata-Rata Nilai Pre-Test vs Post-Test per Modul Training</div>
         <div class="bottom-chart-box">
@@ -923,13 +937,15 @@ function updateFullscreenBtnText() {
 }
 
 // ==========================================
-// CUSTOM PLUGIN: LEADER LINES UNTUK PIE CHART
-// Menghubungkan potongan kecil ke teks di luar pie
+// CUSTOM PLUGIN: LEADER LINES DENGAN ANTI-COLLISION
+// Hanya aktif untuk pie chart status, mencegah teks bertumpuk
 // ==========================================
 const pieLeaderLinesPlugin = {
     id: 'pieLeaderLines',
     afterDraw(chart) {
-        if (chart.config.type !== 'pie') return;
+        // Hanya gambar jika opsi useLeaderLines diaktifkan
+        if (chart.config.type !== 'pie' || !chart.options.plugins?.pieLeaderLines?.display) return;
+        
         const ctx = chart.ctx;
         const meta = chart.getDatasetMeta(0);
         if (!meta || !meta.data) return;
@@ -937,46 +953,59 @@ const pieLeaderLinesPlugin = {
         const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
         if (total === 0) return;
 
-        ctx.save();
+        // Ambil elemen yang persentasenya < 15% (irisan tipis)
+        const callouts = [];
         meta.data.forEach((element, index) => {
             const val = chart.data.datasets[0].data[index];
             const pct = (val * 100 / total);
-
-            // Hanya gambar garis keluar untuk potongan < 15% (agar tidak bertumpuk di dalam slice tipis)
             if (pct > 0 && pct < 15) {
                 const { x, y, outerRadius, startAngle, endAngle } = element;
                 const midAngle = (startAngle + endAngle) / 2;
-
-                // Titik Awal di tepi luar potongan pie
-                const startX = x + Math.cos(midAngle) * outerRadius;
-                const startY = y + Math.sin(midAngle) * outerRadius;
-
-                // Titik Siku / Elbow di luar pie
-                const elbowX = x + Math.cos(midAngle) * (outerRadius + 14);
-                const elbowY = y + Math.sin(midAngle) * (outerRadius + 14);
-
-                // Arah garis horizontal (kiri atau kanan)
-                const isRight = Math.cos(midAngle) >= 0;
-                const endX = elbowX + (isRight ? 12 : -12);
-                const endY = elbowY;
-
-                // Gambar Garis Penunjuk
-                ctx.beginPath();
-                ctx.moveTo(startX, startY);
-                ctx.lineTo(elbowX, elbowY);
-                ctx.lineTo(endX, endY);
-                ctx.strokeStyle = '#222222';
-                ctx.lineWidth = 1.2;
-                ctx.stroke();
-
-                // Gambar Teks Persentase di Ujung Garis
-                ctx.fillStyle = '#000000';
-                ctx.font = 'bold 9.5px Segoe UI, sans-serif';
-                ctx.textAlign = isRight ? 'left' : 'right';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(`${pct.toFixed(1)}%`, endX + (isRight ? 3 : -3), endY);
+                callouts.push({
+                    index,
+                    pct,
+                    x, y,
+                    outerRadius,
+                    midAngle,
+                    isRight: Math.cos(midAngle) >= 0
+                });
             }
         });
+
+        if (callouts.length === 0) return;
+
+        ctx.save();
+        
+        // Staggering: pisahkan jarak siku agar jika berdekatan di atas, tidak saling menimpa
+        callouts.forEach((item, i) => {
+            const staggerOffset = 12 + (i * 12); // Pembeda panjang siku jika ada beberapa slice kecil
+            const startX = item.x + Math.cos(item.midAngle) * item.outerRadius;
+            const startY = item.y + Math.sin(item.midAngle) * item.outerRadius;
+
+            const elbowX = item.x + Math.cos(item.midAngle) * (item.outerRadius + staggerOffset);
+            const elbowY = item.y + Math.sin(item.midAngle) * (item.outerRadius + staggerOffset);
+
+            const isRight = item.isRight;
+            const endX = elbowX + (isRight ? 10 : -10);
+            const endY = elbowY;
+
+            // Gambar Garis Penunjuk Siku
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(elbowX, elbowY);
+            ctx.lineTo(endX, endY);
+            ctx.strokeStyle = '#222222';
+            ctx.lineWidth = 1.2;
+            ctx.stroke();
+
+            // Gambar Teks Persentase
+            ctx.fillStyle = '#000000';
+            ctx.font = 'bold 9.5px Segoe UI, sans-serif';
+            ctx.textAlign = isRight ? 'left' : 'right';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(`${item.pct.toFixed(1)}%`, endX + (isRight ? 3 : -3), endY);
+        });
+
         ctx.restore();
     }
 };
@@ -985,9 +1014,7 @@ Chart.register(ChartDataLabels, pieLeaderLinesPlugin);
 
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQk1Gnwtu-vKG24ImVYA0ytCuAuOuWeujzNpFbUPz2C-Y0jLwRxWspRCSMPqG9gj7WfcTGtXWwSlFH6/pub?gid=1260922175&single=true&output=csv";
 
-// ==========================================
 // MASTER WARNA & URUTAN JABATAN REVISI
-// ==========================================
 const JABATAN_COLORS = {
     "BC": "#4285f4",
     "BM": "#f77f00",
@@ -999,7 +1026,6 @@ const JABATAN_COLORS = {
     "ASE": "#a855f7"
 };
 
-// URUTAN SESUAI PERMINTAAN REVISI: 1.BC 2.BM 3.SM 4.SDH 5.PDH 6.ADH 7.SPV 8.ASE
 const CUSTOM_JABATAN_ORDER = ["BC", "BM", "SM", "SDH", "PDH", "ADH", "SPV", "ASE"];
 
 function getJabatanColor(jabatan) {
@@ -1258,19 +1284,15 @@ function destroyChart(id) {
     }
 }
 
-// ==========================================
-// PIE OPTIONS: Menampilkan label di dalam hanya untuk potongan >= 15%
-// Potongan < 15% akan otomatis ditarik garis keluar oleh plugin
-// ==========================================
-function getPieOptions() {
+// OPSI PIE CHART STATUS (FOTO 1: Garis penunjuk rapi dan tidak saling tumpuk)
+function getStatusPieOptions() {
     return {
         responsive: true,
         maintainAspectRatio: false,
-        layout: {
-            padding: 16 // Ruang agar garis dan teks di luar tidak terpotong
-        },
+        layout: { padding: 18 },
         animation: { duration: 800, easing: 'easeOutQuart' },
         plugins: {
+            pieLeaderLines: { display: true },
             legend: { position: 'right', labels: { font: { size: 10 }, boxWidth: 12 } },
             datalabels: {
                 formatter: (value, ctx) => {
@@ -1279,7 +1301,7 @@ function getPieOptions() {
                     dataArr.map(data => { sum += data; });
                     if (sum === 0) return "";
                     const pct = (value * 100 / sum);
-                    // Potongan < 15% disembunyikan dari dalam slice agar digambar rapi di luar oleh plugin
+                    // Irisan < 15% ditarik ke luar oleh leader line plugin
                     if (pct < 15) return null;
                     return pct.toFixed(1) + "%";
                 },
@@ -1400,7 +1422,7 @@ function renderDashboard(data) {
     chartInstances["coveragePie"] = new Chart(document.getElementById("coveragePieChart"), {
         type: "pie",
         data: { labels: ["Tercoverage", "Not Yet"], datasets: [{ data: [tercoverageCount, notCoverageCount], backgroundColor: ["#f77f00", "#4285f4"] }] },
-        options: getPieOptions()
+        options: getStatusPieOptions()
     });
 
     destroyChart("coverageBar");
@@ -1452,7 +1474,7 @@ function renderDashboard(data) {
     chartInstances["partPie"] = new Chart(document.getElementById("EmployeePieChart"), {
         type: "pie",
         data: { labels: ["Not Yet", "Done", "On Progress"], datasets: [{ data: [notYetPartCount, doneCount, onProgressCount], backgroundColor: ["#4285f4", "#f77f00", "#a855f7"] }] },
-        options: getPieOptions()
+        options: getStatusPieOptions()
     });
 
     destroyChart("partBar");
@@ -1507,7 +1529,7 @@ function renderDashboard(data) {
     chartInstances["hoursPie"] = new Chart(document.getElementById("hoursPieChart"), {
         type: "pie",
         data: { labels: ["Tercapai", "Belum Tercapai"], datasets: [{ data: [tercapaiCount, belumTercapaiCount], backgroundColor: ["#4285f4", "#f77f00"] }] },
-        options: getPieOptions()
+        options: getStatusPieOptions()
     });
 
     destroyChart("hoursBar");
@@ -1535,7 +1557,9 @@ function renderDashboard(data) {
         options: getBarOptionsWithStatusLegend()
     });
 
-    // 4. DISTRIBUSI JABATAN CHART
+    // ==========================================
+    // 4. DISTRIBUSI JABATAN CHART (FOTO 2: PERSENTASE DI DALAM TANPA GARIS)
+    // ==========================================
     const jabatanCounts = {};
     data.forEach(d => { jabatanCounts[d.jabatan] = (jabatanCounts[d.jabatan] || 0) + 1; });
 
@@ -1552,18 +1576,16 @@ function renderDashboard(data) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            layout: { padding: 16 },
             plugins: {
+                pieLeaderLines: { display: false }, // Dinonaktifkan sesuai permintaan foto kedua
                 legend: { position: 'right', labels: { font: { size: 10, weight: 'bold' }, boxWidth: 12, padding: 8 } },
                 datalabels: {
                     formatter: (value, ctx) => {
                         let sum = 0;
                         let dataArr = ctx.chart.data.datasets[0].data;
                         dataArr.map(data => { sum += data; });
-                        if (sum === 0) return "";
-                        const pct = (value * 100 / sum);
-                        if (pct < 15) return null; // Diserahkan ke garis penunjuk di luar
-                        return pct.toFixed(1) + "%";
+                        if (sum === 0) return "0%";
+                        return (value * 100 / sum).toFixed(1) + "%";
                     },
                     color: '#000',
                     font: { weight: 'bold', size: 10 }
@@ -1610,7 +1632,7 @@ function renderDashboard(data) {
         }
     });
 
-    // 6. TABEL REKAP JABATAN (MENGIKUTI URUTAN REVISI)
+    // 6. TABEL REKAP JABATAN
     const tableBody = document.getElementById("jabatanTableBody");
     tableBody.innerHTML = "";
 
