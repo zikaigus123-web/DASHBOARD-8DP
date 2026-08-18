@@ -937,13 +937,12 @@ function updateFullscreenBtnText() {
 }
 
 // ==========================================
-// CUSTOM PLUGIN: LEADER LINES DENGAN ANTI-COLLISION
-// Hanya aktif untuk pie chart status, mencegah teks bertumpuk
+// CUSTOM PLUGIN: DIRECTIONAL LEADER LINES
+// Menghilangkan collision antar irisan kecil di atas
 // ==========================================
 const pieLeaderLinesPlugin = {
     id: 'pieLeaderLines',
     afterDraw(chart) {
-        // Hanya gambar jika opsi useLeaderLines diaktifkan
         if (chart.config.type !== 'pie' || !chart.options.plugins?.pieLeaderLines?.display) return;
         
         const ctx = chart.ctx;
@@ -953,7 +952,6 @@ const pieLeaderLinesPlugin = {
         const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
         if (total === 0) return;
 
-        // Ambil elemen yang persentasenya < 15% (irisan tipis)
         const callouts = [];
         meta.data.forEach((element, index) => {
             const val = chart.data.datasets[0].data[index];
@@ -966,8 +964,7 @@ const pieLeaderLinesPlugin = {
                     pct,
                     x, y,
                     outerRadius,
-                    midAngle,
-                    isRight: Math.cos(midAngle) >= 0
+                    midAngle
                 });
             }
         });
@@ -975,18 +972,31 @@ const pieLeaderLinesPlugin = {
         if (callouts.length === 0) return;
 
         ctx.save();
-        
-        // Staggering: pisahkan jarak siku agar jika berdekatan di atas, tidak saling menimpa
+
         callouts.forEach((item, i) => {
-            const staggerOffset = 12 + (i * 12); // Pembeda panjang siku jika ada beberapa slice kecil
             const startX = item.x + Math.cos(item.midAngle) * item.outerRadius;
             const startY = item.y + Math.sin(item.midAngle) * item.outerRadius;
 
-            const elbowX = item.x + Math.cos(item.midAngle) * (item.outerRadius + staggerOffset);
-            const elbowY = item.y + Math.sin(item.midAngle) * (item.outerRadius + staggerOffset);
+            // Jika ada lebih dari 1 slice kecil di atas (misal Done & On Progress)
+            // Tarik Done (i=0) ke Kiri Atas, dan On Progress (i=1) ke Kanan Atas (ke arah Legenda)
+            let isRight = Math.cos(item.midAngle) >= 0;
+            let targetElbowOffset = 15;
+            let horizontalLineLen = 14;
 
-            const isRight = item.isRight;
-            const endX = elbowX + (isRight ? 10 : -10);
+            if (callouts.length > 1) {
+                if (i === 0) {
+                    isRight = false; // Tarik ke kiri
+                    targetElbowOffset = 16;
+                } else {
+                    isRight = true;  // Tarik ke kanan mengarah ke legenda
+                    targetElbowOffset = 22;
+                    horizontalLineLen = 20; // Garis agak panjang ke arah legenda
+                }
+            }
+
+            const elbowX = item.x + Math.cos(item.midAngle) * (item.outerRadius + targetElbowOffset);
+            const elbowY = item.y + Math.sin(item.midAngle) * (item.outerRadius + targetElbowOffset);
+            const endX = elbowX + (isRight ? horizontalLineLen : -horizontalLineLen);
             const endY = elbowY;
 
             // Gambar Garis Penunjuk Siku
@@ -994,13 +1004,13 @@ const pieLeaderLinesPlugin = {
             ctx.moveTo(startX, startY);
             ctx.lineTo(elbowX, elbowY);
             ctx.lineTo(endX, endY);
-            ctx.strokeStyle = '#222222';
+            ctx.strokeStyle = '#333333';
             ctx.lineWidth = 1.2;
             ctx.stroke();
 
             // Gambar Teks Persentase
             ctx.fillStyle = '#000000';
-            ctx.font = 'bold 9.5px Segoe UI, sans-serif';
+            ctx.font = 'bold 10px Segoe UI, sans-serif';
             ctx.textAlign = isRight ? 'left' : 'right';
             ctx.textBaseline = 'middle';
             ctx.fillText(`${item.pct.toFixed(1)}%`, endX + (isRight ? 3 : -3), endY);
@@ -1284,12 +1294,12 @@ function destroyChart(id) {
     }
 }
 
-// OPSI PIE CHART STATUS (FOTO 1: Garis penunjuk rapi dan tidak saling tumpuk)
+// OPSI PIE CHART STATUS (Overall Coverage, Participation, Target Hours)
 function getStatusPieOptions() {
     return {
         responsive: true,
         maintainAspectRatio: false,
-        layout: { padding: 18 },
+        layout: { padding: 20 },
         animation: { duration: 800, easing: 'easeOutQuart' },
         plugins: {
             pieLeaderLines: { display: true },
@@ -1301,7 +1311,7 @@ function getStatusPieOptions() {
                     dataArr.map(data => { sum += data; });
                     if (sum === 0) return "";
                     const pct = (value * 100 / sum);
-                    // Irisan < 15% ditarik ke luar oleh leader line plugin
+                    // Irisan < 15% ditangani oleh leader line
                     if (pct < 15) return null;
                     return pct.toFixed(1) + "%";
                 },
@@ -1557,9 +1567,7 @@ function renderDashboard(data) {
         options: getBarOptionsWithStatusLegend()
     });
 
-    // ==========================================
-    // 4. DISTRIBUSI JABATAN CHART (FOTO 2: PERSENTASE DI DALAM TANPA GARIS)
-    // ==========================================
+    // 4. DISTRIBUSI JABATAN CHART (Foto Kedua: Persentase di dalam tanpa garis penunjuk)
     const jabatanCounts = {};
     data.forEach(d => { jabatanCounts[d.jabatan] = (jabatanCounts[d.jabatan] || 0) + 1; });
 
@@ -1577,7 +1585,7 @@ function renderDashboard(data) {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                pieLeaderLines: { display: false }, // Dinonaktifkan sesuai permintaan foto kedua
+                pieLeaderLines: { display: false },
                 legend: { position: 'right', labels: { font: { size: 10, weight: 'bold' }, boxWidth: 12, padding: 8 } },
                 datalabels: {
                     formatter: (value, ctx) => {
