@@ -1441,7 +1441,7 @@ function renderDashboard(data) {
     destroyChart("coveragePie");
     chartInstances["coveragePie"] = new Chart(document.getElementById("coveragePieChart"), {
         type: "pie",
-        data: { labels: ["Tercoverage", "Not Yet"], datasets: [{ data: [tercoverageCount, notCoverageCount], backgroundColor: ["#f77f00", "#4285f4"] }] },
+        data: { labels: ["Tercoverage", "Not Yet"], datasets: [{ data: [tercoverageCount, notCoverageCount], backgroundColor: ["#4285f4", "#f77f00"] }] },
         options: getStatusPieOptions()
     });
 
@@ -1493,7 +1493,7 @@ function renderDashboard(data) {
     destroyChart("partPie");
     chartInstances["partPie"] = new Chart(document.getElementById("EmployeePieChart"), {
         type: "pie",
-        data: { labels: ["Not Yet", "Done", "On Progress"], datasets: [{ data: [notYetPartCount, doneCount, onProgressCount], backgroundColor: ["#4285f4", "#f77f00", "#a855f7"] }] },
+        data: { labels: ["Not Yet", "Done", "On Progress"], datasets: [{ data: [notYetPartCount, doneCount, onProgressCount], backgroundColor: ["#f77f00", "#4285f4", "#a855f7"] }] },
         options: getStatusPieOptions()
     });
 
