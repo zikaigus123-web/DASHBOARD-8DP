@@ -1049,8 +1049,8 @@ function parseCustomCSV(text) {
         else if (h1.includes("jabatan")) colMap.jabatan = c;
         else if (combined.includes("coverage")) colMap.statusCoverage = c;
         else if (combined.includes("recap") || combined.includes("employee status") || combined.includes("participation")) colMap.allRecap = c;
+        else if (combined.includes("target training hour") || combined.includes("target hour")) colMap.targetHours = c;
         else if (combined.includes("training hour") || combined.includes("actual hour")) colMap.trainingHours = c;
-        else if (combined.includes("target hour")) colMap.targetHours = c;
         else if (combined.includes("status target") || combined.includes("target status")) colMap.statusTarget = c;
     }
 
