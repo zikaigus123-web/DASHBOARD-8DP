@@ -708,6 +708,12 @@ body {
             <select id="filterLokasi" class="filter-select" onchange="applyFilter()">
                 <option value="ALL">-- Semua Lokasi Kerja --</option>
             </select>
+
+            <!-- TAMBAHAN FILTER JABATAN -->
+            <label for="filterJabatan" style="margin-left: 10px;">Filter Jabatan:</label>
+            <select id="filterJabatan" class="filter-select" onchange="applyFilter()">
+                <option value="ALL">-- Semua Jabatan --</option>
+            </select>
         </div>
 
         <div class="filter-right">
@@ -1233,15 +1239,12 @@ function loadDashboardData(isInitial = false) {
         .then(res => res.text())
         .then(csvText => {
             parseCustomCSV(csvText);
-            initLokasiFilter();
             
-            const currentSelected = document.getElementById("filterLokasi").value || "ALL";
-            if (currentSelected !== "ALL" && document.querySelector(`#filterLokasi option[value="${currentSelected}"]`)) {
-                document.getElementById("filterLokasi").value = currentSelected;
-                applyFilter();
-            } else {
-                renderDashboard(parsedData);
-            }
+            // Panggil inisialisasi filter baru (Lokasi & Jabatan)
+            initFilters();
+            
+            // Langsung terapkan filter untuk merender data
+            applyFilter();
 
             if (!isInitial) {
                 const now = new Date();
@@ -1270,30 +1273,52 @@ function refreshDashboardData() {
     });
 }
 
-function initLokasiFilter() {
-    const currentVal = document.getElementById("filterLokasi").value;
+function initFilters() {
+    // 1. Setup Filter Lokasi
+    const currentLoc = document.getElementById("filterLokasi").value;
     const lokasiSet = new Set();
     parsedData.forEach(item => { if (item.lokasi) lokasiSet.add(item.lokasi); });
 
-    const select = document.getElementById("filterLokasi");
-    select.innerHTML = '<option value="ALL">-- Semua Lokasi Kerja --</option>';
+    const selectLoc = document.getElementById("filterLokasi");
+    selectLoc.innerHTML = '<option value="ALL">-- Semua Lokasi Kerja --</option>';
     Array.from(lokasiSet).sort().forEach(loc => {
         const opt = document.createElement("option");
         opt.value = loc;
         opt.textContent = loc;
-        select.appendChild(opt);
+        selectLoc.appendChild(opt);
     });
+    if (currentLoc && Array.from(selectLoc.options).some(o => o.value === currentLoc)) {
+        selectLoc.value = currentLoc;
+    }
 
-    if (currentVal && Array.from(select.options).some(o => o.value === currentVal)) {
-        select.value = currentVal;
+    // 2. Setup Filter Jabatan
+    const currentJab = document.getElementById("filterJabatan").value;
+    const jabatanSet = new Set();
+    parsedData.forEach(item => { if (item.jabatan) jabatanSet.add(item.jabatan); });
+
+    const selectJab = document.getElementById("filterJabatan");
+    selectJab.innerHTML = '<option value="ALL">-- Semua Jabatan --</option>';
+    Array.from(jabatanSet).sort().forEach(jab => {
+        const opt = document.createElement("option");
+        opt.value = jab;
+        opt.textContent = jab;
+        selectJab.appendChild(opt);
+    });
+    if (currentJab && Array.from(selectJab.options).some(o => o.value === currentJab)) {
+        selectJab.value = currentJab;
     }
 }
 
 function applyFilter() {
-    const selected = document.getElementById("filterLokasi").value;
-    const filtered = selected === "ALL" 
-        ? parsedData 
-        : parsedData.filter(d => d.lokasi === selected);
+    const selectedLoc = document.getElementById("filterLokasi").value;
+    const selectedJab = document.getElementById("filterJabatan").value;
+    
+    // Filter data berdasarkan kedua kondisi (Lokasi & Jabatan)
+    const filtered = parsedData.filter(d => {
+        const matchLoc = selectedLoc === "ALL" || d.lokasi === selectedLoc;
+        const matchJab = selectedJab === "ALL" || d.jabatan === selectedJab;
+        return matchLoc && matchJab;
+    });
 
     renderDashboard(filtered);
 }
@@ -1304,7 +1329,7 @@ function destroyChart(id) {
     }
 }
 
-// OPSI PIE CHART STATUS (Dilengkapi Padding Atas dan Kanan Ekstra Agar Garis Panjang Tidak Terpotong)
+// OPSI PIE CHART STATUS
 function getStatusPieOptions() {
     return {
         responsive: true,
@@ -1441,7 +1466,8 @@ function renderDashboard(data) {
     destroyChart("coveragePie");
     chartInstances["coveragePie"] = new Chart(document.getElementById("coveragePieChart"), {
         type: "pie",
-        data: { labels: ["Tercoverage", "Not Yet"], datasets: [{ data: [tercoverageCount, notCoverageCount], backgroundColor: ["#4285f4", "#f77f00"] }] },
+        // REVISI WARNA: Tercoverage = Biru (#4285f4), Not Yet = Merah (#ea4335)
+        data: { labels: ["Tercoverage", "Not Yet"], datasets: [{ data: [tercoverageCount, notCoverageCount], backgroundColor: ["#4285f4", "#ea4335"] }] },
         options: getStatusPieOptions()
     });
 
@@ -1493,7 +1519,8 @@ function renderDashboard(data) {
     destroyChart("partPie");
     chartInstances["partPie"] = new Chart(document.getElementById("EmployeePieChart"), {
         type: "pie",
-        data: { labels: ["Not Yet", "Done", "On Progress"], datasets: [{ data: [notYetPartCount, doneCount, onProgressCount], backgroundColor: ["#f77f00", "#4285f4", "#a855f7"] }] },
+        // REVISI WARNA: Not Yet = Merah (#ea4335), Done = Hijau (#34a853), On Progress = Kuning (#fbbc04)
+        data: { labels: ["Not Yet", "Done", "On Progress"], datasets: [{ data: [notYetPartCount, doneCount, onProgressCount], backgroundColor: ["#ea4335", "#34a853", "#fbbc04"] }] },
         options: getStatusPieOptions()
     });
 
