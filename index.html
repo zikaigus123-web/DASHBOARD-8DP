@@ -459,6 +459,7 @@ body {
     gap: 4px;
     flex: 1;
     min-height: 0;
+    min-width: 0; /* FIX UNTUK MENCEGAH CHART MEMBESAR */
 }
 
 .chart-box {
@@ -469,6 +470,9 @@ body {
     height: 200px;
     position: relative;
     flex: 1;
+    min-height: 0; /* FIX UNTUK MENCEGAH CHART MEMBESAR */
+    min-width: 0;  /* FIX UNTUK MENCEGAH CHART MEMBESAR */
+    overflow: hidden; /* FIX UNTUK MENCEGAH OVERFLOW/TUMPANG TINDIH */
 }
 
 /* KPI BOX & SUMMARY STYLES */
@@ -590,6 +594,9 @@ body {
 .bottom-chart-box {
     height: 220px;
     position: relative;
+    min-height: 0; /* FIX UNTUK MENCEGAH CHART MEMBESAR */
+    min-width: 0; /* FIX UNTUK MENCEGAH CHART MEMBESAR */
+    overflow: hidden; /* FIX UNTUK MENCEGAH OVERFLOW */
 }
 
 /* TOAST POPUP NOTIFICATION */
@@ -709,7 +716,6 @@ body {
                 <option value="ALL">-- Semua Lokasi Kerja --</option>
             </select>
 
-            <!-- TAMBAHAN FILTER JABATAN -->
             <label for="filterJabatan" style="margin-left: 10px;">Filter Jabatan:</label>
             <select id="filterJabatan" class="filter-select" onchange="applyFilter()">
                 <option value="ALL">-- Semua Jabatan --</option>
@@ -1240,10 +1246,7 @@ function loadDashboardData(isInitial = false) {
         .then(csvText => {
             parseCustomCSV(csvText);
             
-            // Panggil inisialisasi filter baru (Lokasi & Jabatan)
             initFilters();
-            
-            // Langsung terapkan filter untuk merender data
             applyFilter();
 
             if (!isInitial) {
@@ -1313,7 +1316,7 @@ function applyFilter() {
     const selectedLoc = document.getElementById("filterLokasi").value;
     const selectedJab = document.getElementById("filterJabatan").value;
     
-    // Filter data berdasarkan kedua kondisi (Lokasi & Jabatan)
+    // Filter data berdasarkan kedua kondisi
     const filtered = parsedData.filter(d => {
         const matchLoc = selectedLoc === "ALL" || d.lokasi === selectedLoc;
         const matchJab = selectedJab === "ALL" || d.jabatan === selectedJab;
@@ -1326,6 +1329,7 @@ function applyFilter() {
 function destroyChart(id) {
     if (chartInstances[id]) {
         chartInstances[id].destroy();
+        delete chartInstances[id];
     }
 }
 
@@ -1346,7 +1350,6 @@ function getStatusPieOptions() {
                     dataArr.map(data => { sum += data; });
                     if (sum === 0) return "";
                     const pct = (value * 100 / sum);
-                    // Irisan tipis akan ditarik ke luar oleh plugin leader line
                     if (pct < 15) return null;
                     return pct.toFixed(1) + "%";
                 },
@@ -1446,8 +1449,8 @@ function renderDashboard(data) {
 
     document.getElementById("kpiTotalPart").textContent = totalPart;
     document.getElementById("kpiOverallCoverage").innerHTML = `${totalCovered} <span style="font-size:10px; color:#555;">(${coveragePct}%)</span>`;
-    document.getElementById("kpiCompletionStatus").innerHTML = `<span style="color:#2e7d32;">${countDone}</span> / <span style="color:#ed6c02;">${countProgress}</span>`;
-    document.getElementById("kpiTargetHoursStatus").innerHTML = `<span style="color:#2e7d32;">${countTargetTercapai}</span> / <span style="color:#d32f2f;">${countTargetBelum}</span>`;
+    document.getElementById("kpiCompletionStatus").innerHTML = `<span style="color:#2e7d32;">${countDone}</span> / <span style="color:#fbbc04;">${countProgress}</span>`;
+    document.getElementById("kpiTargetHoursStatus").innerHTML = `<span style="color:#2e7d32;">${countTargetTercapai}</span> / <span style="color:#ea4335;">${countTargetBelum}</span>`;
 
     // 1. COVERAGE CHARTS
     let tercoverageCount = 0, notCoverageCount = 0;
@@ -1466,7 +1469,6 @@ function renderDashboard(data) {
     destroyChart("coveragePie");
     chartInstances["coveragePie"] = new Chart(document.getElementById("coveragePieChart"), {
         type: "pie",
-        // REVISI WARNA: Tercoverage = Biru (#4285f4), Not Yet = Merah (#ea4335)
         data: { labels: ["Tercoverage", "Not Yet"], datasets: [{ data: [tercoverageCount, notCoverageCount], backgroundColor: ["#4285f4", "#ea4335"] }] },
         options: getStatusPieOptions()
     });
@@ -1519,7 +1521,6 @@ function renderDashboard(data) {
     destroyChart("partPie");
     chartInstances["partPie"] = new Chart(document.getElementById("EmployeePieChart"), {
         type: "pie",
-        // REVISI WARNA: Not Yet = Merah (#ea4335), Done = Hijau (#34a853), On Progress = Kuning (#fbbc04)
         data: { labels: ["Not Yet", "Done", "On Progress"], datasets: [{ data: [notYetPartCount, doneCount, onProgressCount], backgroundColor: ["#ea4335", "#34a853", "#fbbc04"] }] },
         options: getStatusPieOptions()
     });
@@ -1575,7 +1576,7 @@ function renderDashboard(data) {
     destroyChart("hoursPie");
     chartInstances["hoursPie"] = new Chart(document.getElementById("hoursPieChart"), {
         type: "pie",
-        data: { labels: ["Tercapai", "Belum Tercapai"], datasets: [{ data: [tercapaiCount, belumTercapaiCount], backgroundColor: ["#4285f4", "#f77f00"] }] },
+        data: { labels: ["Tercapai", "Belum Tercapai"], datasets: [{ data: [tercapaiCount, belumTercapaiCount], backgroundColor: ["#34a853", "#ea4335"] }] },
         options: getStatusPieOptions()
     });
 
@@ -1604,7 +1605,7 @@ function renderDashboard(data) {
         options: getBarOptionsWithStatusLegend()
     });
 
-    // 4. DISTRIBUSI JABATAN CHART (Teks Tetap di Dalam, Tanpa Garis)
+    // 4. DISTRIBUSI JABATAN CHART
     const jabatanCounts = {};
     data.forEach(d => { jabatanCounts[d.jabatan] = (jabatanCounts[d.jabatan] || 0) + 1; });
 
