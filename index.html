@@ -459,7 +459,16 @@ body {
     gap: 4px;
     flex: 1;
     min-height: 0;
-    min-width: 0; /* FIX UNTUK MENCEGAH CHART MEMBESAR */
+    min-width: 0;
+}
+
+/* WRAPPER SUPER KETAT UNTUK CHART.JS */
+.canvas-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    min-width: 0;
 }
 
 .chart-box {
@@ -470,9 +479,10 @@ body {
     height: 200px;
     position: relative;
     flex: 1;
-    min-height: 0; /* FIX UNTUK MENCEGAH CHART MEMBESAR */
-    min-width: 0;  /* FIX UNTUK MENCEGAH CHART MEMBESAR */
-    overflow: hidden; /* FIX UNTUK MENCEGAH OVERFLOW/TUMPANG TINDIH */
+    min-height: 0; 
+    min-width: 0; 
+    display: flex;
+    flex-direction: column;
 }
 
 /* KPI BOX & SUMMARY STYLES */
@@ -594,9 +604,10 @@ body {
 .bottom-chart-box {
     height: 220px;
     position: relative;
-    min-height: 0; /* FIX UNTUK MENCEGAH CHART MEMBESAR */
-    min-width: 0; /* FIX UNTUK MENCEGAH CHART MEMBESAR */
-    overflow: hidden; /* FIX UNTUK MENCEGAH OVERFLOW */
+    min-height: 0; 
+    min-width: 0; 
+    display: flex;
+    flex-direction: column;
 }
 
 /* TOAST POPUP NOTIFICATION */
@@ -756,11 +767,15 @@ body {
                 <div class="column-header">Training Coverage</div>
                 <div class="chart-wrapper">
                     <div class="sub-header">Overall Coverage Rate</div>
-                    <div class="chart-box"><canvas id="coveragePieChart"></canvas></div>
+                    <div class="chart-box">
+                        <div class="canvas-wrapper"><canvas id="coveragePieChart"></canvas></div>
+                    </div>
                 </div>
                 <div class="chart-wrapper">
                     <div class="sub-header">Training Coverage per Jabatan</div>
-                    <div class="chart-box"><canvas id="coverageBarChart"></canvas></div>
+                    <div class="chart-box">
+                        <div class="canvas-wrapper"><canvas id="coverageBarChart"></canvas></div>
+                    </div>
                 </div>
             </div>
 
@@ -826,11 +841,15 @@ body {
                     <div class="column-header">Training Participant</div>
                     <div class="chart-wrapper">
                         <div class="sub-header">Overall Participation Status</div>
-                        <div class="chart-box"><canvas id="EmployeePieChart"></canvas></div>
+                        <div class="chart-box">
+                            <div class="canvas-wrapper"><canvas id="EmployeePieChart"></canvas></div>
+                        </div>
                     </div>
                     <div class="chart-wrapper">
                         <div class="sub-header">Training Participant per Jabatan</div>
-                        <div class="chart-box"><canvas id="EmployeeBarChart"></canvas></div>
+                        <div class="chart-box">
+                            <div class="canvas-wrapper"><canvas id="EmployeeBarChart"></canvas></div>
+                        </div>
                     </div>
                 </div>
 
@@ -838,11 +857,15 @@ body {
                     <div class="column-header">Training Hours</div>
                     <div class="chart-wrapper">
                         <div class="sub-header">Overall Hours Target Achievement</div>
-                        <div class="chart-box"><canvas id="hoursPieChart"></canvas></div>
+                        <div class="chart-box">
+                            <div class="canvas-wrapper"><canvas id="hoursPieChart"></canvas></div>
+                        </div>
                     </div>
                     <div class="chart-wrapper">
                         <div class="sub-header">Training Hours per Jabatan</div>
-                        <div class="chart-box"><canvas id="hoursBarChart"></canvas></div>
+                        <div class="chart-box">
+                            <div class="canvas-wrapper"><canvas id="hoursBarChart"></canvas></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -850,7 +873,7 @@ body {
             <div class="column-card" style="flex: 1;">
                 <div class="sub-header">Distribusi Total Employee Berdasarkan Jabatan</div>
                 <div class="chart-box">
-                    <canvas id="jabatanPieChart"></canvas>
+                    <div class="canvas-wrapper"><canvas id="jabatanPieChart"></canvas></div>
                 </div>
             </div>
         </div>
@@ -861,7 +884,7 @@ body {
     <div class="bottom-section">
         <div class="sub-header">Rata-Rata Nilai Pre-Test vs Post-Test per Modul Training</div>
         <div class="bottom-chart-box">
-            <canvas id="prePostLineChart"></canvas>
+            <div class="canvas-wrapper"><canvas id="prePostLineChart"></canvas></div>
         </div>
     </div>
 
@@ -1469,7 +1492,13 @@ function renderDashboard(data) {
     destroyChart("coveragePie");
     chartInstances["coveragePie"] = new Chart(document.getElementById("coveragePieChart"), {
         type: "pie",
-        data: { labels: ["Tercoverage", "Not Yet"], datasets: [{ data: [tercoverageCount, notCoverageCount], backgroundColor: ["#4285f4", "#ea4335"] }] },
+        data: { 
+            labels: ["Tercoverage", "Not Yet"], 
+            datasets: [{ 
+                data: [tercoverageCount, notCoverageCount], 
+                backgroundColor: ["#34a853", "#ea4335"] /* REVISI: HIJAU DAN MERAH */
+            }] 
+        },
         options: getStatusPieOptions()
     });
 
