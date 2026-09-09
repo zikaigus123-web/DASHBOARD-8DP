@@ -819,10 +819,10 @@ body {
 
             <!-- TABEL REKAP -->
             <div class="jabatan-table-container">
-                <div class="sub-header" style="margin-bottom:4px;">Rekap Jumlah Pegawai per Jabatan</div>
+                <div id="tableTitle" class="sub-header" style="margin-bottom:4px;">Rekap Jumlah Pegawai per Jabatan</div>
                 <div class="table-wrapper">
                     <table class="jabatan-table">
-                        <thead>
+                        <thead id="jabatanTableHead">
                             <tr>
                                 <th>Jabatan</th>
                                 <th style="width: 100px; text-align: center;">Total Pegawai</th>
@@ -1709,15 +1709,60 @@ function renderDashboard(data) {
 
     // 6. TABEL REKAP JABATAN
     const tableBody = document.getElementById("jabatanTableBody");
+    const tableHead = document.getElementById("jabatanTableHead");
+    const tableTitle = document.getElementById("tableTitle");
+    
+    // Cek apakah filter sedang aktif (selain "ALL")
+    const isFiltered = document.getElementById("filterLokasi").value !== "ALL" || document.getElementById("filterJabatan").value !== "ALL";
+
     tableBody.innerHTML = "";
 
-    jabatanList.forEach(jab => {
-        if (jabatanCounts[jab]) {
+    if (isFiltered) {
+        // Jika filter aktif, tampilkan detail nama dan status
+        tableTitle.textContent = "Detail Status Pegawai";
+        tableHead.innerHTML = `
+            <tr>
+                <th>Nama Pegawai</th>
+                <th style="width: 70px; text-align: center;">Jabatan</th>
+                <th style="width: 100px; text-align: center;">Status</th>
+            </tr>
+        `;
+        
+        data.forEach(d => {
             const row = document.createElement("tr");
-            row.innerHTML = `<td>${jab}</td><td class="count-col">${jabatanCounts[jab]}</td>`;
+            let statusColor = "#000";
+            const statusText = d.allRecap || "Not Yet";
+            
+            // Sesuaikan warna status dengan tema chart
+            if (statusText.toLowerCase().includes("done")) statusColor = "#34a853";
+            else if (statusText.toLowerCase().includes("progress")) statusColor = "#fbbc04";
+            else statusColor = "#ea4335";
+
+            row.innerHTML = `
+                <td>${d.nama || d.nrp || "-"}</td>
+                <td style="text-align: center;">${d.jabatan}</td>
+                <td style="text-align: center; font-weight: bold; color: ${statusColor};">${statusText}</td>
+            `;
             tableBody.appendChild(row);
-        }
-    });
+        });
+    } else {
+        // Jika tidak ada filter, tampilkan rekap jumlah (default)
+        tableTitle.textContent = "Rekap Jumlah Pegawai per Jabatan";
+        tableHead.innerHTML = `
+            <tr>
+                <th>Jabatan</th>
+                <th style="width: 100px; text-align: center;">Total Pegawai</th>
+            </tr>
+        `;
+
+        jabatanList.forEach(jab => {
+            if (jabatanCounts[jab]) {
+                const row = document.createElement("tr");
+                row.innerHTML = `<td>${jab}</td><td class="count-col">${jabatanCounts[jab]}</td>`;
+                tableBody.appendChild(row);
+            }
+        });
+    }
 }
 </script>
 
