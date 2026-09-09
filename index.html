@@ -12,6 +12,9 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
+<!-- TAMBAHAN: Library SheetJS untuk Export Excel (.xlsx) -->
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+
 <style>
 * {
     box-sizing: border-box;
@@ -1018,40 +1021,19 @@ function closeTableModal() {
 }
 
 // ==========================================
-// FUNGSI DOWNLOAD EXCEL (CSV) (BARU)
+// REVISI: FUNGSI DOWNLOAD EXCEL MENGGUNAKAN SHEETJS (.xlsx)
 // ==========================================
 function downloadTableExcel() {
     const tableTitle = document.getElementById("modalTableTitle").innerText;
-    const head = document.getElementById("modalTableHead");
-    const body = document.getElementById("modalTableBody");
     
-    // Menambahkan BOM untuk mendukung karakter UTF-8 di Excel
-    let csvContent = "\uFEFF"; 
+    // Mengambil elemen tabel yang ada di dalam modal
+    const table = document.querySelector("#tableModal .jabatan-table");
     
-    // Ambil Data Header
-    const headers = [];
-    const ths = head.querySelectorAll("th");
-    ths.forEach(th => headers.push('"' + th.innerText.replace(/"/g, '""') + '"'));
-    csvContent += headers.join(",") + "\n";
+    // Mengubah elemen tabel HTML menjadi struktur data Workbook Excel
+    const wb = XLSX.utils.table_to_book(table, {sheet: "Data Status Pegawai"});
     
-    // Ambil Data Baris (Rows)
-    const trs = body.querySelectorAll("tr");
-    trs.forEach(tr => {
-        const rowData = [];
-        const tds = tr.querySelectorAll("td");
-        tds.forEach(td => rowData.push('"' + td.innerText.replace(/"/g, '""') + '"'));
-        csvContent += rowData.join(",") + "\n";
-    });
-    
-    // Buat Blob dan Download File
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = tableTitle.replace(/\s+/g, '_') + ".csv";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Menyimpan dan mengunduh file dengan format .xlsx
+    XLSX.writeFile(wb, tableTitle.replace(/\s+/g, '_') + ".xlsx");
 }
 
 // ==========================================
