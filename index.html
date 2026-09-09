@@ -1298,6 +1298,10 @@ function parseCustomCSV(text) {
         const row = splitCSVLine(lines[i]);
         if (row.length < 3) continue;
 
+        const cekNrp = row[colMap.nrp] ? row[colMap.nrp].trim() : "";
+        const cekNama = row[colMap.nama] ? row[colMap.nama].trim() : "";
+        if (cekNrp === "" && cekNama === "") continue;
+
         const item = {
             nrp: row[colMap.nrp] || "",
             nama: row[colMap.nama] || "",
