@@ -653,7 +653,12 @@ body {
     <div class="login-card" style="max-width: 1000px; width: 100%; height: 90%; display: flex; flex-direction: column; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.6);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">
             <h2 class="brand-title" style="font-size: 20px; margin:0; text-align: left;" id="modalTableTitle">Detail Status Pegawai</h2>
-            <button onclick="closeTableModal()" style="background: #e53e3e; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; box-shadow: 0 4px 6px rgba(229, 62, 62, 0.3);">X Tutup</button>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="downloadTableExcel()" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3); display: flex; align-items: center; gap: 6px;">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Download Excel
+                </button>
+                <button onclick="closeTableModal()" style="background: #e53e3e; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; box-shadow: 0 4px 6px rgba(229, 62, 62, 0.3);">X Tutup</button>
+            </div>
         </div>
         <div style="overflow-y: auto; flex: 1; border: 1px solid #ccc; border-radius: 4px; text-align: left;">
             <table class="jabatan-table" style="width: 100%; font-size: 13px;">
@@ -1002,7 +1007,7 @@ function updateFullscreenBtnText() {
 }
 
 // ==========================================
-// FUNGSI BUKA / TUTUP TABEL MODAL (BARU)
+// FUNGSI BUKA / TUTUP TABEL MODAL
 // ==========================================
 function openTableModal() {
     document.getElementById("tableModal").style.display = "flex";
@@ -1010,6 +1015,43 @@ function openTableModal() {
 
 function closeTableModal() {
     document.getElementById("tableModal").style.display = "none";
+}
+
+// ==========================================
+// FUNGSI DOWNLOAD EXCEL (CSV) (BARU)
+// ==========================================
+function downloadTableExcel() {
+    const tableTitle = document.getElementById("modalTableTitle").innerText;
+    const head = document.getElementById("modalTableHead");
+    const body = document.getElementById("modalTableBody");
+    
+    // Menambahkan BOM untuk mendukung karakter UTF-8 di Excel
+    let csvContent = "\uFEFF"; 
+    
+    // Ambil Data Header
+    const headers = [];
+    const ths = head.querySelectorAll("th");
+    ths.forEach(th => headers.push('"' + th.innerText.replace(/"/g, '""') + '"'));
+    csvContent += headers.join(",") + "\n";
+    
+    // Ambil Data Baris (Rows)
+    const trs = body.querySelectorAll("tr");
+    trs.forEach(tr => {
+        const rowData = [];
+        const tds = tr.querySelectorAll("td");
+        tds.forEach(td => rowData.push('"' + td.innerText.replace(/"/g, '""') + '"'));
+        csvContent += rowData.join(",") + "\n";
+    });
+    
+    // Buat Blob dan Download File
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = tableTitle.replace(/\s+/g, '_') + ".csv";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 
 // ==========================================
