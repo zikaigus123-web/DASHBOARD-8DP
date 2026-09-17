@@ -12,7 +12,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
-<!-- TAMBAHAN: Library SheetJS untuk Export Excel (.xlsx) -->
+<!-- Library SheetJS untuk Export Excel (.xlsx) -->
 <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 
 <style>
@@ -756,7 +756,6 @@ body {
                 <option value="ALL">-- Semua Jabatan --</option>
             </select>
 
-            <!-- TAMBAHAN FILTER STATUS -->
             <label for="filterStatus" style="margin-left: 10px;">Filter Status:</label>
             <select id="filterStatus" class="filter-select" onchange="applyFilter()">
                 <option value="ALL">-- Semua Status --</option>
@@ -1021,7 +1020,7 @@ function closeTableModal() {
 }
 
 // ==========================================
-// REVISI: FUNGSI DOWNLOAD EXCEL MENGGUNAKAN SHEETJS (.xlsx)
+// FUNGSI DOWNLOAD EXCEL MENGGUNAKAN SHEETJS (.xlsx)
 // ==========================================
 function downloadTableExcel() {
     const tableTitle = document.getElementById("modalTableTitle").innerText;
@@ -1134,7 +1133,7 @@ Chart.register(ChartDataLabels, pieLeaderLinesPlugin);
 
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQk1Gnwtu-vKG24ImVYA0ytCuAuOuWeujzNpFbUPz2C-Y0jLwRxWspRCSMPqG9gj7WfcTGtXWwSlFH6/pub?gid=1260922175&single=true&output=csv";
 
-// MASTER WARNA & URUTAN JABATAN REVISI
+// MASTER WARNA & URUTAN JABATAN
 const JABATAN_COLORS = {
     "BC": "#4285f4",
     "BM": "#f77f00",
@@ -1369,7 +1368,6 @@ function refreshDashboardData() {
 }
 
 function initFilters() {
-    // 1. Setup Filter Lokasi
     const currentLoc = document.getElementById("filterLokasi").value;
     const lokasiSet = new Set();
     parsedData.forEach(item => { if (item.lokasi) lokasiSet.add(item.lokasi); });
@@ -1386,7 +1384,6 @@ function initFilters() {
         selectLoc.value = currentLoc;
     }
 
-    // 2. Setup Filter Jabatan
     const currentJab = document.getElementById("filterJabatan").value;
     const jabatanSet = new Set();
     parsedData.forEach(item => { if (item.jabatan) jabatanSet.add(item.jabatan); });
@@ -1409,7 +1406,6 @@ function applyFilter() {
     const selectedJab = document.getElementById("filterJabatan").value;
     const selectedStatus = document.getElementById("filterStatus").value;
     
-    // Filter data berdasarkan ketiga kondisi
     const filtered = parsedData.filter(d => {
         const matchLoc = selectedLoc === "ALL" || d.lokasi === selectedLoc;
         const matchJab = selectedJab === "ALL" || d.jabatan === selectedJab;
@@ -1434,7 +1430,6 @@ function destroyChart(id) {
     }
 }
 
-// OPSI PIE CHART STATUS
 function getStatusPieOptions() {
     return {
         responsive: true,
@@ -1574,7 +1569,7 @@ function renderDashboard(data) {
             labels: ["Tercoverage", "Not Yet"], 
             datasets: [{ 
                 data: [tercoverageCount, notCoverageCount], 
-                backgroundColor: ["#34a853", "#ea4335"] /* REVISI: HIJAU DAN MERAH */
+                backgroundColor: ["#34a853", "#ea4335"]
             }] 
         },
         options: getStatusPieOptions()
@@ -1785,7 +1780,7 @@ function renderDashboard(data) {
         }
     });
 
-    // 6. TABEL REKAP JABATAN
+    // 6. TABEL REKAP JABATAN & MODUL BELUM SELESAI
     const tableBody = document.getElementById("jabatanTableBody");
     const tableHead = document.getElementById("jabatanTableHead");
     const tableTitle = document.getElementById("tableTitle");
@@ -1798,13 +1793,14 @@ function renderDashboard(data) {
     tableBody.innerHTML = "";
 
     if (isFiltered) {
-        // Jika filter aktif, tampilkan detail nama dan status
+        // Jika filter aktif, tampilkan detail nama, status, dan MODUL BELUM SELESAI
         tableTitle.textContent = "Detail Status Pegawai";
         tableHead.innerHTML = `
             <tr>
                 <th>Nama Pegawai</th>
-                <th style="width: 70px; text-align: center;">Jabatan</th>
-                <th style="width: 100px; text-align: center;">Status</th>
+                <th style="width: 50px; text-align: center;">Jabatan</th>
+                <th style="width: 70px; text-align: center;">Status</th>
+                <th style="width: 45%;">Modul Belum Selesai</th>
             </tr>
         `;
         
@@ -1818,10 +1814,37 @@ function renderDashboard(data) {
             else if (statusText.toLowerCase().includes("progress")) statusColor = "#fbbc04";
             else statusColor = "#ea4335";
 
+            // LOGIKA MENCARI MODUL YANG BELUM SELESAI (NOT YET & ON PROGRESS)
+            let pendingModulesHtml = '<span style="color: #999;">-</span>';
+            
+            if (!statusText.toLowerCase().includes("done")) {
+                let pendingList = [];
+                // Looping semua modul yang dimiliki peserta
+                for (const [modName, modData] of Object.entries(d.modules)) {
+                    const mStatus = (modData.status || "").toLowerCase();
+                    // Modul dianggap "Belum Selesai" jika:
+                    // 1. Dia tidak mengandung kata "not picked" (berarti dia mengambil modul tsb / wajib)
+                    // 2. Dia tidak mengandung kata "done" (berarti belum dituntaskan nilainya)
+                    if (mStatus !== "" && !mStatus.includes("not picked") && !mStatus.includes("done")) {
+                        pendingList.push(modName);
+                    }
+                }
+                
+                if (pendingList.length > 0) {
+                    // Menggunakan <br> agar rapi di UI HTML, dan SANGAT KONDUSIF UNTUK EXPORT EXCEL (Otomatis jadi multi-line di 1 sel)
+                    pendingModulesHtml = pendingList.map(m => `• ${m}`).join('<br>');
+                } else if (statusText.toLowerCase().includes("not yet")) {
+                     pendingModulesHtml = '<span style="font-style:italic; color:#ea4335;">Belum mengambil/mengerjakan modul apapun</span>';
+                }
+            } else {
+                 pendingModulesHtml = '<span style="color: #34a853; font-weight:bold;">All Clear ✓</span>';
+            }
+
             row.innerHTML = `
                 <td>${d.nama || d.nrp || "-"}</td>
                 <td style="text-align: center;">${d.jabatan}</td>
                 <td style="text-align: center; font-weight: bold; color: ${statusColor};">${statusText}</td>
+                <td style="font-size: 10px; line-height: 1.4;">${pendingModulesHtml}</td>
             `;
             tableBody.appendChild(row);
         });
