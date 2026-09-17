@@ -1406,6 +1406,7 @@ function applyFilter() {
     const selectedJab = document.getElementById("filterJabatan").value;
     const selectedStatus = document.getElementById("filterStatus").value;
     
+    // Filter data berdasarkan ketiga kondisi
     const filtered = parsedData.filter(d => {
         const matchLoc = selectedLoc === "ALL" || d.lokasi === selectedLoc;
         const matchJab = selectedJab === "ALL" || d.jabatan === selectedJab;
@@ -1520,6 +1521,9 @@ function getOrderedJabatanList(data) {
 
 function renderDashboard(data) {
     const jabatanList = getOrderedJabatanList(data);
+    
+    // DETEKSI APAKAH FILTER JABATAN SEDANG AKTIF (BUKAN ALL)
+    const isJabatanFiltered = document.getElementById("filterJabatan").value !== "ALL";
 
     const totalPart = data.length;
     let totalCovered = 0;
@@ -1584,15 +1588,17 @@ function renderDashboard(data) {
                 { 
                     label: "Tercoverage", 
                     data: jabatanList.map(j => coverageByJabatan[j]["Tercoverage"]), 
-                    backgroundColor: jabatanList.map(j => getJabatanColor(j)),
-                    borderColor: jabatanList.map(j => getJabatanColor(j)),
+                    // JIKA FILTER JABATAN AKTIF, GUNAKAN HIJAU, JIKA TIDAK GUNAKAN WARNA JABATAN
+                    backgroundColor: jabatanList.map(j => isJabatanFiltered ? "#34a853" : getJabatanColor(j)),
+                    borderColor: jabatanList.map(j => isJabatanFiltered ? "#34a853" : getJabatanColor(j)),
                     borderWidth: 1
                 },
                 { 
                     label: "Not Yet", 
                     data: jabatanList.map(j => coverageByJabatan[j]["Not Yet"]), 
-                    backgroundColor: jabatanList.map(j => hexToRgba(getJabatanColor(j), 0.2)),
-                    borderColor: jabatanList.map(j => getJabatanColor(j)),
+                    // JIKA FILTER JABATAN AKTIF, GUNAKAN MERAH TRANSPARAN, JIKA TIDAK GUNAKAN WARNA JABATAN TRANSPARAN
+                    backgroundColor: jabatanList.map(j => isJabatanFiltered ? hexToRgba("#ea4335", 0.3) : hexToRgba(getJabatanColor(j), 0.2)),
+                    borderColor: jabatanList.map(j => isJabatanFiltered ? "#ea4335" : getJabatanColor(j)),
                     borderWidth: 1.5
                 }
             ]
@@ -1636,22 +1642,25 @@ function renderDashboard(data) {
                 { 
                     label: "Done", 
                     data: jabatanList.map(j => EmployeeByJabatan[j]["Done"]), 
-                    backgroundColor: jabatanList.map(j => getJabatanColor(j)),
-                    borderColor: jabatanList.map(j => getJabatanColor(j)),
+                    // JIKA FILTER JABATAN AKTIF, GUNAKAN HIJAU
+                    backgroundColor: jabatanList.map(j => isJabatanFiltered ? "#34a853" : getJabatanColor(j)),
+                    borderColor: jabatanList.map(j => isJabatanFiltered ? "#34a853" : getJabatanColor(j)),
                     borderWidth: 1
                 },
                 { 
                     label: "On Progress", 
                     data: jabatanList.map(j => EmployeeByJabatan[j]["On Progress"]), 
-                    backgroundColor: jabatanList.map(j => getStripePattern(getJabatanColor(j))),
-                    borderColor: jabatanList.map(j => getJabatanColor(j)),
+                    // JIKA FILTER JABATAN AKTIF, GUNAKAN KUNING STRIPE
+                    backgroundColor: jabatanList.map(j => isJabatanFiltered ? getStripePattern("#fbbc04") : getStripePattern(getJabatanColor(j))),
+                    borderColor: jabatanList.map(j => isJabatanFiltered ? "#fbbc04" : getJabatanColor(j)),
                     borderWidth: 1.5
                 },
                 { 
                     label: "Not Yet", 
                     data: jabatanList.map(j => EmployeeByJabatan[j]["Not Yet"]), 
-                    backgroundColor: jabatanList.map(j => hexToRgba(getJabatanColor(j), 0.15)),
-                    borderColor: jabatanList.map(j => getJabatanColor(j)),
+                    // JIKA FILTER JABATAN AKTIF, GUNAKAN MERAH TRANSPARAN
+                    backgroundColor: jabatanList.map(j => isJabatanFiltered ? hexToRgba("#ea4335", 0.3) : hexToRgba(getJabatanColor(j), 0.15)),
+                    borderColor: jabatanList.map(j => isJabatanFiltered ? "#ea4335" : getJabatanColor(j)),
                     borderWidth: 1.5
                 }
             ]
@@ -1691,15 +1700,17 @@ function renderDashboard(data) {
                 { 
                     label: "Training Hours", 
                     data: jabatanList.map(j => hoursByJabatan[j].actual), 
-                    backgroundColor: jabatanList.map(j => getJabatanColor(j)),
-                    borderColor: jabatanList.map(j => getJabatanColor(j)),
+                    // JIKA FILTER JABATAN AKTIF, GUNAKAN HIJAU
+                    backgroundColor: jabatanList.map(j => isJabatanFiltered ? "#34a853" : getJabatanColor(j)),
+                    borderColor: jabatanList.map(j => isJabatanFiltered ? "#34a853" : getJabatanColor(j)),
                     borderWidth: 1
                 },
                 { 
                     label: "Target Hours", 
                     data: jabatanList.map(j => hoursByJabatan[j].target), 
-                    backgroundColor: jabatanList.map(j => hexToRgba(getJabatanColor(j), 0.2)),
-                    borderColor: jabatanList.map(j => getJabatanColor(j)),
+                    // JIKA FILTER JABATAN AKTIF, GUNAKAN MERAH TRANSPARAN
+                    backgroundColor: jabatanList.map(j => isJabatanFiltered ? hexToRgba("#ea4335", 0.3) : hexToRgba(getJabatanColor(j), 0.2)),
+                    borderColor: jabatanList.map(j => isJabatanFiltered ? "#ea4335" : getJabatanColor(j)),
                     borderWidth: 1.5
                 }
             ]
