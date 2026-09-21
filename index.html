@@ -585,7 +585,7 @@ async function handleMultipleFileUpload(event) {
         }
         
         // --- PROSES UPLOAD OTOMATIS KE GOOGLE SHEETS ---
-        if (typeof UPLOAD_SCRIPT_URL !== 'undefined' && UPLOAD_SCRIPT_URL !== "" && UPLOAD_SCRIPT_URL !== "https://script.google.com/macros/s/AKfycbyEC_jqxLFfXGeHI7ozR7VhGYylZLYVgFsx9pF-pcyqrs8vYt5pglCuvIi9GPWw22SLiQ/exec") {
+        if (typeof UPLOAD_SCRIPT_URL !== 'undefined' && UPLOAD_SCRIPT_URL !== "") {
             Swal.fire({
                 title: 'Mengunggah ke Spreadsheet...',
                 html: `Menyimpan data <b>${files.length}</b> modul ke Google Sheets...`,
