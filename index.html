@@ -396,6 +396,17 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
                 <strong>Cara Update:</strong> Anda dapat mengunggah banyak file raw data modul (contoh: <code>8DP - Maintenance Management 1.xlsx</code>) sekaligus. Sistem akan membaca nilai Pre/Post Test berdasarkan NRP ("First name") dan memperbarui data dashboard secara lokal.
             </div>
 
+            <!-- TAMBAHAN: FITUR FILTER UNTUK TABEL DATABASE -->
+            <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 10px;">
+                <label style="font-weight: bold; font-size: 13px; color: #111;">Filter Status Progress:</label>
+                <select id="filterMasterStatus" class="filter-select" onchange="renderMasterTable()" style="border: 1px solid #aaa; padding: 6px 10px; border-radius: 4px; font-weight: bold; font-size: 13px; min-width: 150px; outline: none; background: #fff;">
+                    <option value="ALL">-- Semua Status --</option>
+                    <option value="Done">Done</option>
+                    <option value="On Progress">On Progress</option>
+                    <option value="Not Yet">Not Yet</option>
+                </select>
+            </div>
+
             <div class="master-table-wrapper">
                 <table class="master-table" id="masterDataTable">
                     <thead>
@@ -557,8 +568,8 @@ async function handleMultipleFileUpload(event) {
                 let preVal = (preStr === "-" || preStr === "") ? NaN : parseFloat(preStr);
                 let postVal = (postStr === "-" || postStr === "") ? NaN : parseFloat(postStr);
 
-                // Cari karyawan ini di baseline data yang sudah di parse dari CSV Google Sheet
-                let userIndex = parsedData.findIndex(u => u.nrp === nrpRaw);
+                // Cari karyawan ini di baseline data yang sudah di parse dari CSV Google Sheet (Penting: konversi ke String untuk mencocokkan)
+                let userIndex = parsedData.findIndex(u => String(u.nrp) === nrpRaw);
                 
                 if (userIndex !== -1) {
                     let user = parsedData[userIndex];
@@ -601,16 +612,18 @@ async function handleMultipleFileUpload(event) {
                 
                 const result = await response.json();
                 if (result.status === "success") {
-                    // Jika sukses update sheet modul, refresh Dashboard dari FINAL DASHBOARD DATA
-                    await loadDashboardData(false); 
                     
+                    // PENTING: Dihapus loadDashboardData(false) dan return; dari sini.
+                    // Google Sheets punya delay ~5 menit sebelum CSV yang di-publish terupdate.
+                    // Jika kita download lagi sekarang, data akan ketimpa data lama (yang belum terupdate).
+                    // Jadi biarkan sistem lanjut ke bawah untuk mengupdate UI layar secara lokal.
+
                     Swal.fire({
                         title: 'Berhasil Terintegrasi!',
-                        html: `Data <b>${files.length}</b> modul berhasil diunggah ke Google Sheets.<br>Dashboard telah otomatis diperbarui dari "Final Dashboard Data".`,
+                        html: `Data <b>${files.length}</b> modul berhasil diunggah ke Google Sheets.<br>Tampilan Dashboard telah diperbarui secara lokal. (Database utama akan tersinkronisasi dalam ~5 menit).`,
                         icon: 'success'
                     });
-                    event.target.value = "";
-                    return; // Hentikan script disini agar popup sukses lokal tidak muncul
+                    
                 } else {
                     throw new Error(result.message || "Gagal menyimpan ke Spreadsheet");
                 }
@@ -624,17 +637,11 @@ async function handleMultipleFileUpload(event) {
         // Kalkulasi ulang status keseluruhan karyawan setelah modulnya diperbarui secara lokal
         recalculateOverallStatus();
         
-        // Render ulang antarmuka
+        // Render ulang antarmuka menggunakan hasil kalkulasi yang baru
         initFilters();
         applyFilter();
         renderMasterTable();
         
-        Swal.fire({
-            title: 'Update Lokal Berhasil!',
-            html: `Sistem telah memproses <b>${files.length}</b> file modul secara lokal.<br>Berhasil mencocokkan <b>${updatedRows}</b> record karyawan.<br><br><small style="color:#d33;">*Data belum tersimpan permanen ke Spreadsheet karena UPLOAD_SCRIPT_URL belum dikonfigurasi.</small>`,
-            icon: 'success'
-        });
-
     } catch (err) {
         console.error(err);
         Swal.fire('Gagal Upload', 'Format file tidak terbaca atau rusak.', 'error');
@@ -687,13 +694,30 @@ function downloadTableExcelMaster() {
 
 function renderMasterTable() {
     const tbody = document.getElementById("masterDataBody");
+    const filterStatus = document.getElementById("filterMasterStatus") ? document.getElementById("filterMasterStatus").value : "ALL";
     tbody.innerHTML = "";
+    
     if(!parsedData || parsedData.length === 0) {
         tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>Data Kosong</td></tr>";
         return;
     }
+
+    // Melakukan Filter
+    const filteredMasterData = parsedData.filter(d => {
+        if (filterStatus === "ALL") return true;
+        const rec = d.allRecap || "Not Yet";
+        if (filterStatus === "Done" && rec.includes("Done")) return true;
+        if (filterStatus === "On Progress" && rec.includes("Progress")) return true;
+        if (filterStatus === "Not Yet" && rec.includes("Not Yet")) return true;
+        return false;
+    });
+
+    if(filteredMasterData.length === 0) {
+        tbody.innerHTML = `<tr><td colspan='6' style='text-align:center; padding: 20px;'>Tidak ada data karyawan dengan status <b>${filterStatus}</b></td></tr>`;
+        return;
+    }
     
-    parsedData.forEach(d => {
+    filteredMasterData.forEach(d => {
         const tr = document.createElement("tr");
         let statusBadge = d.allRecap === "Done" ? "color: #16a34a; font-weight: bold;" : 
                           d.allRecap === "On Progress" ? "color: #d97706; font-weight: bold;" : "color: #dc2626;";
