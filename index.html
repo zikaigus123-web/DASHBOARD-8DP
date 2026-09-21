@@ -382,7 +382,8 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
                 <div style="display: flex; gap: 10px;">
                     <!-- Input untuk File Raw Data Moodle/LMS (Single File & Terarah) -->
                     <input type="file" id="rawFilesUpload" accept=".csv, .xlsx, .xls" style="display:none;" onchange="handleTargetedFileUpload(event)">
-                    <button class="btn-action btn-upload" onclick="showUploadModal()">
+                    <!-- Trigger Pop-up Modal -->
+                    <button class="btn-action btn-upload" onclick="window.showUploadModal()">
                         <i class="fas fa-upload"></i> Upload Raw Modul (.xlsx)
                     </button>
                     <button class="btn-action" style="background:#fff;" onclick="downloadTableExcelMaster()">
@@ -433,7 +434,8 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
 // ==========================================
 // SYSTEM & NAVIGATION LOGIC
 // ==========================================
-const UPLOAD_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyEC_jqxLFfXGeHI7ozR7VhGYylZLYVgFsx9pF-pcyqrs8vYt5pglCuvIi9GPWw22SLiQ/exec"; 
+// PENTING: PASTIKAN URL INI ADALAH URL DARI HASIL "NEW DEPLOYMENT" GOOGLE APPS SCRIPT YANG BARU!
+const UPLOAD_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-soNHqgbGmt_-n3q-HF53HtyY2Yl8YbGoHOTqdTB2qpjxPHbhV9kVp3vV3WBgXwfOzw/exec"; 
 
 function handleLogin(event) {
     event.preventDefault();
@@ -490,53 +492,83 @@ function resizeCharts() { setTimeout(() => { Object.values(chartInstances).forEa
 // ==========================================
 // UPLOAD FILE RAW DATA LOGIC (TARGETED MODULE)
 // ==========================================
-let targetUploadModule = ""; // Variabel global untuk menyimpan modul yang dipilih user
+let targetUploadModule = ""; 
 
-function showUploadModal() {
-    if (!moduleColumns || moduleColumns.length === 0) {
-        Swal.fire('Peringatan', 'Data baseline modul belum dimuat dari Google Sheets. Tunggu sebentar atau muat ulang aplikasi.', 'warning');
-        return;
-    }
+window.showUploadModal = function() {
+    try {
+        let availableModules = [];
+        
+        if (moduleColumns && moduleColumns.length > 0) {
+            availableModules = moduleColumns.map(m => m.name);
+        } else if (parsedData && parsedData.length > 0 && parsedData[0].modules) {
+            availableModules = Object.keys(parsedData[0].modules);
+        }
 
-    // Buat daftar dropdown dinamis dari kolom master
-    let optionsHtml = '<option value="" selected disabled>-- Pilih Modul dari Daftar --</option>';
-    moduleColumns.forEach(mod => {
-        optionsHtml += `<option value="${mod.name}">${mod.name}</option>`;
-    });
+        if (availableModules.length === 0) {
+            Swal.fire({
+                title: 'Tentukan Target Modul',
+                html: '<p style="font-size:13px; color:#ea4335;">Sistem gagal membaca daftar modul dari Sheet secara otomatis.</p>' +
+                      '<div style="text-align:left; font-size:14px; margin-top:10px;">' +
+                      '<label style="font-weight:bold;">Ketik Nama Modul Manual:</label>' +
+                      '<input type="text" id="manualModInput" class="swal2-input" placeholder="Contoh: Product Knowledge..." style="width:100%; box-sizing:border-box;">' +
+                      '</div>',
+                showCancelButton: true,
+                confirmButtonColor: '#34a853',
+                cancelButtonColor: '#ea4335',
+                confirmButtonText: '<i class="fas fa-folder-open"></i> Lanjut Pilih File',
+                preConfirm: () => {
+                    const val = document.getElementById('manualModInput').value.trim();
+                    if (!val) { Swal.showValidationMessage('Nama modul tidak boleh kosong!'); return false; }
+                    return val;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    targetUploadModule = result.value;
+                    document.getElementById('rawFilesUpload').click();
+                }
+            });
+            return;
+        }
 
-    Swal.fire({
-        title: 'Pilih Target Modul',
-        html: `
-            <div style="text-align: left; font-size: 14px; margin-bottom: 15px;">
-                <label style="font-weight: bold; color: #333;">Modul yang akan diperbarui:</label>
-                <select id="swalModSelect" style="width: 100%; margin-top: 8px; padding: 10px; border-radius: 6px; border: 1px solid #aaa; font-size:14px; outline:none; background:#f9fafb;">
-                    ${optionsHtml}
-                </select>
-            </div>
-            <div style="font-size: 12px; color: #b45309; background: #fff8e1; padding: 10px; border-radius: 6px; text-align:left; border: 1px solid #ffe082;">
-                <i class="fas fa-shield-alt"></i> <strong>Sistem Keamanan Aktif:</strong> File yang Anda upload nantinya harus mengandung unsur kata dari nama modul ini. Jika berbeda, sistem otomatis menolaknya.
-            </div>
-        `,
-        showCancelButton: true,
-        confirmButtonColor: '#34a853',
-        cancelButtonColor: '#ea4335',
-        confirmButtonText: '<i class="fas fa-folder-open"></i> Lanjut Pilih File',
-        cancelButtonText: 'Batal',
-        preConfirm: () => {
-            const sel = document.getElementById('swalModSelect').value;
-            if (!sel) {
-                Swal.showValidationMessage('Mohon pilih modul dari dropdown terlebih dahulu!');
-                return false;
+        let optionsHtml = '<option value="" selected disabled>-- Pilih Target Modul --</option>';
+        availableModules.forEach(modName => {
+            optionsHtml += '<option value="' + modName + '">' + modName + '</option>';
+        });
+
+        Swal.fire({
+            title: 'Pilih Target Modul',
+            html: '<div style="text-align: left; font-size: 14px; margin-bottom: 15px;">' +
+                  '<label style="font-weight: bold; color: #333;">Modul yang akan diperbarui nilainya:</label>' +
+                  '<select id="swalModSelect" style="width: 100%; margin-top: 8px; padding: 10px; border-radius: 6px; border: 1px solid #aaa; font-size:14px; outline:none; background:#f9fafb;">' +
+                  optionsHtml +
+                  '</select>' +
+                  '</div>' +
+                  '<div style="font-size: 12px; color: #b45309; background: #fff8e1; padding: 10px; border-radius: 6px; text-align:left; border: 1px solid #ffe082;">' +
+                  '<i class="fas fa-shield-alt"></i> <strong>Sistem Keamanan Aktif:</strong> File excel/csv yang Anda upload nantinya wajib mengandung unsur kata dari nama modul ini. Jika namanya berbeda, otomatis ditolak.</div>',
+            showCancelButton: true,
+            confirmButtonColor: '#34a853',
+            cancelButtonColor: '#ea4335',
+            confirmButtonText: '<i class="fas fa-folder-open"></i> Lanjut Pilih File',
+            cancelButtonText: 'Batal',
+            preConfirm: () => {
+                const sel = document.getElementById('swalModSelect').value;
+                if (!sel) {
+                    Swal.showValidationMessage('Mohon pilih salah satu modul dari dropdown!');
+                    return false;
+                }
+                return sel;
             }
-            return sel;
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            targetUploadModule = result.value;
-            document.getElementById('rawFilesUpload').click(); // Membuka jendela pemilihan file sistem
-        }
-    });
-}
+        }).then((result) => {
+            if (result.isConfirmed) {
+                targetUploadModule = result.value;
+                document.getElementById('rawFilesUpload').click();
+            }
+        });
+
+    } catch (e) {
+        alert("Terjadi kesalahan sistem saat mencoba memuat pilihan modul: " + e.message);
+    }
+};
 
 function readFileAsBinary(file) {
     return new Promise((resolve, reject) => {
@@ -551,38 +583,34 @@ async function handleTargetedFileUpload(event) {
     const files = event.target.files;
     if (!files || files.length === 0) return;
     
-    const file = files[0]; // Karena sudah dirubah ke input single, kita ambil file indeks 0
+    const file = files[0];
     const fileName = file.name;
 
-    // --- PROTEKSI NAMA FILE ---
-    // Membersihkan string dari karakter spesial dan spasi agar pencocokan nama file & modul tidak kaku
     const safeFileName = fileName.toLowerCase().replace(/[^a-z0-9]/g, '');
     const safeModName = targetUploadModule.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-    // Cek apakah unsur nama modul ADA di dalam nama file yang di-upload
     if (!safeFileName.includes(safeModName)) {
         Swal.fire({
             title: 'File Ditolak!',
-            html: `Sistem mendeteksi ketidaksesuaian.<br><br>
-                   Anda memilih modul target: <b>${targetUploadModule}</b><br>
-                   Namun Anda memasukkan file: <b>${fileName}</b><br><br>
-                   <span style="color:#e53e3e; font-size:12px;">Pastikan nama file mengandung unsur kata yang sama dengan modul yang dipilih untuk menghindari kesalahan rekapitulasi data.</span>`,
+            html: `Sistem mendeteksi ketidaksesuaian nama file.<br><br>
+                   Anda memilih target modul: <b>${targetUploadModule}</b><br>
+                   Namun file yang dimasukkan: <b>${fileName}</b><br><br>
+                   <span style="color:#e53e3e; font-size:12px;">Pastikan nama file mengandung unsur kata yang sama dengan modul yang dipilih. Mohon Rename file Anda terlebih dahulu.</span>`,
             icon: 'error'
         });
-        event.target.value = ""; // Reset input field agar bisa mengunggah file yang sama setelah di-rename
+        event.target.value = ""; 
         return;
     }
-    // ----------------------------
 
     Swal.fire({
         title: 'Memproses Data...',
-        html: `Sedang memverifikasi kecocokan NRP pada file <b>${fileName}</b> untuk modul target <b>${targetUploadModule}</b>. Harap tunggu.`,
+        html: `Membaca nilai dari file <b>${fileName}</b>. Harap tunggu.`,
         allowOutsideClick: false,
         didOpen: () => { Swal.showLoading(); }
     });
 
     let updatedRows = 0;
-    let uploadPayload = []; 
+    let extractedUpdates = []; // <-- ARRAY BARU UNTUK GOOGLE APPS SCRIPT
 
     try {
         const data = await readFileAsBinary(file);
@@ -590,21 +618,12 @@ async function handleTargetedFileUpload(event) {
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
         const jsonData = XLSX.utils.sheet_to_json(sheet, { defval: "" });
 
-        // Siapkan nama sheet target di google sheets (Asumsi format sheet target: Nama File + " Grades")
-        let sheetNameTarget = fileName.replace(/\.xlsx|\.xls|\.csv/g, '').trim();
-        if (!sheetNameTarget.toLowerCase().endsWith("grades")) {
-            sheetNameTarget += " Grades";
-        }
-
-        uploadPayload.push({
-            sheetName: sheetNameTarget,
-            data: jsonData
-        });
-
         jsonData.forEach(row => {
             let keyNrp = Object.keys(row).find(k => k.toLowerCase().includes('first name'));
-            let keyPre = Object.keys(row).find(k => k.toLowerCase().includes('pre test') || k.toLowerCase().includes('quiz: 01'));
-            let keyPost = Object.keys(row).find(k => k.toLowerCase().includes('post test') || k.toLowerCase().includes('quiz: 04'));
+            
+            // Pencarian header kolom Pre/Post lebih luwes
+            let keyPre = Object.keys(row).find(k => k.toLowerCase().includes('pre test') || k.toLowerCase().includes('quiz: 01') || (k.toLowerCase().includes('pre') && !k.toLowerCase().includes('post')));
+            let keyPost = Object.keys(row).find(k => k.toLowerCase().includes('post test') || k.toLowerCase().includes('quiz: 04') || k.toLowerCase().includes('post'));
             
             let nrpRaw = keyNrp ? String(row[keyNrp]).trim() : "";
             if (!nrpRaw || nrpRaw.toLowerCase() === "first name") return; 
@@ -615,57 +634,64 @@ async function handleTargetedFileUpload(event) {
             let preVal = (preStr === "-" || preStr === "") ? NaN : parseFloat(preStr);
             let postVal = (postStr === "-" || postStr === "") ? NaN : parseFloat(postStr);
 
+            let modStatus = "Not Yet";
+            if (!isNaN(postVal) && postVal > 0) modStatus = "Done"; 
+            else if (!isNaN(preVal) && preVal > 0) modStatus = "On Progress";
+
+            // MASUKKAN KE PAYLOAD UNTUK APPS SCRIPT
+            extractedUpdates.push({
+                nrp: nrpRaw,
+                pre: isNaN(preVal) ? "" : preVal,
+                post: isNaN(postVal) ? "" : postVal,
+                status: modStatus
+            });
+
+            // UPDATE TAMPILAN LOKAL SEPERTI BIASA
             let userIndex = parsedData.findIndex(u => String(u.nrp) === nrpRaw);
-            
             if (userIndex !== -1) {
                 let user = parsedData[userIndex];
-                
                 if (!user.modules[targetUploadModule]) {
                     user.modules[targetUploadModule] = { pre: null, post: null, status: "Not Picked" };
                 }
-                
                 if (!isNaN(preVal)) user.modules[targetUploadModule].pre = preVal;
                 if (!isNaN(postVal)) user.modules[targetUploadModule].post = postVal;
-                
-                let modStatus = "Not Yet";
-                if (!isNaN(postVal) && postVal > 0) modStatus = "Done"; 
-                else if (!isNaN(preVal) && preVal > 0) modStatus = "On Progress";
-                
                 user.modules[targetUploadModule].status = modStatus;
                 updatedRows++;
             }
         });
         
-        // --- PROSES UPLOAD OTOMATIS KE GOOGLE SHEETS ---
+        // --- PROSES UPLOAD TERSTRUKTUR KE GOOGLE SHEETS ---
         if (typeof UPLOAD_SCRIPT_URL !== 'undefined' && UPLOAD_SCRIPT_URL !== "") {
             Swal.fire({
-                title: 'Mengirim ke Cloud...',
-                html: `Berhasil mencocokkan ${updatedRows} karyawan.<br>Menyimpan data modul <b>${targetUploadModule}</b> ke Google Sheets...`,
+                title: 'Mengirim ke Sheet...',
+                html: `Menyuntikkan data ${updatedRows} karyawan tepat ke dalam kolom modul <b>${targetUploadModule}</b>...`,
                 allowOutsideClick: false,
                 didOpen: () => { Swal.showLoading(); }
             });
 
             try {
+                // KIRIM PAYLOAD TERSTRUKTUR (HANYA INFO YANG DIBUTUHKAN, BUKAN DATA EXCEL MENTAH)
                 const response = await fetch(UPLOAD_SCRIPT_URL, {
                     method: 'POST',
-                    body: JSON.stringify({ filesData: uploadPayload })
+                    body: JSON.stringify({
+                        moduleName: targetUploadModule,
+                        updates: extractedUpdates
+                    })
                 });
                 
                 const result = await response.json();
                 if (result.status === "success") {
-                    
                     Swal.fire({
                         title: 'Upload Sukses & Tervalidasi!',
-                        html: `Data modul <b>${targetUploadModule}</b> telah diverifikasi dan dikirim ke Google Sheets.<br><br>Dashboard diperbarui secara lokal. <i>(File CSV utama akan tersinkronisasi dalam ~5 menit).</i>`,
+                        html: `Data modul <b>${targetUploadModule}</b> telah disuntikkan sempurna ke Google Sheets.<br><br>Dashboard diperbarui secara lokal. <i>(File utama di server Google akan tersinkronisasi dalam ~5 menit).</i>`,
                         icon: 'success'
                     });
-                    
                 } else {
                     throw new Error(result.message || "Gagal menyimpan ke Spreadsheet");
                 }
             } catch (fetchErr) {
                 console.error("Gagal POST ke GSheets:", fetchErr);
-                Swal.fire('Peringatan Integrasi Cloud', 'Gagal mengirim data ke Google Sheets otomatis (' + fetchErr.message + '). Data hanya diperbarui di layar Anda (Lokal).', 'warning');
+                Swal.fire('Peringatan Integrasi Cloud', 'Gagal mengirim data otomatis ke GSheets (' + fetchErr.message + '). Data hanya diperbarui di layar Anda (Lokal).', 'warning');
             }
         }
 
@@ -679,7 +705,7 @@ async function handleTargetedFileUpload(event) {
         Swal.fire('Gagal Parsing Data', 'Format file Excel tidak terbaca atau rusak.', 'error');
     }
     
-    event.target.value = ""; // Reset input field
+    event.target.value = ""; 
 }
 
 // Menghitung ulang overallRecap dan Coverage berdasarkan nilai modul terbaru
@@ -879,8 +905,10 @@ function parseCustomCSV(text) {
             if (!["no", "nrp", "name", "nama", "lokasi kerja update", "corpu area", "jumlah modul yg diambil", "jabatan"].includes(h1Upper.toLowerCase())) currentModule = h1Upper;
         }
         const subHeader = row2[colIdx] ? row2[colIdx].toLowerCase().trim() : "";
-        if (currentModule && subHeader.includes("pre test")) {
-            if (!moduleColumns.find(m => m.name === currentModule)) moduleColumns.push({ name: currentModule, preIdx: colIdx, postIdx: colIdx + 1, statusIdx: colIdx + 2 });
+        if (currentModule && (subHeader.includes("pre test") || subHeader.includes("quiz") || subHeader.includes("pre"))) {
+            if (!moduleColumns.find(m => m.name === currentModule)) {
+                moduleColumns.push({ name: currentModule, preIdx: colIdx, postIdx: colIdx + 1, statusIdx: colIdx + 2 });
+            }
         }
     }
 
