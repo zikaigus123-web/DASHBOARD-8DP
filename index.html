@@ -8,659 +8,194 @@
 <!-- Favicon -->
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 
+<!-- Font Awesome untuk Icon Sidebar -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- SweetAlert2 untuk Popup -->
+<link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <!-- Chart.js CDN & Plugin DataLabels -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
-<!-- Library SheetJS untuk Export Excel (.xlsx) -->
+<!-- Library SheetJS untuk Export & Import Excel (.xlsx) -->
 <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 
 <style>
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #1e1e1e;
-    color: #333;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1e1e1e; color: #333; overflow: hidden; }
 
 /* ==========================================
    MODAL LOGIN STYLES
    ========================================== */
-.login-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: #18181b;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-    padding: 15px;
-}
-
-.login-card {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 24px 32px 30px 32px;
-    width: 100%;
-    max-width: 450px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    border-top: 6px solid #ffc107;
-}
-
-.login-header-logos {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
+.login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #18181b; display: flex; justify-content: center; align-items: center; z-index: 9999; padding: 15px; }
+.login-card { background: #ffffff; border-radius: 12px; padding: 24px 32px 30px 32px; width: 100%; max-width: 450px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); text-align: center; position: relative; border-top: 6px solid #ffc107; }
+.login-header-logos { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
 .login-logo-ut { height: 32px; object-fit: contain; }
 .login-logo-corpu { height: 40px; object-fit: contain; }
-
-.login-icon-badge {
-    background-color: #ffc107;
-    width: 56px;
-    height: 56px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 12px auto;
-    box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3);
-}
-
-.login-icon-badge svg {
-    width: 30px;
-    height: 30px;
-    fill: #111;
-}
-
-.brand-title {
-    font-size: 24px;
-    font-weight: 800;
-    color: #111;
-    letter-spacing: -0.5px;
-    margin-bottom: 4px;
-}
-
+.login-icon-badge { background-color: #ffc107; width: 56px; height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto; box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3); }
+.login-icon-badge i { font-size: 24px; color: #111; }
+.brand-title { font-size: 24px; font-weight: 800; color: #111; letter-spacing: -0.5px; margin-bottom: 4px; }
 .brand-title span { color: #ffc107; }
-
-.brand-subtitle {
-    font-size: 10.5px;
-    font-weight: 700;
-    color: #666;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 24px;
-    line-height: 1.3;
-}
-
-.login-field {
-    margin-bottom: 16px;
-    text-align: left;
-}
-
-.login-field label {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    color: #444;
-    margin-bottom: 6px;
-}
-
-.input-icon-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.input-icon-wrapper svg {
-    position: absolute;
-    left: 14px;
-    width: 18px;
-    height: 18px;
-    fill: #a0aec0;
-    transition: fill 0.2s;
-}
-
-.login-field input {
-    width: 100%;
-    padding: 12px 14px 12px 42px;
-    font-size: 13.5px;
-    border: 1px solid #e2e8f0;
-    background-color: #f8fafc;
-    border-radius: 8px;
-    outline: none;
-    transition: all 0.2s;
-    color: #1a202c;
-}
-
-.login-field input:focus {
-    background-color: #ffffff;
-    border-color: #ffc107;
-    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.2);
-}
-
-.login-btn {
-    width: 100%;
-    background: #ffc107;
-    color: #111;
-    border: none;
-    padding: 12px;
-    font-size: 13.5px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-top: 8px;
-    transition: all 0.2s;
-    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.25);
-}
-
-.login-btn:hover {
-    background: #e0a800;
-    transform: translateY(-1px);
-}
-
-.error-msg {
-    color: #e53e3e;
-    background-color: #fff5f5;
-    border: 1px solid #fed7d7;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 12px;
-    margin-top: 14px;
-    font-weight: 600;
-    display: none;
-}
-
-.login-footer {
-    margin-top: 22px;
-    padding-top: 14px;
-    border-top: 1px solid #f1f5f9;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    font-size: 11.5px;
-    color: #94a3b8;
-    font-weight: 500;
-}
-
-.login-footer svg { width: 14px; height: 14px; fill: #94a3b8; }
+.brand-subtitle { font-size: 10.5px; font-weight: 700; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 24px; line-height: 1.3; }
+.login-field { margin-bottom: 16px; text-align: left; }
+.login-field label { display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 6px; }
+.input-icon-wrapper { position: relative; display: flex; align-items: center; }
+.input-icon-wrapper i { position: absolute; left: 14px; font-size: 16px; color: #a0aec0; }
+.login-field input { width: 100%; padding: 12px 14px 12px 42px; font-size: 13.5px; border: 1px solid #e2e8f0; background-color: #f8fafc; border-radius: 8px; outline: none; transition: all 0.2s; color: #1a202c; }
+.login-field input:focus { background-color: #ffffff; border-color: #ffc107; box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.2); }
+.login-btn { width: 100%; background: #ffc107; color: #111; border: none; padding: 12px; font-size: 13.5px; font-weight: 800; letter-spacing: 0.5px; border-radius: 8px; cursor: pointer; margin-top: 8px; transition: all 0.2s; box-shadow: 0 4px 12px rgba(255, 193, 7, 0.25); }
+.login-btn:hover { background: #e0a800; transform: translateY(-1px); }
 
 /* ==========================================
-   DASHBOARD STYLES & ANIMATION
+   APP CONTAINER & SIDEBAR
    ========================================== */
-.dashboard-container {
-    display: none;
-    padding: 10px;
-    background-color: #e5e7eb;
-    min-height: 100vh;
-    opacity: 0;
-    transform: scale(0.98);
-    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-}
+#appContainer { display: none; height: 100vh; width: 100vw; display: flex; }
+.sidebar { width: 250px; background-color: #111; color: white; transition: all 0.3s ease; display: flex; flex-direction: column; height: 100vh; z-index: 1000; border-right: 3px solid #ffc107; flex-shrink: 0; }
+.sidebar.collapsed { width: 70px; }
+.sidebar-brand { padding: 1.5rem 1rem; font-size: 1.2rem; font-weight: 800; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; gap: 10px; color: #ffc107; }
+.nav-link-custom { color: #d1d5db; padding: 1rem 1.5rem; display: flex; align-items: center; gap: 1rem; text-decoration: none; border-left: 4px solid transparent; font-weight: 600; transition: 0.2s; white-space: nowrap; cursor: pointer; font-size: 14px; }
+.nav-link-custom:hover, .nav-link-custom.active { background-color: rgba(255, 193, 7, 0.1); color: #ffc107; border-left-color: #ffc107; }
+.sidebar.collapsed .nav-text { display: none; }
 
-.dashboard-container.animate-show {
-    opacity: 1;
-    transform: scale(1);
-}
+.main-content { flex: 1; display: flex; flex-direction: column; height: 100vh; overflow-y: auto; background-color: #e5e7eb; }
+.topbar { background: #ffffff; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ccc; position: sticky; top: 0; z-index: 999; flex-shrink: 0; }
+.topbar-left { display: flex; align-items: center; gap: 15px; }
+.toggle-btn { background: #fff; border: 1px solid #111; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 16px; }
+.toggle-btn:hover { background: #eee; }
+.topbar-title { font-size: 18px; font-weight: 800; font-style: italic; color: #111; margin: 0; }
+.header-logos { display: flex; gap: 10px; align-items: center; }
+.header-logos img { height: 35px; object-fit: contain; }
+
+.view-section { display: none; flex: 1; flex-direction: column; padding: 15px; animation: fadeIn 0.4s ease; }
+.view-section.active { display: flex; }
+@keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 
 /* ==========================================
-   STYLING KHUSUS MODE TV / FULLSCREEN (AUTO FIT 100vh)
+   DASHBOARD STYLES
    ========================================== */
-:fullscreen .dashboard-container,
-:-webkit-full-screen .dashboard-container,
-:-moz-full-screen .dashboard-container {
-    height: 100vh;
-    width: 100vw;
-    overflow: hidden !important;
-    padding: 8px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
+.filter-container { background: #ffffff; border: 2px solid #000; border-radius: 4px; padding: 6px 12px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.filter-left, .filter-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.filter-container label { font-weight: bold; font-size: 12px; }
+.filter-select { padding: 4px 8px; font-size: 12px; border-radius: 4px; border: 1px solid #aaa; outline: none; min-width: 140px; }
 
-:fullscreen .header, :-webkit-full-screen .header, :-moz-full-screen .header {
-    margin-bottom: 6px;
-    padding: 4px 15px;
-}
+.btn-action { background-color: #ffb703; color: #000; border: 2px solid #000; padding: 6px 12px; font-size: 12px; font-weight: bold; border-radius: 4px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: background-color 0.2s, transform 0.1s; }
+.btn-action:hover { background-color: #e0a200; transform: translateY(-1px); }
 
-:fullscreen .logo-ut, :-webkit-full-screen .logo-ut, :-moz-full-screen .logo-ut { height: 32px; }
-:fullscreen .logo-corpu, :-webkit-full-screen .logo-corpu, :-moz-full-screen .logo-corpu { height: 42px; }
-:fullscreen .title-container h1, :-webkit-full-screen .title-container h1, :-moz-full-screen .title-container h1 { font-size: 18px; }
-
-:fullscreen .filter-container, :-webkit-full-screen .filter-container, :-moz-full-screen .filter-container {
-    margin-bottom: 8px;
-    padding: 4px 10px;
-}
-
-:fullscreen .main-layout, :-webkit-full-screen .main-layout, :-moz-full-screen .main-layout {
-    margin-bottom: 8px;
-    gap: 8px;
-    flex: 1;
-    min-height: 0;
-}
-
-:fullscreen .left-column, :-webkit-full-screen .left-column, :-moz-full-screen .left-column,
-:fullscreen .right-column, :-webkit-full-screen .right-column, :-moz-full-screen .right-column {
-    gap: 8px;
-    min-height: 0;
-}
-
-:fullscreen .top-right-grid, :-webkit-full-screen .top-right-grid, :-moz-full-screen .top-right-grid {
-    gap: 8px;
-    min-height: 0;
-    flex: 2;
-}
-
-:fullscreen .column-card, :-webkit-full-screen .column-card, :-moz-full-screen .column-card {
-    padding: 6px;
-    gap: 6px;
-    min-height: 0;
-}
-
-:fullscreen .column-header, :-webkit-full-screen .column-header, :-moz-full-screen .column-header { font-size: 13px; padding: 3px; }
-:fullscreen .sub-header, :-webkit-full-screen .sub-header, :-moz-full-screen .sub-header { font-size: 10px; padding: 2px; }
-
-:fullscreen .chart-box, :-webkit-full-screen .chart-box, :-moz-full-screen .chart-box {
-    height: 100% !important;
-    min-height: 0 !important;
-    padding: 4px;
-}
-
-:fullscreen .kpi-container, :-webkit-full-screen .kpi-container, :-moz-full-screen .kpi-container {
-    padding: 6px 10px;
-    gap: 4px;
-}
-
-:fullscreen .kpi-icon-box, :-webkit-full-screen .kpi-icon-box, :-moz-full-screen .kpi-icon-box {
-    width: 42px;
-    height: 42px;
-    padding: 4px;
-}
-
-:fullscreen .kpi-icon-box svg, :-webkit-full-screen .kpi-icon-box svg, :-moz-full-screen .kpi-icon-box svg {
-    width: 24px;
-    height: 24px;
-}
-
-:fullscreen .kpi-item h3, :-webkit-full-screen .kpi-item h3, :-moz-full-screen .kpi-item h3 { font-size: 15px; margin-bottom: 2px; }
-:fullscreen .kpi-item p, :-webkit-full-screen .kpi-item p, :-moz-full-screen .kpi-item p { font-size: 9px; }
-
-:fullscreen .jabatan-table-container, :-webkit-full-screen .jabatan-table-container, :-moz-full-screen .jabatan-table-container {
-    padding: 6px;
-    min-height: 0;
-}
-
-:fullscreen .table-wrapper, :-webkit-full-screen .table-wrapper, :-moz-full-screen .table-wrapper {
-    max-height: 110px;
-}
-
-:fullscreen .jabatan-table, :-webkit-full-screen .jabatan-table, :-moz-full-screen .jabatan-table { font-size: 10px; }
-:fullscreen .jabatan-table th, :-webkit-full-screen .jabatan-table th, 
-:fullscreen .jabatan-table td, :-webkit-full-screen .jabatan-table td { padding: 3px 6px; }
-
-:fullscreen .bottom-section, :-webkit-full-screen .bottom-section, :-moz-full-screen .bottom-section {
-    padding: 6px;
-    gap: 4px;
-    height: 160px;
-    flex-shrink: 0;
-}
-
-:fullscreen .bottom-chart-box, :-webkit-full-screen .bottom-chart-box, :-moz-full-screen .bottom-chart-box {
-    height: calc(100% - 22px) !important;
-}
-
-/* HEADER SECTION */
-.header {
-    background: #ffffff;
-    border: 2px solid #000;
-    padding: 8px 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
-.logo-ut { height: 40px; }
-.logo-corpu { height: 50px; }
-
-.title-container h1 {
-    font-size: 20px;
-    font-weight: 800;
-    font-style: italic;
-    color: #111;
-    text-align: center;
-}
-
-/* FILTER SECTION */
-.filter-container {
-    background: #ffffff;
-    border: 2px solid #000;
-    border-radius: 4px;
-    padding: 6px 12px;
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-}
-
-.filter-left, .filter-right {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.filter-container label {
-    font-weight: bold;
-    font-size: 12px;
-}
-
-.filter-select {
-    padding: 4px 8px;
-    font-size: 12px;
-    border-radius: 4px;
-    border: 1px solid #aaa;
-    outline: none;
-    min-width: 140px;
-}
-
-/* BUTTONS */
-.btn-action {
-    background-color: #ffb703;
-    color: #000;
-    border: 2px solid #000;
-    padding: 4px 10px;
-    font-size: 12px;
-    font-weight: bold;
-    border-radius: 4px;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    transition: background-color 0.2s, transform 0.1s;
-}
-
-.btn-action:hover {
-    background-color: #e0a200;
-    transform: translateY(-1px);
-}
-
-.btn-action svg { width: 14px; height: 14px; fill: currentColor; }
-
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-.spinning { animation: spin 0.8s linear infinite; }
-
-/* MAIN LAYOUT SPLIT (SIMETRIS) */
-.main-layout {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 10px;
-    margin-bottom: 10px;
-    align-items: stretch;
-}
-
-.left-column, .right-column {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.top-right-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-}
-
-/* CARDS SIMETRIS */
-.column-card {
-    background: #ffffff;
-    border: 2px solid #000;
-    border-radius: 4px;
-    padding: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    height: 100%;
-    width: 100%;
-    flex: 1;
-}
-
-.column-header, .sub-header {
-    background: #ffb703;
-    border: 2px solid #000;
-    padding: 4px;
-    text-align: center;
-    font-weight: bold;
-    font-style: italic;
-    color: #000;
-    border-radius: 4px;
-}
-
+.main-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 10px; margin-bottom: 10px; align-items: stretch; }
+.left-column, .right-column { display: flex; flex-direction: column; gap: 10px; }
+.top-right-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.column-card { background: #ffffff; border: 2px solid #000; border-radius: 4px; padding: 8px; display: flex; flex-direction: column; gap: 8px; height: 100%; width: 100%; flex: 1; }
+.column-header, .sub-header { background: #ffb703; border: 2px solid #000; padding: 4px; text-align: center; font-weight: bold; font-style: italic; color: #000; border-radius: 4px; }
 .column-header { font-size: 15px; }
 .sub-header { font-size: 11px; padding: 3px; }
+.chart-wrapper { display: flex; flex-direction: column; gap: 4px; flex: 1; min-height: 0; min-width: 0; }
+.canvas-wrapper { position: relative; width: 100%; height: 100%; min-height: 0; min-width: 0; }
+.chart-box { background: #ffffff; border: 1px solid #ccc; border-radius: 4px; padding: 6px; height: 200px; position: relative; flex: 1; min-height: 0; min-width: 0; display: flex; flex-direction: column; }
 
-.chart-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    flex: 1;
-    min-height: 0;
-    min-width: 0;
-}
+/* KPI BOX & TABLE */
+.kpi-container { background: #ffffff; border: 2px solid #000; border-radius: 4px; padding: 10px 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+.kpi-content-wrapper { display: grid; grid-template-columns: 50px 1fr; gap: 12px; align-items: center; width: 100%; }
+.kpi-icon-box { background: #ffb703; border: 2px solid #000; border-radius: 8px; padding: 6px; display: flex; align-items: center; justify-content: center; width: 50px; height: 50px; font-size: 24px; color: #000; }
+.kpi-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; align-items: center; }
+.kpi-item { display: flex; flex-direction: column; align-items: center; text-align: center; justify-content: center; }
+.kpi-item h3 { font-size: 18px; font-weight: 800; color: #000; line-height: 1.1; margin-bottom: 2px; width: 100%; }
+.kpi-item p { font-size: 10px; font-weight: bold; color: #444; line-height: 1.2; margin: 0; }
 
-/* WRAPPER SUPER KETAT UNTUK CHART.JS */
-.canvas-wrapper {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    min-height: 0;
-    min-width: 0;
-}
-
-.chart-box {
-    background: #ffffff;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 6px;
-    height: 200px;
-    position: relative;
-    flex: 1;
-    min-height: 0; 
-    min-width: 0; 
-    display: flex;
-    flex-direction: column;
-}
-
-/* KPI BOX & SUMMARY STYLES */
-.kpi-container {
-    background: #ffffff;
-    border: 2px solid #000;
-    border-radius: 4px;
-    padding: 10px 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
-
-.kpi-content-wrapper {
-    display: grid;
-    grid-template-columns: 50px 1fr;
-    gap: 12px;
-    align-items: center;
-    width: 100%;
-}
-
-.kpi-icon-box {
-    background: #ffb703;
-    border: 2px solid #000;
-    border-radius: 8px;
-    padding: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 50px;
-    height: 50px;
-}
-
-.kpi-icon-box svg { width: 30px; height: 30px; stroke: #000; }
-
-.kpi-metrics {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    width: 100%;
-    align-items: center;
-}
-
-.kpi-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    justify-content: center;
-}
-
-.kpi-item h3 {
-    font-size: 18px;
-    font-weight: 800;
-    color: #000;
-    line-height: 1.1;
-    margin-bottom: 2px;
-    width: 100%;
-}
-
-.kpi-item p {
-    font-size: 10px;
-    font-weight: bold;
-    color: #444;
-    line-height: 1.2;
-    margin: 0;
-}
-
-/* TABLE */
-.jabatan-table-container {
-    background: #ffffff;
-    border: 2px solid #000;
-    border-radius: 4px;
-    padding: 8px;
-    flex: 1;
-}
-
-.table-wrapper {
-    max-height: 160px;
-    overflow-y: auto;
-}
-
-.jabatan-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 11px;
-}
-
-.jabatan-table th, .jabatan-table td {
-    border: 1px solid #ccc;
-    padding: 4px 8px;
-    text-align: left;
-}
-
-.jabatan-table th {
-    background-color: #ffb703;
-    color: #000;
-    font-weight: bold;
-    position: sticky;
-    top: 0;
-}
-
+.jabatan-table-container { background: #ffffff; border: 2px solid #000; border-radius: 4px; padding: 8px; flex: 1; }
+.table-wrapper { max-height: 160px; overflow-y: auto; }
+.jabatan-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.jabatan-table th, .jabatan-table td { border: 1px solid #ccc; padding: 4px 8px; text-align: left; color:#000;}
+.jabatan-table th { background-color: #ffb703; color: #000; font-weight: bold; position: sticky; top: 0; }
 .jabatan-table tr:nth-child(even) { background-color: #f9fafb; }
 .jabatan-table td.count-col { text-align: center; font-weight: bold; }
 
-/* BOTTOM SECTION */
-.bottom-section {
-    background: #ffffff;
-    border: 2px solid #000;
-    border-radius: 4px;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
+.bottom-section { background: #ffffff; border: 2px solid #000; border-radius: 4px; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+.bottom-chart-box { height: 220px; position: relative; min-height: 0; min-width: 0; display: flex; flex-direction: column; }
 
-.bottom-chart-box {
-    height: 220px;
-    position: relative;
-    min-height: 0; 
-    min-width: 0; 
-    display: flex;
-    flex-direction: column;
-}
+/* ==========================================
+   MASTER DATA VIEW STYLES
+   ========================================== */
+.master-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 15px; border-bottom: 2px solid #ccc; margin-bottom: 15px; color:#111; }
+.master-header h2 { font-size: 20px; font-weight: 800; }
+.btn-upload { background-color: #34a853; color: white; border: 2px solid #1a6d32; }
+.btn-upload:hover { background-color: #2b8b44; }
 
-/* TOAST POPUP NOTIFICATION */
-.toast-notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: #10b981;
-    color: #ffffff;
-    padding: 12px 20px;
-    border-radius: 8px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    font-size: 13px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    z-index: 10000;
-    opacity: 0;
-    transform: translateY(-20px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    border: 2px solid #047857;
-}
+.master-table-wrapper { background: #fff; border: 2px solid #000; border-radius: 4px; flex: 1; overflow: auto; }
+.master-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.master-table th, .master-table td { border: 1px solid #ddd; padding: 8px; text-align: left; color:#000;}
+.master-table th { background-color: #ffb703; color: #000; position: sticky; top: 0; z-index: 2; }
+.master-table tr:nth-child(even) { background-color: #f9fafb; }
 
-.toast-notification.show { opacity: 1; transform: translateY(0); }
-.toast-notification svg { width: 20px; height: 20px; fill: #ffffff; }
+/* ==========================================
+   FULLSCREEN OVERRIDES
+   ========================================== */
+:fullscreen .sidebar { display: none !important; }
+:fullscreen .topbar { display: none !important; }
+:fullscreen .main-content { width: 100vw !important; height: 100vh !important; padding: 0 !important; }
+:fullscreen #view-dashboard { padding: 8px; height: 100vh; overflow: hidden; justify-content: space-between; }
+:fullscreen .filter-container { margin-bottom: 8px; padding: 4px 10px; }
+:fullscreen .main-layout { margin-bottom: 8px; gap: 8px; flex: 1; min-height: 0; }
+:fullscreen .bottom-section { height: 160px; flex-shrink: 0; padding: 6px; }
 
-@media (max-width: 768px) {
-    .login-card { padding: 20px; }
-    .header { flex-direction: column; gap: 10px; text-align: center; }
-    .filter-container, .filter-left, .filter-right { flex-direction: column; align-items: stretch; }
-    .filter-select, .btn-action { width: 100%; justify-content: center; }
-    .main-layout, .top-right-grid { grid-template-columns: 1fr; }
-    .kpi-content-wrapper { grid-template-columns: 1fr; }
-    .kpi-metrics { grid-template-columns: repeat(2, 1fr); }
-}
+:-webkit-full-screen .sidebar { display: none !important; }
+:-webkit-full-screen .topbar { display: none !important; }
+:-webkit-full-screen .main-content { width: 100vw !important; height: 100vh !important; padding: 0 !important; }
+:-webkit-full-screen #view-dashboard { padding: 8px; height: 100vh; overflow: hidden; justify-content: space-between; }
+:-webkit-full-screen .filter-container { margin-bottom: 8px; padding: 4px 10px; }
+:-webkit-full-screen .main-layout { margin-bottom: 8px; gap: 8px; flex: 1; min-height: 0; }
+:-webkit-full-screen .bottom-section { height: 160px; flex-shrink: 0; padding: 6px; }
+
+.spinning { animation: spin 0.8s linear infinite; }
+@keyframes spin { 100% { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
+
+<!-- MODAL LOGIN SECURITY -->
+<div id="loginModal" class="login-overlay">
+    <div class="login-card">
+        <div class="login-header-logos">
+            <img src="logo ut.png" alt="UT" class="login-logo-ut" onerror="this.src='https://via.placeholder.com/80x40?text=UT'">
+            <img src="logo corpu.png" alt="Corpu" class="login-logo-corpu" onerror="this.src='https://via.placeholder.com/80x40?text=Corpu'">
+        </div>
+        <div class="login-icon-badge"><i class="fas fa-shield-alt"></i></div>
+        <h2 class="brand-title">8DP <span>Development</span></h2>
+        <div class="brand-subtitle">DASHBOARD MONITORING DEVELOPMENT 8DP</div>
+
+        <form onsubmit="handleLogin(event)">
+            <div class="login-field">
+                <label>Username / NIK</label>
+                <div class="input-icon-wrapper">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="username" placeholder="Masukkan ID Anda" required autocomplete="off">
+                </div>
+            </div>
+            <div class="login-field">
+                <label>Password</label>
+                <div class="input-icon-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+            </div>
+            <button type="submit" class="login-btn">MASUK KE SISTEM <i class="fas fa-arrow-right ms-2"></i></button>
+        </form>
+    </div>
+</div>
 
 <!-- MODAL TABLE FULLSCREEN (POP UP TABEL BESAR) -->
 <div id="tableModal" class="login-overlay" style="display: none; z-index: 10000; padding: 30px;">
     <div class="login-card" style="max-width: 1000px; width: 100%; height: 90%; display: flex; flex-direction: column; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.6);">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">
-            <h2 class="brand-title" style="font-size: 20px; margin:0; text-align: left;" id="modalTableTitle">Detail Status Pegawai</h2>
+            <h2 class="brand-title" style="font-size: 20px; margin:0; text-align: left; color:#111;" id="modalTableTitle">Detail Status Pegawai</h2>
             <div style="display: flex; gap: 10px;">
-                <button onclick="downloadTableExcel()" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3); display: flex; align-items: center; gap: 6px;">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Download Excel
+                <button class="btn-action" style="background:#10b981; color:#fff; border-color:#047857;" onclick="downloadTableExcel()">
+                    <i class="fas fa-file-excel"></i> Download Excel
                 </button>
-                <button onclick="closeTableModal()" style="background: #e53e3e; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; box-shadow: 0 4px 6px rgba(229, 62, 62, 0.3);">X Tutup</button>
+                <button class="btn-action" style="background:#e53e3e; color:#fff; border-color:#b91c1c;" onclick="closeTableModal()">
+                    <i class="fas fa-times"></i> Tutup
+                </button>
             </div>
         </div>
         <div style="overflow-y: auto; flex: 1; border: 1px solid #ccc; border-radius: 4px; text-align: left;">
@@ -672,382 +207,528 @@ body {
     </div>
 </div>
 
-<!-- TOAST POP-UP NOTIFIKASI -->
-<div id="toastNotif" class="toast-notification">
-    <svg viewBox="0 0 24 24">
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-    </svg>
-    <span id="toastMsg">Data berhasil diperbarui!</span>
-</div>
-
-<!-- MODAL LOGIN SECURITY -->
-<div id="loginModal" class="login-overlay">
-    <div class="login-card">
-        <div class="login-header-logos">
-            <img src="logo ut.png" alt="United Tractors" class="login-logo-ut">
-            <img src="logo corpu.png" alt="UT Corporate University" class="login-logo-corpu">
+<!-- APP WRAPPER -->
+<div id="appContainer">
+    
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-chart-line"></i>
+            <span class="nav-text">8 DP Portal</span>
         </div>
-
-        <div class="login-icon-badge">
-            <svg viewBox="0 0 24 24">
-                <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
-            </svg>
-        </div>
-
-        <h2 class="brand-title">8DP <span>Development</span></h2>
-        <div class="brand-subtitle">DASHBOARD MONITORING DEVELOPMENT 8DP</div>
-
-        <form onsubmit="handleLogin(event)">
-            <div class="login-field">
-                <label for="username">Username / NIK</label>
-                <div class="input-icon-wrapper">
-                    <input type="text" id="username" placeholder="Masukkan ID Anda" required autocomplete="off">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                    </svg>
+        <div class="d-flex flex-column mt-3 gap-1" style="flex:1;">
+            <div class="nav-link-custom active" onclick="switchView('dashboard', this)">
+                <i class="fas fa-home"></i> <span class="nav-text">Dashboard Overview</span>
+            </div>
+            <div class="nav-link-custom" onclick="switchView('database', this)">
+                <i class="fas fa-database"></i> <span class="nav-text">Master Data & Upload</span>
+            </div>
+            <div style="margin-top: auto; margin-bottom: 15px;">
+                <div class="nav-link-custom" style="color: #ef4444;" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> <span class="nav-text">Keluar</span>
                 </div>
             </div>
-
-            <div class="login-field">
-                <label for="password">Password</label>
-                <div class="input-icon-wrapper">
-                    <input type="password" id="password" placeholder="••••••••" required>
-                    <svg viewBox="0 0 24 24">
-                        <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
-                    </svg>
-                </div>
-            </div>
-
-            <button type="submit" class="login-btn">MASUK KE SISTEM</button>
-            <div id="errorMsg" class="error-msg">Username / NIK atau Password salah!</div>
-        </form>
-
-        <div class="login-footer">
-            <svg viewBox="0 0 24 24">
-                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
-            </svg>
-            Secure Enterprise Portal
-        </div>
-    </div>
-</div>
-
-<!-- DASHBOARD CONTAINER -->
-<div id="dashboardContent" class="dashboard-container">
-
-    <!-- HEADER -->
-    <div class="header">
-        <img src="logo ut.png" alt="United Tractors" class="logo-ut">
-        <div class="title-container">
-            <h1>DASHBOARD MONITORING DEVELOPMENT 8 DP</h1>
-        </div>
-        <img src="logo corpu.png" alt="UT Corporate University" class="logo-corpu">
-    </div>
-
-    <!-- FILTER & ACTION BAR -->
-    <div class="filter-container">
-        <div class="filter-left">
-            <label for="filterLokasi">Filter Lokasi Kerja Update:</label>
-            <select id="filterLokasi" class="filter-select" onchange="applyFilter()">
-                <option value="ALL">-- Semua Lokasi Kerja --</option>
-            </select>
-
-            <label for="filterJabatan" style="margin-left: 10px;">Filter Jabatan:</label>
-            <select id="filterJabatan" class="filter-select" onchange="applyFilter()">
-                <option value="ALL">-- Semua Jabatan --</option>
-            </select>
-
-            <label for="filterStatus" style="margin-left: 10px;">Filter Status:</label>
-            <select id="filterStatus" class="filter-select" onchange="applyFilter()">
-                <option value="ALL">-- Semua Status --</option>
-                <option value="Done">Done</option>
-                <option value="On Progress">On Progress</option>
-                <option value="Not Yet">Not Yet</option>
-            </select>
-        </div>
-
-        <div class="filter-right">
-            <!-- TOMBOL FITUR FULLSCREEN / TV MODE -->
-            <button class="btn-action" onclick="toggleFullScreen()">
-                <svg viewBox="0 0 24 24">
-                    <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
-                </svg>
-                <span id="fullscreenText">TV / Fullscreen</span>
-            </button>
-
-            <button class="btn-action" onclick="refreshDashboardData()">
-                <svg id="refreshIcon" viewBox="0 0 24 24">
-                    <path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-                </svg>
-                Refresh Data
-            </button>
-
-            <a href="https://docs.google.com/spreadsheets/d/1dnf8Zo3a0oHPanGMNKvVUvsRt-N5SYd_-qL_QpnVq6M/edit?usp=sharing" target="_blank" class="btn-action">
-                <svg viewBox="0 0 24 24">
-                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-2h2v2zm0-4H7v-2h2v2zm0-4H7V7h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/>
-                </svg>
-                Buka Spreadsheet Data
-            </a>
         </div>
     </div>
 
-    <!-- MAIN LAYOUT -->
-    <div class="main-layout">
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        
+        <!-- TOPBAR -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="toggle-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+                <h1 class="topbar-title">DASHBOARD MONITORING DEVELOPMENT 8 DP</h1>
+            </div>
+            <div class="header-logos">
+                <img src="logo ut.png" alt="UT" onerror="this.src='https://via.placeholder.com/80x40?text=UT'">
+                <img src="logo corpu.png" alt="Corpu" onerror="this.src='https://via.placeholder.com/80x40?text=Corpu'">
+            </div>
+        </div>
 
-        <!-- LEFT COLUMN -->
-        <div class="left-column">
-            <div class="column-card">
-                <div class="column-header">Training Coverage</div>
-                <div class="chart-wrapper">
-                    <div class="sub-header">Overall Coverage Rate</div>
-                    <div class="chart-box">
-                        <div class="canvas-wrapper"><canvas id="coveragePieChart"></canvas></div>
+        <!-- VIEW 1: DASHBOARD -->
+        <div id="view-dashboard" class="view-section active">
+            
+            <!-- FILTER & ACTION BAR -->
+            <div class="filter-container">
+                <div class="filter-left">
+                    <label>Lokasi Kerja:</label>
+                    <select id="filterLokasi" class="filter-select" onchange="applyFilter()">
+                        <option value="ALL">-- Semua Lokasi --</option>
+                    </select>
+
+                    <label>Jabatan:</label>
+                    <select id="filterJabatan" class="filter-select" onchange="applyFilter()">
+                        <option value="ALL">-- Semua Jabatan --</option>
+                    </select>
+
+                    <label>Status:</label>
+                    <select id="filterStatus" class="filter-select" onchange="applyFilter()">
+                        <option value="ALL">-- Semua Status --</option>
+                        <option value="Done">Done</option>
+                        <option value="On Progress">On Progress</option>
+                        <option value="Not Yet">Not Yet</option>
+                    </select>
+                </div>
+
+                <div class="filter-right">
+                    <button class="btn-action" onclick="toggleFullScreen()">
+                        <i class="fas fa-tv"></i> <span id="fullscreenText">TV / Fullscreen</span>
+                    </button>
+                    <button class="btn-action" onclick="refreshDashboardData()">
+                        <i class="fas fa-sync-alt" id="refreshIcon"></i> Refresh Baseline Data
+                    </button>
+                    <!-- Tautan ke Sheet Baseline (Final Dashboard Data) -->
+                    <a href="https://docs.google.com/spreadsheets/d/1dnf8Zo3a0oHPanGMNKvVUvsRt-N5SYd_-qL_QpnVq6M/edit?usp=sharing" target="_blank" class="btn-action" style="background:#fff;">
+                        <i class="fas fa-external-link-alt"></i> Buka Sheet
+                    </a>
+                </div>
+            </div>
+
+            <!-- MAIN LAYOUT -->
+            <div class="main-layout">
+                <!-- LEFT COLUMN -->
+                <div class="left-column">
+                    <div class="column-card">
+                        <div class="column-header">Training Coverage</div>
+                        <div class="chart-wrapper">
+                            <div class="sub-header">Overall Coverage Rate</div>
+                            <div class="chart-box">
+                                <div class="canvas-wrapper"><canvas id="coveragePieChart"></canvas></div>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <div class="sub-header">Training Coverage per Jabatan</div>
+                            <div class="chart-box">
+                                <div class="canvas-wrapper"><canvas id="coverageBarChart"></canvas></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-container">
+                        <div class="sub-header" style="width: 100%; text-align: center; margin-bottom: 2px;">SUMMARY KPI 2026 (YTD)</div>
+                        <div class="kpi-content-wrapper">
+                            <div class="kpi-icon-box"><i class="fas fa-chart-pie"></i></div>
+                            <div class="kpi-metrics">
+                                <div class="kpi-item"><h3 id="kpiTotalPart">0</h3><p>Total Employee<br>2026 (YTD)</p></div>
+                                <div class="kpi-item"><h3 id="kpiOverallCoverage">0</h3><p>Employee Coverage<br>(Assigned)</p></div>
+                                <div class="kpi-item"><h3 id="kpiCompletionStatus">0/0</h3><p>Training Progress<br><span style="color:#555;">(Done/Prog)</span></p></div>
+                                <div class="kpi-item"><h3 id="kpiTargetHoursStatus">0/0</h3><p>Target Hours<br><span style="color:#555;">(Tercapai/Blm)</span></p></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="jabatan-table-container">
+                        <div class="sub-header" style="margin-bottom:4px; display: flex; justify-content: space-between; align-items: center; padding: 0 8px;">
+                            <span id="tableTitle">Rekap Jumlah Pegawai per Jabatan</span>
+                            <button onclick="openTableModal()" style="background:none; border:none; cursor:pointer;" title="Perbesar Tabel">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="jabatan-table">
+                                <thead id="jabatanTableHead"><tr><th>Jabatan</th><th style="width: 100px; text-align: center;">Total</th></tr></thead>
+                                <tbody id="jabatanTableBody"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-                <div class="chart-wrapper">
-                    <div class="sub-header">Training Coverage per Jabatan</div>
-                    <div class="chart-box">
-                        <div class="canvas-wrapper"><canvas id="coverageBarChart"></canvas></div>
+
+                <!-- RIGHT COLUMN -->
+                <div class="right-column">
+                    <div class="top-right-grid">
+                        <div class="column-card">
+                            <div class="column-header">Training Participant</div>
+                            <div class="chart-wrapper">
+                                <div class="sub-header">Overall Participation Status</div>
+                                <div class="chart-box"><div class="canvas-wrapper"><canvas id="EmployeePieChart"></canvas></div></div>
+                            </div>
+                            <div class="chart-wrapper">
+                                <div class="sub-header">Training Participant per Jabatan</div>
+                                <div class="chart-box"><div class="canvas-wrapper"><canvas id="EmployeeBarChart"></canvas></div></div>
+                            </div>
+                        </div>
+
+                        <div class="column-card">
+                            <div class="column-header">Training Hours</div>
+                            <div class="chart-wrapper">
+                                <div class="sub-header">Overall Hours Target Achievement</div>
+                                <div class="chart-box"><div class="canvas-wrapper"><canvas id="hoursPieChart"></canvas></div></div>
+                            </div>
+                            <div class="chart-wrapper">
+                                <div class="sub-header">Training Hours per Jabatan</div>
+                                <div class="chart-box"><div class="canvas-wrapper"><canvas id="hoursBarChart"></canvas></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column-card" style="flex: 1;">
+                        <div class="sub-header">Distribusi Total Employee Berdasarkan Jabatan</div>
+                        <div class="chart-box"><div class="canvas-wrapper"><canvas id="jabatanPieChart"></canvas></div></div>
                     </div>
                 </div>
             </div>
 
-            <!-- KPI SUMMARY BOX -->
-            <div class="kpi-container">
-                <div class="sub-header" style="width: 100%; text-align: center; margin-bottom: 2px;">SUMMARY KPI 2026 (YTD)</div>
-                
-                <div class="kpi-content-wrapper">
-                    <div class="kpi-icon-box">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="9" cy="7" r="4"></circle>
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                        </svg>
-                    </div>
-                    
-                    <div class="kpi-metrics">
-                        <div class="kpi-item">
-                            <h3 id="kpiTotalPart">0</h3>
-                            <p>Total Employee<br>2026 (YTD)</p>
-                        </div>
-                        
-                        <div class="kpi-item">
-                            <h3 id="kpiOverallCoverage">0</h3>
-                            <p>Employee Coverage<br>(Assigned & Completed)</p>
-                        </div>
-
-                        <div class="kpi-item">
-                            <h3 id="kpiCompletionStatus">0 / 0</h3>
-                            <p>Training Progress<br><span style="font-weight:normal; font-size:8.5px; color:#555;">(Done / On Progress)</span></p>
-                        </div>
-
-                        <div class="kpi-item">
-                            <h3 id="kpiTargetHoursStatus">0 / 0</h3>
-                            <p>Target Hours Status<br><span style="font-weight:normal; font-size:8.5px; color:#555;">(Tercapai / Belum)</span></p>
-                        </div>
-                    </div>
-                </div>
+            <!-- BOTTOM SECTION -->
+            <div class="bottom-section">
+                <div class="sub-header">Rata-Rata Nilai Pre-Test vs Post-Test per Modul Training</div>
+                <div class="bottom-chart-box"><div class="canvas-wrapper"><canvas id="prePostLineChart"></canvas></div></div>
             </div>
+        </div>
 
-            <!-- TABEL REKAP DENGAN TOMBOL EXPAND -->
-            <div class="jabatan-table-container">
-                <div class="sub-header" style="margin-bottom:4px; display: flex; justify-content: space-between; align-items: center; padding-left: 8px; padding-right: 8px;">
-                    <span id="tableTitle">Rekap Jumlah Pegawai per Jabatan</span>
-                    <button onclick="openTableModal()" style="background: none; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;" title="Perbesar Tabel">
-                        <svg viewBox="0 0 24 24" width="16" height="16" fill="#000"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+        <!-- VIEW 2: MASTER DATA & UPLOAD -->
+        <div id="view-database" class="view-section">
+            <div class="master-header">
+                <h2>Database Karyawan & Sinkronisasi Modul</h2>
+                <div style="display: flex; gap: 10px;">
+                    <!-- Input untuk Multiple File Raw Data Moodle/LMS -->
+                    <input type="file" id="rawFilesUpload" multiple accept=".csv, .xlsx, .xls" style="display:none;" onchange="handleMultipleFileUpload(event)">
+                    <button class="btn-action btn-upload" onclick="document.getElementById('rawFilesUpload').click()">
+                        <i class="fas fa-upload"></i> Upload Raw Modul (.xlsx)
+                    </button>
+                    <button class="btn-action" style="background:#fff;" onclick="downloadTableExcelMaster()">
+                        <i class="fas fa-download"></i> Download Table
                     </button>
                 </div>
-                <div class="table-wrapper">
-                    <table class="jabatan-table">
-                        <thead id="jabatanTableHead">
-                            <tr>
-                                <th>Jabatan</th>
-                                <th style="width: 100px; text-align: center;">Total Pegawai</th>
-                            </tr>
-                        </thead>
-                        <tbody id="jabatanTableBody"></tbody>
-                    </table>
-                </div>
             </div>
-        </div>
-
-        <!-- RIGHT COLUMN -->
-        <div class="right-column">
-            <div class="top-right-grid">
-                <div class="column-card">
-                    <div class="column-header">Training Participant</div>
-                    <div class="chart-wrapper">
-                        <div class="sub-header">Overall Participation Status</div>
-                        <div class="chart-box">
-                            <div class="canvas-wrapper"><canvas id="EmployeePieChart"></canvas></div>
-                        </div>
-                    </div>
-                    <div class="chart-wrapper">
-                        <div class="sub-header">Training Participant per Jabatan</div>
-                        <div class="chart-box">
-                            <div class="canvas-wrapper"><canvas id="EmployeeBarChart"></canvas></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="column-card">
-                    <div class="column-header">Training Hours</div>
-                    <div class="chart-wrapper">
-                        <div class="sub-header">Overall Hours Target Achievement</div>
-                        <div class="chart-box">
-                            <div class="canvas-wrapper"><canvas id="hoursPieChart"></canvas></div>
-                        </div>
-                    </div>
-                    <div class="chart-wrapper">
-                        <div class="sub-header">Training Hours per Jabatan</div>
-                        <div class="chart-box">
-                            <div class="canvas-wrapper"><canvas id="hoursBarChart"></canvas></div>
-                        </div>
-                    </div>
-                </div>
+            
+            <div style="background: #fff8e1; border: 1px solid #ffe082; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-size: 13px; color: #b45309;">
+                <i class="fas fa-info-circle"></i> 
+                <strong>Cara Update:</strong> Anda dapat mengunggah banyak file raw data modul (contoh: <code>8DP - Maintenance Management 1.xlsx</code>) sekaligus. Sistem akan membaca nilai Pre/Post Test berdasarkan NRP ("First name") dan memperbarui data dashboard secara lokal.
             </div>
 
-            <div class="column-card" style="flex: 1;">
-                <div class="sub-header">Distribusi Total Employee Berdasarkan Jabatan</div>
-                <div class="chart-box">
-                    <div class="canvas-wrapper"><canvas id="jabatanPieChart"></canvas></div>
-                </div>
+            <div class="master-table-wrapper">
+                <table class="master-table" id="masterDataTable">
+                    <thead>
+                        <tr>
+                            <th>NRP</th>
+                            <th>Nama Pegawai</th>
+                            <th>Jabatan</th>
+                            <th>Lokasi</th>
+                            <th>Total Modul</th>
+                            <th>Status Progress</th>
+                        </tr>
+                    </thead>
+                    <tbody id="masterDataBody">
+                        <tr><td colspan="6" style="text-align:center; padding: 20px;">Memuat data baseline...</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
     </div>
-
-    <!-- BOTTOM SECTION -->
-    <div class="bottom-section">
-        <div class="sub-header">Rata-Rata Nilai Pre-Test vs Post-Test per Modul Training</div>
-        <div class="bottom-chart-box">
-            <div class="canvas-wrapper"><canvas id="prePostLineChart"></canvas></div>
-        </div>
-    </div>
-
 </div>
 
 <script>
 // ==========================================
-// KREDENSIAL LOGIN SECURITY
+// SYSTEM & NAVIGATION LOGIC
 // ==========================================
-const CORRECT_USER = "admin";
-const CORRECT_PASS = "utcorp2026";
+const UPLOAD_SCRIPT_URL = "URL_APPS_SCRIPT_ANDA_DISINI"; // Ganti dengan Web App URL Google Script Anda yang memiliki fungsi doPost(e)
 
 function handleLogin(event) {
     event.preventDefault();
-    const userInput = document.getElementById("username").value.trim();
-    const passInput = document.getElementById("password").value.trim();
-    const errorMsg = document.getElementById("errorMsg");
+    const u = document.getElementById("username").value.trim();
+    const p = document.getElementById("password").value.trim();
 
-    if (userInput === CORRECT_USER && passInput === CORRECT_PASS) {
+    if (u === "admin" && p === "utcorp2026") {
         document.getElementById("loginModal").style.display = "none";
+        document.getElementById("appContainer").style.display = "flex";
         
-        const dash = document.getElementById("dashboardContent");
-        dash.style.display = "flex";
-        dash.style.flexDirection = "column";
-        
-        setTimeout(() => {
-            dash.classList.add("animate-show");
-        }, 50);
-
         loadDashboardData(true);
+        Swal.fire({ title: 'Login Berhasil', text: 'Selamat datang di 8 DP Portal', icon: 'success', timer: 1500, showConfirmButton: false });
     } else {
-        errorMsg.style.display = "block";
+        Swal.fire({ title: 'Akses Ditolak', text: 'Username atau password salah.', icon: 'error', confirmButtonColor: '#1A1A1A' });
     }
 }
 
-// ==========================================
-// FUNGSI TOGGLE FULLSCREEN / TV MODE
-// ==========================================
+function logout() {
+    Swal.fire({
+        title: 'Konfirmasi', text: 'Apakah Anda yakin ingin keluar?', icon: 'question',
+        showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Ya, Keluar'
+    }).then((result) => { if (result.isConfirmed) location.reload(); });
+}
+
+function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('collapsed');
+    setTimeout(() => { Object.values(chartInstances).forEach(c => { if(c) c.resize(); }); }, 300);
+}
+
+function switchView(viewName, element) {
+    document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+    document.getElementById('view-' + viewName).classList.add('active');
+    document.querySelectorAll('.nav-link-custom').forEach(el => el.classList.remove('active'));
+    element.classList.add('active');
+    if(viewName === 'dashboard') {
+        setTimeout(() => { Object.values(chartInstances).forEach(c => { if(c) c.resize(); }); }, 200);
+    }
+}
+
 function toggleFullScreen() {
     const elem = document.documentElement;
-
-    if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
-        if (elem.requestFullscreen) {
-            elem.requestFullscreen();
-        } else if (elem.msRequestFullscreen) {
-            elem.msRequestFullscreen();
-        } else if (elem.mozRequestFullScreen) {
-            elem.mozRequestFullScreen();
-        } else if (elem.webkitRequestFullscreen) {
-            elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-        }
+    if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+        if (elem.requestFullscreen) elem.requestFullscreen();
+        else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
     } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        }
+        if (document.exitFullscreen) document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
     }
 }
+document.addEventListener("fullscreenchange", resizeCharts);
+document.addEventListener("webkitfullscreenchange", resizeCharts);
+function resizeCharts() { setTimeout(() => { Object.values(chartInstances).forEach(c => { if(c) c.resize(); }); }, 150); }
 
-document.addEventListener("fullscreenchange", updateFullscreenBtnText);
-document.addEventListener("webkitfullscreenchange", updateFullscreenBtnText);
-document.addEventListener("mozfullscreenchange", updateFullscreenBtnText);
-document.addEventListener("MSFullscreenChange", updateFullscreenBtnText);
+// ==========================================
+// UPLOAD MULTIPLE FILE RAW DATA LOGIC
+// ==========================================
+function readFileAsBinary(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (e) => resolve(e.target.result);
+        reader.onerror = (e) => reject(e);
+        reader.readAsBinaryString(file);
+    });
+}
 
-function updateFullscreenBtnText() {
-    const fsText = document.getElementById("fullscreenText");
-    if (!fsText) return;
+async function handleMultipleFileUpload(event) {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
 
-    setTimeout(() => {
-        Object.keys(chartInstances).forEach(key => {
-            if (chartInstances[key]) chartInstances[key].resize();
+    Swal.fire({
+        title: 'Memproses Modul...',
+        html: `Sedang membaca dan menyiapkan data dari ${files.length} file. Harap tunggu.`,
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); }
+    });
+
+    let updatedRows = 0;
+    let modulesDiscovered = new Set();
+    let uploadPayload = []; // Menyimpan sekumpulan data untuk dikirim (POST) ke Google Sheets
+
+    try {
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const fileName = file.name;
+            
+            // Ekstrak Nama Modul dari Nama File
+            // Cth: "8DP - Maintenance Management 1 Grades.xlsx" -> "Maintenance Management 1"
+            let extractedModName = fileName.replace(/\.xlsx|\.xls|\.csv/g, '');
+            extractedModName = extractedModName.replace(/^8DP\s*-\s*/i, ''); // Hapus prefix 8DP
+            extractedModName = extractedModName.replace(/\s*Grades$/i, ''); // Hapus suffix Grades
+            extractedModName = extractedModName.trim();
+            
+            modulesDiscovered.add(extractedModName);
+
+            // Pastikan modul terdaftar di master column, jika belum tambahkan dinamis
+            if (!moduleColumns.find(m => m.name === extractedModName)) {
+                moduleColumns.push({ name: extractedModName, preIdx: -1, postIdx: -1, statusIdx: -1 });
+            }
+
+            const data = await readFileAsBinary(file);
+            const workbook = XLSX.read(data, { type: 'binary' });
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            
+            // Konversi ke JSON, skip baris header (defval memastikan sel kosong tetap diproses)
+            const jsonData = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+
+            // Siapkan nama sheet target (Berdasarkan format gambar: Nama File + " Grades")
+            let sheetNameTarget = fileName.replace(/\.xlsx|\.xls|\.csv/g, '').trim();
+            if (!sheetNameTarget.toLowerCase().endsWith("grades")) {
+                sheetNameTarget += " Grades";
+            }
+
+            // Masukkan JSON utuh ke antrean upload payload Google Sheets
+            uploadPayload.push({
+                sheetName: sheetNameTarget,
+                data: jsonData
+            });
+
+            jsonData.forEach(row => {
+                // Pencarian kolom fleksibel berdasarkan nama header yang ditunjukkan di gambar user
+                let keyNrp = Object.keys(row).find(k => k.toLowerCase().includes('first name'));
+                let keyPre = Object.keys(row).find(k => k.toLowerCase().includes('pre test') || k.toLowerCase().includes('quiz: 01'));
+                let keyPost = Object.keys(row).find(k => k.toLowerCase().includes('post test') || k.toLowerCase().includes('quiz: 04'));
+                
+                let nrpRaw = keyNrp ? String(row[keyNrp]).trim() : "";
+                if (!nrpRaw || nrpRaw.toLowerCase() === "first name") return; // Skip header string
+                
+                // Normalisasi string koma desimal ke titik agar bisa di parse
+                let preStr = keyPre ? String(row[keyPre]).replace(',', '.').trim() : "-";
+                let postStr = keyPost ? String(row[keyPost]).replace(',', '.').trim() : "-";
+
+                let preVal = (preStr === "-" || preStr === "") ? NaN : parseFloat(preStr);
+                let postVal = (postStr === "-" || postStr === "") ? NaN : parseFloat(postStr);
+
+                // Cari karyawan ini di baseline data yang sudah di parse dari CSV Google Sheet
+                let userIndex = parsedData.findIndex(u => u.nrp === nrpRaw);
+                
+                if (userIndex !== -1) {
+                    let user = parsedData[userIndex];
+                    
+                    // Inisialisasi modul untuk user ini jika belum ada
+                    if (!user.modules[extractedModName]) {
+                        user.modules[extractedModName] = { pre: null, post: null, status: "Not Picked" };
+                    }
+                    
+                    // Update skor
+                    if (!isNaN(preVal)) user.modules[extractedModName].pre = preVal;
+                    if (!isNaN(postVal)) user.modules[extractedModName].post = postVal;
+                    
+                    // Tentukan Status Modul
+                    let modStatus = "Not Yet";
+                    // Jika ada nilai Post Test (asumsi > 0), maka selesai. 
+                    if (!isNaN(postVal) && postVal > 0) modStatus = "Done"; 
+                    else if (!isNaN(preVal) && preVal > 0) modStatus = "On Progress";
+                    
+                    user.modules[extractedModName].status = modStatus;
+                    updatedRows++;
+                }
+            });
+        }
+        
+        // --- PROSES UPLOAD OTOMATIS KE GOOGLE SHEETS ---
+        if (typeof UPLOAD_SCRIPT_URL !== 'undefined' && UPLOAD_SCRIPT_URL !== "" && UPLOAD_SCRIPT_URL !== "https://script.google.com/macros/s/AKfycbyEC_jqxLFfXGeHI7ozR7VhGYylZLYVgFsx9pF-pcyqrs8vYt5pglCuvIi9GPWw22SLiQ/exec") {
+            Swal.fire({
+                title: 'Mengunggah ke Spreadsheet...',
+                html: `Menyimpan data <b>${files.length}</b> modul ke Google Sheets...`,
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            try {
+                const response = await fetch(UPLOAD_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ filesData: uploadPayload })
+                });
+                
+                const result = await response.json();
+                if (result.status === "success") {
+                    // Jika sukses update sheet modul, refresh Dashboard dari FINAL DASHBOARD DATA
+                    await loadDashboardData(false); 
+                    
+                    Swal.fire({
+                        title: 'Berhasil Terintegrasi!',
+                        html: `Data <b>${files.length}</b> modul berhasil diunggah ke Google Sheets.<br>Dashboard telah otomatis diperbarui dari "Final Dashboard Data".`,
+                        icon: 'success'
+                    });
+                    event.target.value = "";
+                    return; // Hentikan script disini agar popup sukses lokal tidak muncul
+                } else {
+                    throw new Error(result.message || "Gagal menyimpan ke Spreadsheet");
+                }
+            } catch (fetchErr) {
+                console.error("Gagal POST ke GSheets:", fetchErr);
+                Swal.fire('Peringatan Integrasi Cloud', 'Gagal mengirim data ke Google Sheets otomatis (' + fetchErr.message + '). Data hanya diperbarui di layar Anda (Lokal).', 'warning');
+            }
+        }
+        // --- END PROSES UPLOAD GOOGLE SHEETS ---
+
+        // Kalkulasi ulang status keseluruhan karyawan setelah modulnya diperbarui secara lokal
+        recalculateOverallStatus();
+        
+        // Render ulang antarmuka
+        initFilters();
+        applyFilter();
+        renderMasterTable();
+        
+        Swal.fire({
+            title: 'Update Lokal Berhasil!',
+            html: `Sistem telah memproses <b>${files.length}</b> file modul secara lokal.<br>Berhasil mencocokkan <b>${updatedRows}</b> record karyawan.<br><br><small style="color:#d33;">*Data belum tersimpan permanen ke Spreadsheet karena UPLOAD_SCRIPT_URL belum dikonfigurasi.</small>`,
+            icon: 'success'
         });
-    }, 100);
-    
-    if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
-        fsText.textContent = "Keluar Fullscreen";
-    } else {
-        fsText.textContent = "TV / Fullscreen";
+
+    } catch (err) {
+        console.error(err);
+        Swal.fire('Gagal Upload', 'Format file tidak terbaca atau rusak.', 'error');
     }
+    
+    event.target.value = ""; // Reset input field
 }
 
-// ==========================================
-// FUNGSI BUKA / TUTUP TABEL MODAL
-// ==========================================
-function openTableModal() {
-    document.getElementById("tableModal").style.display = "flex";
+// Menghitung ulang overallRecap dan Coverage berdasarkan nilai modul terbaru
+function recalculateOverallStatus() {
+    parsedData.forEach(user => {
+        let hasAnyPicked = false;
+        let hasDoneAny = false;
+        let hasProgressAny = false;
+        let hasNotYetAssigned = false; // untuk melacak jika ada modul yang diambil tapi belum dikerjakan sama sekali
+
+        for (const [modName, modData] of Object.entries(user.modules)) {
+            const mStatus = (modData.status || "").toLowerCase();
+            if (mStatus !== "" && !mStatus.includes("not picked")) {
+                hasAnyPicked = true;
+                if (mStatus.includes("done")) hasDoneAny = true;
+                else if (mStatus.includes("progress")) hasProgressAny = true;
+                else if (mStatus.includes("not yet")) hasNotYetAssigned = true;
+            }
+        }
+
+        // Tentukan Coverage (asumsi: mengambil minimal 1 modul berarti Tercoverage)
+        user.statusCoverage = (user.jumlahModul > 0 || hasAnyPicked) ? "Tercoverage" : "Not Yet";
+
+        // Tentukan Final Progress Recap
+        if (hasDoneAny && !hasProgressAny && !hasNotYetAssigned) {
+            // Semua modul yang diambil selesai
+            user.allRecap = "Done";
+        } else if (hasDoneAny || hasProgressAny) {
+            // Ada progres campuran
+            user.allRecap = "On Progress";
+        } else {
+            // Belum ada progress sama sekali
+            user.allRecap = "Not Yet";
+        }
+    });
 }
 
-function closeTableModal() {
-    document.getElementById("tableModal").style.display = "none";
+// Master Table (View 2) Renderer
+function downloadTableExcelMaster() {
+    const table = document.getElementById("masterDataTable");
+    const wb = XLSX.utils.table_to_book(table, {sheet: "Master Data Dashboard"});
+    XLSX.writeFile(wb, "MasterData_8DP_Latest.xlsx");
 }
 
+function renderMasterTable() {
+    const tbody = document.getElementById("masterDataBody");
+    tbody.innerHTML = "";
+    if(!parsedData || parsedData.length === 0) {
+        tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>Data Kosong</td></tr>";
+        return;
+    }
+    
+    parsedData.forEach(d => {
+        const tr = document.createElement("tr");
+        let statusBadge = d.allRecap === "Done" ? "color: #16a34a; font-weight: bold;" : 
+                          d.allRecap === "On Progress" ? "color: #d97706; font-weight: bold;" : "color: #dc2626;";
+        tr.innerHTML = `
+            <td>${d.nrp}</td>
+            <td><strong>${d.nama}</strong></td>
+            <td>${d.jabatan}</td>
+            <td>${d.lokasi}</td>
+            <td style="text-align:center;">${d.jumlahModul}</td>
+            <td style="${statusBadge}">${d.allRecap || "Not Yet"}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+
 // ==========================================
-// FUNGSI DOWNLOAD EXCEL MENGGUNAKAN SHEETJS (.xlsx)
+// DASHBOARD & CHARTING LOGIC (Dari Code 50 - Theme Gelap dgn Leader Lines)
 // ==========================================
+function openTableModal() { document.getElementById("tableModal").style.display = "flex"; }
+function closeTableModal() { document.getElementById("tableModal").style.display = "none"; }
 function downloadTableExcel() {
     const tableTitle = document.getElementById("modalTableTitle").innerText;
-    
-    // Mengambil elemen tabel yang ada di dalam modal
     const table = document.querySelector("#tableModal .jabatan-table");
-    
-    // Mengubah elemen tabel HTML menjadi struktur data Workbook Excel
     const wb = XLSX.utils.table_to_book(table, {sheet: "Data Status Pegawai"});
-    
-    // Menyimpan dan mengunduh file dengan format .xlsx
     XLSX.writeFile(wb, tableTitle.replace(/\s+/g, '_') + ".xlsx");
 }
 
-// ==========================================
-// CUSTOM PLUGIN: DIRECTIONAL LEADER LINES
-// Anti Collision: Jika bertumpuk, ditarik ke kiri dan kanan dengan rapi
-// ==========================================
+// Chart Plugin LeaderLines Anti Collision
 const pieLeaderLinesPlugin = {
     id: 'pieLeaderLines',
     afterDraw(chart) {
         if (chart.config.type !== 'pie' || !chart.options.plugins?.pieLeaderLines?.display) return;
-        
-        const ctx = chart.ctx;
-        const meta = chart.getDatasetMeta(0);
+        const ctx = chart.ctx; const meta = chart.getDatasetMeta(0);
         if (!meta || !meta.data) return;
-
         const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
         if (total === 0) return;
 
@@ -1055,188 +736,83 @@ const pieLeaderLinesPlugin = {
         meta.data.forEach((element, index) => {
             const val = chart.data.datasets[0].data[index];
             const pct = (val * 100 / total);
-            // Saring irisan tipis (< 15%)
             if (pct > 0 && pct < 15) {
                 const { x, y, outerRadius, startAngle, endAngle } = element;
                 const midAngle = (startAngle + endAngle) / 2;
-                callouts.push({
-                    index,
-                    pct,
-                    x, y,
-                    outerRadius,
-                    midAngle
-                });
+                callouts.push({ index, pct, x, y, outerRadius, midAngle });
             }
         });
 
         if (callouts.length === 0) return;
-
         ctx.save();
-
         callouts.forEach((item, i) => {
             const startX = item.x + Math.cos(item.midAngle) * item.outerRadius;
             const startY = item.y + Math.sin(item.midAngle) * item.outerRadius;
-
             let elbowX, elbowY, endX, endY, isRight;
 
-            // Logika anti-bertumpuk ketika terdapat 2 irisan kecil berdampingan di atas
             if (callouts.length > 1) {
                 if (i === 0) { 
-                    // Irisan pertama: Tarik diagonal ke Kiri-Atas lalu horizontal ke Kiri
-                    elbowX = item.x + Math.cos(item.midAngle) * (item.outerRadius + 12);
-                    elbowY = item.y + Math.sin(item.midAngle) * (item.outerRadius + 12);
-                    isRight = false;
-                    endX = elbowX - 15; 
-                    endY = elbowY;
+                    elbowX = item.x + Math.cos(item.midAngle) * (item.outerRadius + 12); elbowY = item.y + Math.sin(item.midAngle) * (item.outerRadius + 12); isRight = false; endX = elbowX - 15; endY = elbowY;
                 } else { 
-                    // Irisan kedua: Tarik tegak LURUS ke Atas menembus batas irisan pertama, lalu panjang ke Kanan
-                    elbowX = startX; 
-                    elbowY = item.y - item.outerRadius - 20; 
-                    isRight = true;
-                    endX = elbowX + 55; 
-                    endY = elbowY;
+                    elbowX = startX; elbowY = item.y - item.outerRadius - 20; isRight = true; endX = elbowX + 55; endY = elbowY;
                 }
             } else {
-                // Logika standar 1 irisan
-                isRight = Math.cos(item.midAngle) >= 0;
-                elbowX = item.x + Math.cos(item.midAngle) * (item.outerRadius + 12);
-                elbowY = item.y + Math.sin(item.midAngle) * (item.outerRadius + 12);
-                endX = elbowX + (isRight ? 15 : -15);
-                endY = elbowY;
+                isRight = Math.cos(item.midAngle) >= 0; elbowX = item.x + Math.cos(item.midAngle) * (item.outerRadius + 12); elbowY = item.y + Math.sin(item.midAngle) * (item.outerRadius + 12); endX = elbowX + (isRight ? 15 : -15); endY = elbowY;
             }
 
-            // Gambar Garis Siku
-            ctx.beginPath();
-            ctx.moveTo(startX, startY);
-            ctx.lineTo(elbowX, elbowY);
-            ctx.lineTo(endX, endY);
-            ctx.strokeStyle = '#555555';
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
-
-            // Gambar Teks Persentase
-            ctx.fillStyle = '#000000';
-            ctx.font = 'bold 11px "Segoe UI", sans-serif';
-            ctx.textAlign = isRight ? 'left' : 'right';
-            ctx.textBaseline = 'middle';
-            
-            // Format 2.0% jadi 2%, tapi biarkan 4.4%
-            const formattedPct = parseFloat(item.pct.toFixed(1)) + '%';
-            ctx.fillText(formattedPct, endX + (isRight ? 5 : -5), endY);
+            ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(elbowX, elbowY); ctx.lineTo(endX, endY);
+            ctx.strokeStyle = '#555555'; ctx.lineWidth = 1.5; ctx.stroke();
+            ctx.fillStyle = '#000000'; ctx.font = 'bold 11px "Segoe UI", sans-serif'; ctx.textAlign = isRight ? 'left' : 'right'; ctx.textBaseline = 'middle';
+            ctx.fillText(parseFloat(item.pct.toFixed(1)) + '%', endX + (isRight ? 5 : -5), endY);
         });
-
         ctx.restore();
     }
 };
-
 Chart.register(ChartDataLabels, pieLeaderLinesPlugin);
 
+// Baseline Google Sheet CSV URL (Berdasarkan crosscheck sheet FINAL DASHBOARD DATA)
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQk1Gnwtu-vKG24ImVYA0ytCuAuOuWeujzNpFbUPz2C-Y0jLwRxWspRCSMPqG9gj7WfcTGtXWwSlFH6/pub?gid=1260922175&single=true&output=csv";
-
-// MASTER WARNA & URUTAN JABATAN
-const JABATAN_COLORS = {
-    "BC": "#4285f4",
-    "BM": "#f77f00",
-    "SM": "#34a853",
-    "SDH": "#ea4335",
-    "PDH": "#f59e0b",
-    "ADH": "#14b8a6",
-    "SPV": "#6366f1",
-    "ASE": "#a855f7"
-};
-
+const JABATAN_COLORS = { "BC": "#4285f4", "BM": "#f77f00", "SM": "#34a853", "SDH": "#ea4335", "PDH": "#f59e0b", "ADH": "#14b8a6", "SPV": "#6366f1", "ASE": "#a855f7" };
 const CUSTOM_JABATAN_ORDER = ["BC", "BM", "SM", "SDH", "PDH", "ADH", "SPV", "ASE"];
 
-function getJabatanColor(jabatan) {
-    return JABATAN_COLORS[jabatan] || "#999999";
-}
-
+function getJabatanColor(jabatan) { return JABATAN_COLORS[jabatan] || "#999999"; }
 function hexToRgba(hex, alpha) {
     if (!hex || hex[0] !== '#') return `rgba(153, 153, 153, ${alpha})`;
-    let c = hex.replace('#', '');
-    if (c.length === 3) c = c.split('').map(x => x + x).join('');
-    const num = parseInt(c, 16);
-    return `rgba(${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}, ${alpha})`;
+    let c = hex.replace('#', ''); if (c.length === 3) c = c.split('').map(x => x + x).join('');
+    const num = parseInt(c, 16); return `rgba(${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}, ${alpha})`;
 }
-
 function getStripePattern(colorStr) {
-    const patternCanvas = document.createElement('canvas');
-    patternCanvas.width = 10;
-    patternCanvas.height = 10;
-    const pctx = patternCanvas.getContext('2d');
-
-    pctx.fillStyle = hexToRgba(colorStr, 0.25);
-    pctx.fillRect(0, 0, 10, 10);
-
-    pctx.strokeStyle = colorStr;
-    pctx.lineWidth = 2;
-    pctx.beginPath();
-    pctx.moveTo(0, 10);
-    pctx.lineTo(10, 0);
-    pctx.stroke();
-
-    return pctx.createPattern(patternCanvas, 'repeat');
+    const pC = document.createElement('canvas'); pC.width = 10; pC.height = 10; const pctx = pC.getContext('2d');
+    pctx.fillStyle = hexToRgba(colorStr, 0.25); pctx.fillRect(0, 0, 10, 10);
+    pctx.strokeStyle = colorStr; pctx.lineWidth = 2; pctx.beginPath(); pctx.moveTo(0, 10); pctx.lineTo(10, 0); pctx.stroke();
+    return pctx.createPattern(pC, 'repeat');
 }
 
-let parsedData = [];
-let moduleColumns = [];
-let chartInstances = {};
-let colMap = {};
-
-function showToast(message) {
-    const toast = document.getElementById("toastNotif");
-    const toastMsg = document.getElementById("toastMsg");
-    toastMsg.textContent = message;
-    toast.classList.add("show");
-
-    setTimeout(() => {
-        toast.classList.remove("show");
-    }, 3500);
-}
+let parsedData = []; let moduleColumns = []; let chartInstances = {}; let colMap = {};
 
 function parseCustomCSV(text) {
     const lines = text.split("\n").filter(l => l.trim().length > 0);
     if (lines.length < 2) return;
 
     function splitCSVLine(line) {
-        const result = [];
-        let cur = '';
-        let inQuotes = false;
+        const result = []; let cur = ''; let inQ = false;
         for (let i = 0; i < line.length; i++) {
             const c = line[i];
-            if (c === '"') {
-                inQuotes = !inQuotes;
-            } else if (c === ',' && !inQuotes) {
-                result.push(cur.trim().replace(/^"|"$/g, ''));
-                cur = '';
-            } else {
-                cur += c;
-            }
+            if (c === '"') inQ = !inQ; else if (c === ',' && !inQ) { result.push(cur.trim().replace(/^"|"$/g, '')); cur = ''; }
+            else cur += c;
         }
         result.push(cur.trim().replace(/^"|"$/g, ''));
         return result;
     }
 
-    const row1 = splitCSVLine(lines[0]);
-    const row2 = splitCSVLine(lines[1]);
-
-    colMap = {
-        nrp: -1, nama: -1, lokasi: -1, corpu: -1, jumlahModul: -1,
-        jabatan: -1, statusCoverage: -1, allRecap: -1, trainingHours: -1,
-        targetHours: -1, statusTarget: -1
-    };
+    const row1 = splitCSVLine(lines[0]); const row2 = splitCSVLine(lines[1]);
+    colMap = { nrp:-1, nama:-1, lokasi:-1, corpu:-1, jumlahModul:-1, jabatan:-1, statusCoverage:-1, allRecap:-1, trainingHours:-1, targetHours:-1, statusTarget:-1 };
 
     for (let c = 0; c < Math.max(row1.length, row2.length); c++) {
-        const h1 = (row1[c] || "").toLowerCase().trim();
-        const h2 = (row2[c] || "").toLowerCase().trim();
-        const combined = h1 + " " + h2;
-
-        if (h1.includes("nrp")) colMap.nrp = c;
-        else if (h1.includes("name") || h1.includes("nama")) colMap.nama = c;
-        else if (h1.includes("lokasi")) colMap.lokasi = c;
-        else if (h1.includes("corpu")) colMap.corpu = c;
-        else if (h1.includes("jumlah modul")) colMap.jumlahModul = c;
-        else if (h1.includes("jabatan")) colMap.jabatan = c;
+        const h1 = (row1[c] || "").toLowerCase().trim(); const h2 = (row2[c] || "").toLowerCase().trim(); const combined = h1 + " " + h2;
+        if (h1.includes("nrp")) colMap.nrp = c; else if (h1.includes("name") || h1.includes("nama")) colMap.nama = c;
+        else if (h1.includes("lokasi")) colMap.lokasi = c; else if (h1.includes("corpu")) colMap.corpu = c;
+        else if (h1.includes("jumlah modul")) colMap.jumlahModul = c; else if (h1.includes("jabatan")) colMap.jabatan = c;
         else if (combined.includes("coverage")) colMap.statusCoverage = c;
         else if (combined.includes("recap") || combined.includes("employee status") || combined.includes("participation")) colMap.allRecap = c;
         else if (combined.includes("target training hour") || combined.includes("target hour")) colMap.targetHours = c;
@@ -1244,51 +820,30 @@ function parseCustomCSV(text) {
         else if (combined.includes("status target") || combined.includes("target status")) colMap.statusTarget = c;
     }
 
-    if (colMap.nrp === -1) colMap.nrp = 1;
-    if (colMap.nama === -1) colMap.nama = 2;
-    if (colMap.lokasi === -1) colMap.lokasi = 3;
-    if (colMap.corpu === -1) colMap.corpu = 4;
-    if (colMap.jumlahModul === -1) colMap.jumlahModul = 5;
-    if (colMap.jabatan === -1) colMap.jabatan = 6;
+    if (colMap.nrp === -1) colMap.nrp = 1; if (colMap.nama === -1) colMap.nama = 2; if (colMap.lokasi === -1) colMap.lokasi = 3;
+    if (colMap.corpu === -1) colMap.corpu = 4; if (colMap.jumlahModul === -1) colMap.jumlahModul = 5; if (colMap.jabatan === -1) colMap.jabatan = 6;
 
-    moduleColumns = [];
-    let currentModule = "";
+    moduleColumns = []; let currentModule = "";
     for (let colIdx = 0; colIdx < row1.length; colIdx++) {
         if (row1[colIdx] && row1[colIdx].trim() !== "") {
             const h1Upper = row1[colIdx].trim();
-            if (!["no", "nrp", "name", "nama", "lokasi kerja update", "corpu area", "jumlah modul yg diambil", "jabatan"].includes(h1Upper.toLowerCase())) {
-                currentModule = h1Upper;
-            }
+            if (!["no", "nrp", "name", "nama", "lokasi kerja update", "corpu area", "jumlah modul yg diambil", "jabatan"].includes(h1Upper.toLowerCase())) currentModule = h1Upper;
         }
-        
         const subHeader = row2[colIdx] ? row2[colIdx].toLowerCase().trim() : "";
         if (currentModule && subHeader.includes("pre test")) {
-            if (!moduleColumns.find(m => m.name === currentModule)) {
-                moduleColumns.push({
-                    name: currentModule,
-                    preIdx: colIdx,
-                    postIdx: colIdx + 1,
-                    statusIdx: colIdx + 2
-                });
-            }
+            if (!moduleColumns.find(m => m.name === currentModule)) moduleColumns.push({ name: currentModule, preIdx: colIdx, postIdx: colIdx + 1, statusIdx: colIdx + 2 });
         }
     }
 
     parsedData = [];
     for (let i = 2; i < lines.length; i++) {
-        const row = splitCSVLine(lines[i]);
-        if (row.length < 3) continue;
-
-        const cekNrp = row[colMap.nrp] ? row[colMap.nrp].trim() : "";
-        const cekNama = row[colMap.nama] ? row[colMap.nama].trim() : "";
+        const row = splitCSVLine(lines[i]); if (row.length < 3) continue;
+        const cekNrp = row[colMap.nrp] ? row[colMap.nrp].trim() : ""; const cekNama = row[colMap.nama] ? row[colMap.nama].trim() : "";
         if (cekNrp === "" && cekNama === "") continue;
 
         const item = {
-            nrp: row[colMap.nrp] || "",
-            nama: row[colMap.nama] || "",
-            lokasi: row[colMap.lokasi] || "",
-            corpu: row[colMap.corpu] || "",
-            jumlahModul: parseInt(row[colMap.jumlahModul]) || 0,
+            nrp: row[colMap.nrp] || "", nama: row[colMap.nama] || "", lokasi: row[colMap.lokasi] || "",
+            corpu: row[colMap.corpu] || "", jumlahModul: parseInt(row[colMap.jumlahModul]) || 0,
             jabatan: (row[colMap.jabatan] || "").trim().toUpperCase(),
             statusCoverage: colMap.statusCoverage !== -1 ? row[colMap.statusCoverage] : "", 
             allRecap: colMap.allRecap !== -1 ? row[colMap.allRecap] : "",
@@ -1299,106 +854,56 @@ function parseCustomCSV(text) {
         };
 
         let hasAnyPicked = false, hasDoneAny = false, hasProgressAny = false;
-
         moduleColumns.forEach(mod => {
-            const preVal = parseFloat(row[mod.preIdx]);
-            const postVal = parseFloat(row[mod.postIdx]);
-            const modStatus = row[mod.statusIdx] || "";
-
-            item.modules[mod.name] = {
-                pre: !isNaN(preVal) ? preVal : null,
-                post: !isNaN(postVal) ? postVal : null,
-                status: modStatus
-            };
-
+            const preVal = parseFloat(row[mod.preIdx]); const postVal = parseFloat(row[mod.postIdx]); const modStatus = row[mod.statusIdx] || "";
+            item.modules[mod.name] = { pre: !isNaN(preVal) ? preVal : null, post: !isNaN(postVal) ? postVal : null, status: modStatus };
             if (modStatus && !modStatus.toLowerCase().includes("not picked") && modStatus.trim() !== "") {
-                hasAnyPicked = true;
-                if (modStatus.toLowerCase().includes("done")) hasDoneAny = true;
-                if (modStatus.toLowerCase().includes("progress")) hasProgressAny = true;
+                hasAnyPicked = true; if (modStatus.toLowerCase().includes("done")) hasDoneAny = true; if (modStatus.toLowerCase().includes("progress")) hasProgressAny = true;
             }
         });
 
-        if (!item.statusCoverage) {
-            item.statusCoverage = (item.jumlahModul > 0 || hasAnyPicked) ? "Tercoverage" : "Not Yet";
-        }
+        if (!item.statusCoverage) item.statusCoverage = (item.jumlahModul > 0 || hasAnyPicked) ? "Tercoverage" : "Not Yet";
         if (!item.allRecap) {
-            if (hasDoneAny) item.allRecap = "Done";
-            else if (hasProgressAny) item.allRecap = "On Progress";
-            else item.allRecap = "Not Yet";
+            if (hasDoneAny) item.allRecap = "Done"; else if (hasProgressAny) item.allRecap = "On Progress"; else item.allRecap = "Not Yet";
         }
-
         parsedData.push(item);
     }
 }
 
 function loadDashboardData(isInitial = false) {
+    if(isInitial) Swal.fire({title:'Memuat Baseline Data', html: 'Mengambil data dari Google Sheet', allowOutsideClick: false, didOpen:()=>{Swal.showLoading()}});
+    
     return fetch(CSV_URL + "&t=" + new Date().getTime())
         .then(res => res.text())
         .then(csvText => {
             parseCustomCSV(csvText);
-            
             initFilters();
             applyFilter();
-
-            if (!isInitial) {
-                const now = new Date();
-                const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                showToast(`Data berhasil diperbarui! Last Updated: ${timeStr} WIB`);
-            }
+            if (isInitial) Swal.close();
+            else Swal.fire({ title: 'Tersinkron!', text: 'Data baseline dikembalikan dari Google Sheet.', icon: 'success', timer: 1500, showConfirmButton: false });
         })
-        .catch(err => console.error("Error loading CSV:", err));
+        .catch(err => {
+            console.error("Error loading CSV:", err);
+            if(isInitial) Swal.fire('Error', 'Gagal memuat data dari Spreadsheet', 'error');
+        });
 }
 
 function refreshDashboardData() {
-    const refreshIcon = document.getElementById("refreshIcon");
-    const dash = document.getElementById("dashboardContent");
-    
-    if (refreshIcon) refreshIcon.classList.add("spinning");
-    
-    dash.style.opacity = "0.4";
-    dash.style.transform = "scale(0.99)";
-
-    loadDashboardData(false).finally(() => {
-        setTimeout(() => {
-            if (refreshIcon) refreshIcon.classList.remove("spinning");
-            dash.style.opacity = "1";
-            dash.style.transform = "scale(1)";
-        }, 500);
-    });
+    loadDashboardData(false);
 }
 
 function initFilters() {
-    const currentLoc = document.getElementById("filterLokasi").value;
-    const lokasiSet = new Set();
+    const currentLoc = document.getElementById("filterLokasi").value; const lokasiSet = new Set();
     parsedData.forEach(item => { if (item.lokasi) lokasiSet.add(item.lokasi); });
+    const selectLoc = document.getElementById("filterLokasi"); selectLoc.innerHTML = '<option value="ALL">-- Semua Lokasi --</option>';
+    Array.from(lokasiSet).sort().forEach(loc => { selectLoc.innerHTML += `<option value="${loc}">${loc}</option>`; });
+    if (currentLoc && Array.from(selectLoc.options).some(o => o.value === currentLoc)) selectLoc.value = currentLoc;
 
-    const selectLoc = document.getElementById("filterLokasi");
-    selectLoc.innerHTML = '<option value="ALL">-- Semua Lokasi Kerja --</option>';
-    Array.from(lokasiSet).sort().forEach(loc => {
-        const opt = document.createElement("option");
-        opt.value = loc;
-        opt.textContent = loc;
-        selectLoc.appendChild(opt);
-    });
-    if (currentLoc && Array.from(selectLoc.options).some(o => o.value === currentLoc)) {
-        selectLoc.value = currentLoc;
-    }
-
-    const currentJab = document.getElementById("filterJabatan").value;
-    const jabatanSet = new Set();
+    const currentJab = document.getElementById("filterJabatan").value; const jabatanSet = new Set();
     parsedData.forEach(item => { if (item.jabatan) jabatanSet.add(item.jabatan); });
-
-    const selectJab = document.getElementById("filterJabatan");
-    selectJab.innerHTML = '<option value="ALL">-- Semua Jabatan --</option>';
-    Array.from(jabatanSet).sort().forEach(jab => {
-        const opt = document.createElement("option");
-        opt.value = jab;
-        opt.textContent = jab;
-        selectJab.appendChild(opt);
-    });
-    if (currentJab && Array.from(selectJab.options).some(o => o.value === currentJab)) {
-        selectJab.value = currentJab;
-    }
+    const selectJab = document.getElementById("filterJabatan"); selectJab.innerHTML = '<option value="ALL">-- Semua Jabatan --</option>';
+    Array.from(jabatanSet).sort().forEach(jab => { selectJab.innerHTML += `<option value="${jab}">${jab}</option>`; });
+    if (currentJab && Array.from(selectJab.options).some(o => o.value === currentJab)) selectJab.value = currentJab;
 }
 
 function applyFilter() {
@@ -1406,482 +911,146 @@ function applyFilter() {
     const selectedJab = document.getElementById("filterJabatan").value;
     const selectedStatus = document.getElementById("filterStatus").value;
     
-    // Filter data berdasarkan ketiga kondisi
     const filtered = parsedData.filter(d => {
         const matchLoc = selectedLoc === "ALL" || d.lokasi === selectedLoc;
         const matchJab = selectedJab === "ALL" || d.jabatan === selectedJab;
-        
-        let dStatus = "Not Yet";
-        const stText = (d.allRecap || "").toLowerCase();
-        if (stText.includes("done")) dStatus = "Done";
-        else if (stText.includes("progress")) dStatus = "On Progress";
-        
+        let dStatus = "Not Yet"; const stText = (d.allRecap || "").toLowerCase();
+        if (stText.includes("done")) dStatus = "Done"; else if (stText.includes("progress")) dStatus = "On Progress";
         const matchStatus = selectedStatus === "ALL" || dStatus === selectedStatus;
-
         return matchLoc && matchJab && matchStatus;
     });
 
     renderDashboard(filtered);
+    renderMasterTable(); 
 }
 
-function destroyChart(id) {
-    if (chartInstances[id]) {
-        chartInstances[id].destroy();
-        delete chartInstances[id];
-    }
-}
-
+function destroyChart(id) { if (chartInstances[id]) { chartInstances[id].destroy(); delete chartInstances[id]; } }
 function getStatusPieOptions() {
     return {
-        responsive: true,
-        maintainAspectRatio: false,
-        layout: { padding: { top: 35, right: 60, bottom: 10, left: 20 } },
-        animation: { duration: 800, easing: 'easeOutQuart' },
+        responsive: true, maintainAspectRatio: false, layout: { padding: { top: 35, right: 60, bottom: 10, left: 20 } },
         plugins: {
-            pieLeaderLines: { display: true },
-            legend: { position: 'right', labels: { font: { size: 10 }, boxWidth: 12 } },
-            datalabels: {
-                formatter: (value, ctx) => {
-                    let sum = 0;
-                    let dataArr = ctx.chart.data.datasets[0].data;
-                    dataArr.map(data => { sum += data; });
-                    if (sum === 0) return "";
-                    const pct = (value * 100 / sum);
-                    if (pct < 15) return null;
-                    return pct.toFixed(1) + "%";
-                },
-                color: '#000',
-                font: { weight: 'bold', size: 10 }
-            }
+            pieLeaderLines: { display: true }, legend: { position: 'right', labels: { font: { size: 10 }, boxWidth: 12 } },
+            datalabels: { formatter: (value, ctx) => { let sum=0; ctx.chart.data.datasets[0].data.map(d=>sum+=d); return (sum===0||(value*100/sum)<15)?"": (value*100/sum).toFixed(1)+"%"; }, color: '#000', font: { weight: 'bold', size: 10 } }
         }
     };
 }
-
 function getBarOptionsWithStatusLegend() {
     return {
-        responsive: true,
-        maintainAspectRatio: false,
-        animation: { duration: 800, easing: 'easeOutQuart' },
+        responsive: true, maintainAspectRatio: false,
         plugins: { 
             datalabels: { display: false },
             legend: {
-                display: true,
-                position: 'top',
+                display: true, position: 'top',
                 labels: {
-                    font: { size: 9 },
-                    boxWidth: 12,
-                    boxHeight: 12,
+                    font: { size: 9 }, boxWidth: 12, boxHeight: 12,
                     generateLabels: function(chart) {
                         const original = Chart.defaults.plugins.legend.labels.generateLabels(chart);
-                        original.forEach((label) => {
-                            const textLower = label.text.toLowerCase();
-                            if (textLower.includes("done") || textLower.includes("tercoverage") || textLower === "training hours") {
-                                label.fillStyle = "#444444";
-                                label.strokeStyle = "#444444";
-                                label.lineWidth = 1;
-                            } else if (textLower.includes("progress")) {
-                                label.fillStyle = getStripePattern("#444444");
-                                label.strokeStyle = "#444444";
-                                label.lineWidth = 1;
-                            } else if (textLower.includes("not") || textLower.includes("target")) {
-                                label.fillStyle = "rgba(68, 68, 68, 0.15)";
-                                label.strokeStyle = "#444444";
-                                label.lineWidth = 1.5;
-                            }
-                        });
-                        return original;
+                        original.forEach(label => {
+                            const txt = label.text.toLowerCase();
+                            if(txt.includes("done")||txt.includes("tercoverage")||txt==="training hours") { label.fillStyle="#444"; label.strokeStyle="#444"; label.lineWidth=1; }
+                            else if(txt.includes("progress")) { label.fillStyle=getStripePattern("#444"); label.strokeStyle="#444"; label.lineWidth=1; }
+                            else { label.fillStyle="rgba(68, 68, 68, 0.15)"; label.strokeStyle="#444"; label.lineWidth=1.5; }
+                        }); return original;
                     }
                 }
             }
-        },
-        scales: { 
-            x: { ticks: { font: { size: 9 } } },
-            y: { beginAtZero: true, ticks: { font: { size: 9 } } } 
-        }
+        }, scales: { x: { ticks: { font: { size: 9 } } }, y: { beginAtZero: true, ticks: { font: { size: 9 } } } }
     };
 }
-
 function getOrderedJabatanList(data) {
-    const existingJabatan = new Set(data.map(d => d.jabatan));
-    const ordered = [];
-
-    CUSTOM_JABATAN_ORDER.forEach(j => {
-        if (existingJabatan.has(j)) {
-            ordered.push(j);
-            existingJabatan.delete(j);
-        }
-    });
-
-    Array.from(existingJabatan).sort().forEach(j => {
-        if(j) ordered.push(j);
-    });
-
-    return ordered;
+    const e = new Set(data.map(d => d.jabatan)); const o = [];
+    CUSTOM_JABATAN_ORDER.forEach(j => { if (e.has(j)) { o.push(j); e.delete(j); } });
+    Array.from(e).sort().forEach(j => { if(j) o.push(j); }); return o;
 }
 
 function renderDashboard(data) {
     const jabatanList = getOrderedJabatanList(data);
-    
-    // DETEKSI APAKAH FILTER JABATAN SEDANG AKTIF (BUKAN ALL)
     const isJabatanFiltered = document.getElementById("filterJabatan").value !== "ALL";
-
-    const totalPart = data.length;
-    let totalCovered = 0;
-    let countDone = 0;
-    let countProgress = 0;
-    let countTargetTercapai = 0;
-    let countTargetBelum = 0;
+    let totalCovered=0, countDone=0, countProgress=0, countTargetTercapai=0, countTargetBelum=0;
 
     data.forEach(d => {
-        const isCov = d.statusCoverage === "Tercoverage" || (d.statusCoverage && d.statusCoverage.toLowerCase().includes("tercoverage"));
-        if (isCov) totalCovered++;
-
+        if(d.statusCoverage==="Tercoverage" || (d.statusCoverage||"").toLowerCase().includes("tercoverage")) totalCovered++;
         const st = (d.allRecap || "").toLowerCase();
-        if (st.includes("done")) countDone++;
-        else if (st.includes("progress")) countProgress++;
-
-        const stTarget = (d.statusTarget || "").toLowerCase();
-        if (stTarget.includes("tercapai") && !stTarget.includes("belum")) countTargetTercapai++;
-        else countTargetBelum++;
+        if(st.includes("done")) countDone++; else if(st.includes("progress")) countProgress++;
+        const stT = (d.statusTarget || "").toLowerCase();
+        if(stT.includes("tercapai") && !stT.includes("belum")) countTargetTercapai++; else countTargetBelum++;
     });
 
-    const coveragePct = totalPart > 0 ? ((totalCovered / totalPart) * 100).toFixed(1) : 0;
+    const covPct = data.length>0 ? ((totalCovered/data.length)*100).toFixed(1):0;
+    document.getElementById("kpiTotalPart").textContent = data.length;
+    document.getElementById("kpiOverallCoverage").innerHTML = `${totalCovered} <span style="font-size:10px; color:#555;">(${covPct}%)</span>`;
+    document.getElementById("kpiCompletionStatus").innerHTML = `<span style="color:#2e7d32;">${countDone}</span>/<span style="color:#fbbc04;">${countProgress}</span>`;
+    document.getElementById("kpiTargetHoursStatus").innerHTML = `<span style="color:#2e7d32;">${countTargetTercapai}</span>/<span style="color:#ea4335;">${countTargetBelum}</span>`;
 
-    document.getElementById("kpiTotalPart").textContent = totalPart;
-    document.getElementById("kpiOverallCoverage").innerHTML = `${totalCovered} <span style="font-size:10px; color:#555;">(${coveragePct}%)</span>`;
-    document.getElementById("kpiCompletionStatus").innerHTML = `<span style="color:#2e7d32;">${countDone}</span> / <span style="color:#fbbc04;">${countProgress}</span>`;
-    document.getElementById("kpiTargetHoursStatus").innerHTML = `<span style="color:#2e7d32;">${countTargetTercapai}</span> / <span style="color:#ea4335;">${countTargetBelum}</span>`;
-
-    // 1. COVERAGE CHARTS
-    let tercoverageCount = 0, notCoverageCount = 0;
-    const coverageByJabatan = {};
-    jabatanList.forEach(j => coverageByJabatan[j] = { Tercoverage: 0, "Not Yet": 0 });
-
-    data.forEach(d => {
-        const isCov = d.statusCoverage === "Tercoverage" || (d.statusCoverage && d.statusCoverage.toLowerCase().includes("tercoverage"));
-        if (isCov) tercoverageCount++; else notCoverageCount++;
-        if (coverageByJabatan[d.jabatan]) {
-            if (isCov) coverageByJabatan[d.jabatan]["Tercoverage"]++;
-            else coverageByJabatan[d.jabatan]["Not Yet"]++;
-        }
+    // Coverage
+    let terC=0, notC=0; const covByJab={}; jabatanList.forEach(j=>covByJab[j]={"Tercoverage":0,"Not Yet":0});
+    data.forEach(d=>{ const ic = d.statusCoverage==="Tercoverage"||(d.statusCoverage||"").toLowerCase().includes("tercoverage");
+        if(ic) terC++; else notC++; if(covByJab[d.jabatan]){ if(ic) covByJab[d.jabatan]["Tercoverage"]++; else covByJab[d.jabatan]["Not Yet"]++; }
     });
+    destroyChart("coveragePie"); chartInstances["coveragePie"] = new Chart(document.getElementById("coveragePieChart"), { type:"pie", data:{ labels:["Tercoverage","Not Yet"], datasets:[{data:[terC,notC],backgroundColor:["#34a853","#ea4335"]}] }, options:getStatusPieOptions() });
+    destroyChart("coverageBar"); chartInstances["coverageBar"] = new Chart(document.getElementById("coverageBarChart"), { type:"bar", data:{ labels:jabatanList, datasets:[
+        { label:"Tercoverage", data:jabatanList.map(j=>covByJab[j]["Tercoverage"]), backgroundColor:jabatanList.map(j=>isJabatanFiltered?"#34a853":getJabatanColor(j)), borderColor:jabatanList.map(j=>isJabatanFiltered?"#34a853":getJabatanColor(j)), borderWidth:1},
+        { label:"Not Yet", data:jabatanList.map(j=>covByJab[j]["Not Yet"]), backgroundColor:jabatanList.map(j=>isJabatanFiltered?hexToRgba("#ea4335",0.3):hexToRgba(getJabatanColor(j),0.2)), borderColor:jabatanList.map(j=>isJabatanFiltered?"#ea4335":getJabatanColor(j)), borderWidth:1.5}
+    ]}, options:getBarOptionsWithStatusLegend() });
 
-    destroyChart("coveragePie");
-    chartInstances["coveragePie"] = new Chart(document.getElementById("coveragePieChart"), {
-        type: "pie",
-        data: { 
-            labels: ["Tercoverage", "Not Yet"], 
-            datasets: [{ 
-                data: [tercoverageCount, notCoverageCount], 
-                backgroundColor: ["#34a853", "#ea4335"]
-            }] 
-        },
-        options: getStatusPieOptions()
+    // Participation
+    let dnC=0, opC=0, nyC=0; const empByJab={}; jabatanList.forEach(j=>empByJab[j]={"Done":0,"On Progress":0,"Not Yet":0});
+    data.forEach(d=>{ const st=(d.allRecap||"").toLowerCase(); let sc="Not Yet"; if(st.includes("done"))sc="Done"; else if(st.includes("progress"))sc="On Progress";
+        if(sc==="Done")dnC++; else if(sc==="On Progress")opC++; else nyC++; if(empByJab[d.jabatan])empByJab[d.jabatan][sc]++;
     });
+    destroyChart("partPie"); chartInstances["partPie"] = new Chart(document.getElementById("EmployeePieChart"), { type:"pie", data:{ labels:["Not Yet","Done","On Progress"], datasets:[{data:[nyC,dnC,opC],backgroundColor:["#ea4335","#34a853","#fbbc04"]}] }, options:getStatusPieOptions() });
+    destroyChart("partBar"); chartInstances["partBar"] = new Chart(document.getElementById("EmployeeBarChart"), { type:"bar", data:{ labels:jabatanList, datasets:[
+        {label:"Done",data:jabatanList.map(j=>empByJab[j]["Done"]),backgroundColor:jabatanList.map(j=>isJabatanFiltered?"#34a853":getJabatanColor(j)),borderColor:jabatanList.map(j=>isJabatanFiltered?"#34a853":getJabatanColor(j)),borderWidth:1},
+        {label:"On Progress",data:jabatanList.map(j=>empByJab[j]["On Progress"]),backgroundColor:jabatanList.map(j=>isJabatanFiltered?getStripePattern("#fbbc04"):getStripePattern(getJabatanColor(j))),borderColor:jabatanList.map(j=>isJabatanFiltered?"#fbbc04":getJabatanColor(j)),borderWidth:1.5},
+        {label:"Not Yet",data:jabatanList.map(j=>empByJab[j]["Not Yet"]),backgroundColor:jabatanList.map(j=>isJabatanFiltered?hexToRgba("#ea4335",0.3):hexToRgba(getJabatanColor(j),0.15)),borderColor:jabatanList.map(j=>isJabatanFiltered?"#ea4335":getJabatanColor(j)),borderWidth:1.5}
+    ]}, options:getBarOptionsWithStatusLegend() });
 
-    destroyChart("coverageBar");
-    chartInstances["coverageBar"] = new Chart(document.getElementById("coverageBarChart"), {
-        type: "bar",
-        data: {
-            labels: jabatanList,
-            datasets: [
-                { 
-                    label: "Tercoverage", 
-                    data: jabatanList.map(j => coverageByJabatan[j]["Tercoverage"]), 
-                    // JIKA FILTER JABATAN AKTIF, GUNAKAN HIJAU, JIKA TIDAK GUNAKAN WARNA JABATAN
-                    backgroundColor: jabatanList.map(j => isJabatanFiltered ? "#34a853" : getJabatanColor(j)),
-                    borderColor: jabatanList.map(j => isJabatanFiltered ? "#34a853" : getJabatanColor(j)),
-                    borderWidth: 1
-                },
-                { 
-                    label: "Not Yet", 
-                    data: jabatanList.map(j => coverageByJabatan[j]["Not Yet"]), 
-                    // JIKA FILTER JABATAN AKTIF, GUNAKAN MERAH TRANSPARAN, JIKA TIDAK GUNAKAN WARNA JABATAN TRANSPARAN
-                    backgroundColor: jabatanList.map(j => isJabatanFiltered ? hexToRgba("#ea4335", 0.3) : hexToRgba(getJabatanColor(j), 0.2)),
-                    borderColor: jabatanList.map(j => isJabatanFiltered ? "#ea4335" : getJabatanColor(j)),
-                    borderWidth: 1.5
-                }
-            ]
-        },
-        options: getBarOptionsWithStatusLegend()
+    // Hours
+    let tcC=0, btcC=0; const hrsByJab={}; jabatanList.forEach(j=>hrsByJab[j]={act:0,tgt:0});
+    data.forEach(d=>{ const st=(d.statusTarget||"").toLowerCase(); if(st.includes("tercapai")&&!st.includes("belum"))tcC++; else btcC++;
+        if(hrsByJab[d.jabatan]){hrsByJab[d.jabatan].act+=d.trainingHours; hrsByJab[d.jabatan].tgt+=d.targetHours;}
     });
+    destroyChart("hoursPie"); chartInstances["hoursPie"] = new Chart(document.getElementById("hoursPieChart"), { type:"pie", data:{labels:["Tercapai","Belum Tercapai"],datasets:[{data:[tcC,btcC],backgroundColor:["#34a853","#ea4335"]}]}, options:getStatusPieOptions() });
+    destroyChart("hoursBar"); chartInstances["hoursBar"] = new Chart(document.getElementById("hoursBarChart"), { type:"bar", data:{labels:jabatanList,datasets:[
+        {label:"Training Hours",data:jabatanList.map(j=>hrsByJab[j].act),backgroundColor:jabatanList.map(j=>isJabatanFiltered?"#34a853":getJabatanColor(j)),borderColor:jabatanList.map(j=>isJabatanFiltered?"#34a853":getJabatanColor(j)),borderWidth:1},
+        {label:"Target Hours",data:jabatanList.map(j=>hrsByJab[j].tgt),backgroundColor:jabatanList.map(j=>isJabatanFiltered?hexToRgba("#ea4335",0.3):hexToRgba(getJabatanColor(j),0.2)),borderColor:jabatanList.map(j=>isJabatanFiltered?"#ea4335":getJabatanColor(j)),borderWidth:1.5}
+    ]}, options:getBarOptionsWithStatusLegend() });
 
-    // 2. PARTICIPATION CHARTS
-    let doneCount = 0, onProgressCount = 0, notYetPartCount = 0;
-    const EmployeeByJabatan = {};
-    jabatanList.forEach(j => EmployeeByJabatan[j] = { Done: 0, "On Progress": 0, "Not Yet": 0 });
+    // Distribusi
+    const jCounts={}; data.forEach(d=>{jCounts[d.jabatan]=(jCounts[d.jabatan]||0)+1;});
+    destroyChart("jabatanPie"); chartInstances["jabatanPie"] = new Chart(document.getElementById("jabatanPieChart"), { type:"pie", data:{labels:jabatanList,datasets:[{data:jabatanList.map(j=>jCounts[j]||0),backgroundColor:jabatanList.map(j=>getJabatanColor(j))}]}, options:{ responsive:true, maintainAspectRatio:false, plugins:{ pieLeaderLines:{display:false}, legend:{position:'right',labels:{font:{size:10,weight:'bold'},boxWidth:12,padding:8}}, datalabels:{formatter:(v,c)=>{let s=0;c.chart.data.datasets[0].data.map(d=>s+=d);return s===0?"0%":(v*100/s).toFixed(1)+"%";},color:'#000',font:{weight:'bold',size:10}} } } });
 
-    data.forEach(d => {
-        const st = (d.allRecap || "").toLowerCase();
-        let statusCategory = "Not Yet";
-        if (st.includes("done")) statusCategory = "Done";
-        else if (st.includes("progress")) statusCategory = "On Progress";
+    // Line Pre Post
+    const modNs = moduleColumns.map(m=>m.name); const aPre=[], aPost=[];
+    moduleColumns.forEach(mod=>{ let pS=0,pC=0,poS=0,poC=0; data.forEach(d=>{const m=d.modules[mod.name];if(m){if(m.pre!==null&&!isNaN(m.pre)){pS+=m.pre;pC++;}if(m.post!==null&&!isNaN(m.post)){poS+=m.post;poC++;}}}); aPre.push(pC>0?(pS/pC).toFixed(1):0); aPost.push(poC>0?(poS/poC).toFixed(1):0); });
+    destroyChart("prePostLine"); chartInstances["prePostLine"] = new Chart(document.getElementById("prePostLineChart"), { type:"line", data:{labels:modNs.length>0?modNs:["M1","M2"],datasets:[{label:"Rata-Rata Pre-Test",data:aPre,borderColor:"#ea4335",backgroundColor:"#ea4335",tension:0.3,borderWidth:2,pointRadius:3},{label:"Rata-Rata Post-Test",data:aPost,borderColor:"#34a853",backgroundColor:"#34a853",tension:0.3,borderWidth:2,pointRadius:3}]}, options:{responsive:true,maintainAspectRatio:false,plugins:{datalabels:{display:false}},scales:{y:{beginAtZero:true,max:100,ticks:{font:{size:9}}},x:{ticks:{font:{size:9}}}}} });
 
-        if (statusCategory === "Done") doneCount++;
-        else if (statusCategory === "On Progress") onProgressCount++;
-        else notYetPartCount++;
-
-        if (EmployeeByJabatan[d.jabatan]) {
-            EmployeeByJabatan[d.jabatan][statusCategory]++;
-        }
-    });
-
-    destroyChart("partPie");
-    chartInstances["partPie"] = new Chart(document.getElementById("EmployeePieChart"), {
-        type: "pie",
-        data: { labels: ["Not Yet", "Done", "On Progress"], datasets: [{ data: [notYetPartCount, doneCount, onProgressCount], backgroundColor: ["#ea4335", "#34a853", "#fbbc04"] }] },
-        options: getStatusPieOptions()
-    });
-
-    destroyChart("partBar");
-    chartInstances["partBar"] = new Chart(document.getElementById("EmployeeBarChart"), {
-        type: "bar",
-        data: {
-            labels: jabatanList,
-            datasets: [
-                { 
-                    label: "Done", 
-                    data: jabatanList.map(j => EmployeeByJabatan[j]["Done"]), 
-                    // JIKA FILTER JABATAN AKTIF, GUNAKAN HIJAU
-                    backgroundColor: jabatanList.map(j => isJabatanFiltered ? "#34a853" : getJabatanColor(j)),
-                    borderColor: jabatanList.map(j => isJabatanFiltered ? "#34a853" : getJabatanColor(j)),
-                    borderWidth: 1
-                },
-                { 
-                    label: "On Progress", 
-                    data: jabatanList.map(j => EmployeeByJabatan[j]["On Progress"]), 
-                    // JIKA FILTER JABATAN AKTIF, GUNAKAN KUNING STRIPE
-                    backgroundColor: jabatanList.map(j => isJabatanFiltered ? getStripePattern("#fbbc04") : getStripePattern(getJabatanColor(j))),
-                    borderColor: jabatanList.map(j => isJabatanFiltered ? "#fbbc04" : getJabatanColor(j)),
-                    borderWidth: 1.5
-                },
-                { 
-                    label: "Not Yet", 
-                    data: jabatanList.map(j => EmployeeByJabatan[j]["Not Yet"]), 
-                    // JIKA FILTER JABATAN AKTIF, GUNAKAN MERAH TRANSPARAN
-                    backgroundColor: jabatanList.map(j => isJabatanFiltered ? hexToRgba("#ea4335", 0.3) : hexToRgba(getJabatanColor(j), 0.15)),
-                    borderColor: jabatanList.map(j => isJabatanFiltered ? "#ea4335" : getJabatanColor(j)),
-                    borderWidth: 1.5
-                }
-            ]
-        },
-        options: getBarOptionsWithStatusLegend()
-    });
-
-    // 3. HOURS CHARTS
-    let tercapaiCount = 0, belumTercapaiCount = 0;
-    const hoursByJabatan = {};
-    jabatanList.forEach(j => hoursByJabatan[j] = { actual: 0, target: 0 });
-
-    data.forEach(d => {
-        const stTarget = (d.statusTarget || "").toLowerCase();
-        if (stTarget.includes("tercapai") && !stTarget.includes("belum")) tercapaiCount++;
-        else belumTercapaiCount++;
-
-        if (hoursByJabatan[d.jabatan]) {
-            hoursByJabatan[d.jabatan].actual += d.trainingHours;
-            hoursByJabatan[d.jabatan].target += d.targetHours;
-        }
-    });
-
-    destroyChart("hoursPie");
-    chartInstances["hoursPie"] = new Chart(document.getElementById("hoursPieChart"), {
-        type: "pie",
-        data: { labels: ["Tercapai", "Belum Tercapai"], datasets: [{ data: [tercapaiCount, belumTercapaiCount], backgroundColor: ["#34a853", "#ea4335"] }] },
-        options: getStatusPieOptions()
-    });
-
-    destroyChart("hoursBar");
-    chartInstances["hoursBar"] = new Chart(document.getElementById("hoursBarChart"), {
-        type: "bar",
-        data: {
-            labels: jabatanList,
-            datasets: [
-                { 
-                    label: "Training Hours", 
-                    data: jabatanList.map(j => hoursByJabatan[j].actual), 
-                    // JIKA FILTER JABATAN AKTIF, GUNAKAN HIJAU
-                    backgroundColor: jabatanList.map(j => isJabatanFiltered ? "#34a853" : getJabatanColor(j)),
-                    borderColor: jabatanList.map(j => isJabatanFiltered ? "#34a853" : getJabatanColor(j)),
-                    borderWidth: 1
-                },
-                { 
-                    label: "Target Hours", 
-                    data: jabatanList.map(j => hoursByJabatan[j].target), 
-                    // JIKA FILTER JABATAN AKTIF, GUNAKAN MERAH TRANSPARAN
-                    backgroundColor: jabatanList.map(j => isJabatanFiltered ? hexToRgba("#ea4335", 0.3) : hexToRgba(getJabatanColor(j), 0.2)),
-                    borderColor: jabatanList.map(j => isJabatanFiltered ? "#ea4335" : getJabatanColor(j)),
-                    borderWidth: 1.5
-                }
-            ]
-        },
-        options: getBarOptionsWithStatusLegend()
-    });
-
-    // 4. DISTRIBUSI JABATAN CHART
-    const jabatanCounts = {};
-    data.forEach(d => { jabatanCounts[d.jabatan] = (jabatanCounts[d.jabatan] || 0) + 1; });
-
-    destroyChart("jabatanPie");
-    chartInstances["jabatanPie"] = new Chart(document.getElementById("jabatanPieChart"), {
-        type: "pie",
-        data: {
-            labels: jabatanList,
-            datasets: [{ 
-                data: jabatanList.map(j => jabatanCounts[j] || 0), 
-                backgroundColor: jabatanList.map(j => getJabatanColor(j)) 
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                pieLeaderLines: { display: false },
-                legend: { position: 'right', labels: { font: { size: 10, weight: 'bold' }, boxWidth: 12, padding: 8 } },
-                datalabels: {
-                    formatter: (value, ctx) => {
-                        let sum = 0;
-                        let dataArr = ctx.chart.data.datasets[0].data;
-                        dataArr.map(data => { sum += data; });
-                        if (sum === 0) return "0%";
-                        return (value * 100 / sum).toFixed(1) + "%";
-                    },
-                    color: '#000',
-                    font: { weight: 'bold', size: 10 }
-                }
-            }
-        }
-    });
-
-    // 5. LINE CHART PRE VS POST
-    const modNames = moduleColumns.map(m => m.name);
-    const avgPreList = [];
-    const avgPostList = [];
-
-    moduleColumns.forEach(mod => {
-        let preSum = 0, preCount = 0;
-        let postSum = 0, postCount = 0;
-
-        data.forEach(d => {
-            const mData = d.modules[mod.name];
-            if (mData) {
-                if (mData.pre !== null && !isNaN(mData.pre)) { preSum += mData.pre; preCount++; }
-                if (mData.post !== null && !isNaN(mData.post)) { postSum += mData.post; postCount++; }
-            }
-        });
-
-        avgPreList.push(preCount > 0 ? (preSum / preCount).toFixed(1) : 0);
-        avgPostList.push(postCount > 0 ? (postSum / postCount).toFixed(1) : 0);
-    });
-
-    destroyChart("prePostLine");
-    chartInstances["prePostLine"] = new Chart(document.getElementById("prePostLineChart"), {
-        type: "line",
-        data: {
-            labels: modNames.length > 0 ? modNames : ["Modul 1", "Modul 2"],
-            datasets: [
-                { label: "Rata-Rata Pre-Test", data: avgPreList, borderColor: "#ea4335", backgroundColor: "#ea4335", tension: 0.3, borderWidth: 2, pointRadius: 3 },
-                { label: "Rata-Rata Post-Test", data: avgPostList, borderColor: "#34a853", backgroundColor: "#34a853", tension: 0.3, borderWidth: 2, pointRadius: 3 }
-            ]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { datalabels: { display: false } },
-            scales: { y: { beginAtZero: true, max: 100, ticks: { font: { size: 9 } } }, x: { ticks: { font: { size: 9 } } } }
-        }
-    });
-
-    // 6. TABEL REKAP JABATAN & MODUL BELUM SELESAI
-    const tableBody = document.getElementById("jabatanTableBody");
-    const tableHead = document.getElementById("jabatanTableHead");
-    const tableTitle = document.getElementById("tableTitle");
-    
-    // Cek apakah filter sedang aktif (selain "ALL")
-    const isFiltered = document.getElementById("filterLokasi").value !== "ALL" || 
-                       document.getElementById("filterJabatan").value !== "ALL" || 
-                       document.getElementById("filterStatus").value !== "ALL";
-
-    tableBody.innerHTML = "";
+    // Table Logic
+    const tbody = document.getElementById("jabatanTableBody"); const thead = document.getElementById("jabatanTableHead"); const tTitle = document.getElementById("tableTitle");
+    const isFiltered = document.getElementById("filterLokasi").value!=="ALL" || document.getElementById("filterJabatan").value!=="ALL" || document.getElementById("filterStatus").value!=="ALL";
+    tbody.innerHTML = "";
 
     if (isFiltered) {
-        // Jika filter aktif, tampilkan detail nama, status, dan MODUL BELUM SELESAI
-        tableTitle.textContent = "Detail Status Pegawai";
-        tableHead.innerHTML = `
-            <tr>
-                <th>Nama Pegawai</th>
-                <th style="width: 50px; text-align: center;">Jabatan</th>
-                <th style="width: 70px; text-align: center;">Status</th>
-                <th style="width: 45%;">Modul Belum Selesai</th>
-            </tr>
-        `;
-        
-        data.forEach(d => {
-            const row = document.createElement("tr");
-            let statusColor = "#000";
-            const statusText = d.allRecap || "Not Yet";
-            
-            // Sesuaikan warna status dengan tema chart
-            if (statusText.toLowerCase().includes("done")) statusColor = "#34a853";
-            else if (statusText.toLowerCase().includes("progress")) statusColor = "#fbbc04";
-            else statusColor = "#ea4335";
-
-            // LOGIKA MENCARI MODUL YANG BELUM SELESAI (NOT YET & ON PROGRESS)
-            let pendingModulesHtml = '<span style="color: #999;">-</span>';
-            
-            if (!statusText.toLowerCase().includes("done")) {
-                let pendingList = [];
-                // Looping semua modul yang dimiliki peserta
-                for (const [modName, modData] of Object.entries(d.modules)) {
-                    const mStatus = (modData.status || "").toLowerCase();
-                    // Modul dianggap "Belum Selesai" jika:
-                    // 1. Dia tidak mengandung kata "not picked" (berarti dia mengambil modul tsb / wajib)
-                    // 2. Dia tidak mengandung kata "done" (berarti belum dituntaskan nilainya)
-                    if (mStatus !== "" && !mStatus.includes("not picked") && !mStatus.includes("done")) {
-                        pendingList.push(modName);
-                    }
-                }
-                
-                if (pendingList.length > 0) {
-                    // Menggunakan <br> agar rapi di UI HTML, dan SANGAT KONDUSIF UNTUK EXPORT EXCEL (Otomatis jadi multi-line di 1 sel)
-                    pendingModulesHtml = pendingList.map(m => `• ${m}`).join('<br>');
-                } else if (statusText.toLowerCase().includes("not yet")) {
-                     pendingModulesHtml = '<span style="font-style:italic; color:#ea4335;">Belum mengambil/mengerjakan modul apapun</span>';
-                }
-            } else {
-                 pendingModulesHtml = '<span style="color: #34a853; font-weight:bold;">All Clear ✓</span>';
-            }
-
-            row.innerHTML = `
-                <td>${d.nama || d.nrp || "-"}</td>
-                <td style="text-align: center;">${d.jabatan}</td>
-                <td style="text-align: center; font-weight: bold; color: ${statusColor};">${statusText}</td>
-                <td style="font-size: 10px; line-height: 1.4;">${pendingModulesHtml}</td>
-            `;
-            tableBody.appendChild(row);
+        tTitle.textContent = "Detail Status Pegawai";
+        thead.innerHTML = `<tr><th>Nama Pegawai</th><th style="width:50px;text-align:center;">Jabatan</th><th style="width:70px;text-align:center;">Status</th><th style="width:45%;">Modul Belum Selesai</th></tr>`;
+        data.forEach(d=>{
+            const stTxt = d.allRecap||"Not Yet"; let sC="#ea4335"; if(stTxt.toLowerCase().includes("done"))sC="#34a853"; else if(stTxt.toLowerCase().includes("progress"))sC="#fbbc04";
+            let pendH='<span style="color:#999;">-</span>';
+            if(!stTxt.toLowerCase().includes("done")) {
+                let pendList=[];
+                for(const[mN,mD] of Object.entries(d.modules)){ const mS=(mD.status||"").toLowerCase(); if(mS!==""&&!mS.includes("not picked")&&!mS.includes("done")) pendList.push(mN); }
+                if(pendList.length>0) pendH=pendList.map(m=>`• ${m}`).join('<br>'); else if(stTxt.toLowerCase().includes("not yet")) pendH='<span style="font-style:italic; color:#ea4335;">Belum mengambil modul</span>';
+            } else pendH='<span style="color:#34a853;font-weight:bold;">All Clear ✓</span>';
+            tbody.innerHTML += `<tr><td>${d.nama||d.nrp||"-"}</td><td style="text-align:center;">${d.jabatan}</td><td style="text-align:center;font-weight:bold;color:${sC};">${stTxt}</td><td style="font-size:10px;line-height:1.4;">${pendH}</td></tr>`;
         });
     } else {
-        // Jika tidak ada filter, tampilkan rekap jumlah (default)
-        tableTitle.textContent = "Rekap Jumlah Pegawai per Jabatan";
-        tableHead.innerHTML = `
-            <tr>
-                <th>Jabatan</th>
-                <th style="width: 100px; text-align: center;">Total Pegawai</th>
-            </tr>
-        `;
-
-        jabatanList.forEach(jab => {
-            if (jabatanCounts[jab]) {
-                const row = document.createElement("tr");
-                row.innerHTML = `<td>${jab}</td><td class="count-col">${jabatanCounts[jab]}</td>`;
-                tableBody.appendChild(row);
-            }
-        });
+        tTitle.textContent = "Rekap Jumlah Pegawai per Jabatan";
+        thead.innerHTML = `<tr><th>Jabatan</th><th style="width:100px;text-align:center;">Total Pegawai</th></tr>`;
+        jabatanList.forEach(jab=>{ if(jCounts[jab]) tbody.innerHTML += `<tr><td>${jab}</td><td class="count-col">${jCounts[jab]}</td></tr>`; });
     }
-
-    // SINKRONISASI ISI TABEL KE MODAL FULLSCREEN TABEL
-    document.getElementById("modalTableHead").innerHTML = tableHead.innerHTML;
-    document.getElementById("modalTableBody").innerHTML = tableBody.innerHTML;
-    document.getElementById("modalTableTitle").textContent = tableTitle.textContent;
+    document.getElementById("modalTableHead").innerHTML = thead.innerHTML;
+    document.getElementById("modalTableBody").innerHTML = tbody.innerHTML;
+    document.getElementById("modalTableTitle").textContent = tTitle.textContent;
 }
 </script>
 
