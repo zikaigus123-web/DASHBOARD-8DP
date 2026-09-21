@@ -680,15 +680,34 @@ async function handleTargetedFileUpload(event) {
                 });
                 
                 const result = await response.json();
-                if (result.status === "success") {
-                    Swal.fire({
-                        title: 'Upload Sukses & Tervalidasi!',
-                        html: `Data modul <b>${targetUploadModule}</b> telah disuntikkan sempurna ke Google Sheets.<br><br>Dashboard diperbarui secara lokal. <i>(File utama di server Google akan tersinkronisasi dalam ~5 menit).</i>`,
-                        icon: 'success'
-                    });
-                } else {
-                    throw new Error(result.message || "Gagal menyimpan ke Spreadsheet");
-                }
+if (result.status === "success") {
+
+    Swal.fire({
+        title: 'Upload Berhasil!',
+        html: `
+            Data modul <b>${targetUploadModule}</b>
+            berhasil diperbarui ke sheet
+            <b>${result.targetSheet}</b>.
+
+            <br><br>
+            <b>${result.updatedCount}</b> data berhasil diperbarui.
+            ${
+                result.unmatchedCount > 0
+                ? `<br><span style="color:#d97706;">
+                    ${result.unmatchedCount} NRP tidak ditemukan.
+                   </span>`
+                : ''
+            }
+        `,
+        icon: 'success'
+    });
+
+} else {
+
+    throw new Error(
+        result.message || "Gagal menyimpan ke Spreadsheet."
+    );
+}
             } catch (fetchErr) {
                 console.error("Gagal POST ke GSheets:", fetchErr);
                 Swal.fire('Peringatan Integrasi Cloud', 'Gagal mengirim data otomatis ke GSheets (' + fetchErr.message + '). Data hanya diperbarui di layar Anda (Lokal).', 'warning');
