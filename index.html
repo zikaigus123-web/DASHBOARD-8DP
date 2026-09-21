@@ -380,9 +380,9 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
             <div class="master-header">
                 <h2>Database Karyawan & Sinkronisasi Modul</h2>
                 <div style="display: flex; gap: 10px;">
-                    <!-- Input untuk Multiple File Raw Data Moodle/LMS -->
-                    <input type="file" id="rawFilesUpload" multiple accept=".csv, .xlsx, .xls" style="display:none;" onchange="handleMultipleFileUpload(event)">
-                    <button class="btn-action btn-upload" onclick="document.getElementById('rawFilesUpload').click()">
+                    <!-- Input untuk File Raw Data Moodle/LMS (Single File & Terarah) -->
+                    <input type="file" id="rawFilesUpload" accept=".csv, .xlsx, .xls" style="display:none;" onchange="handleTargetedFileUpload(event)">
+                    <button class="btn-action btn-upload" onclick="showUploadModal()">
                         <i class="fas fa-upload"></i> Upload Raw Modul (.xlsx)
                     </button>
                     <button class="btn-action" style="background:#fff;" onclick="downloadTableExcelMaster()">
@@ -393,10 +393,10 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
             
             <div style="background: #fff8e1; border: 1px solid #ffe082; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-size: 13px; color: #b45309;">
                 <i class="fas fa-info-circle"></i> 
-                <strong>Cara Update:</strong> Anda dapat mengunggah banyak file raw data modul (contoh: <code>8DP - Maintenance Management 1.xlsx</code>) sekaligus. Sistem akan membaca nilai Pre/Post Test berdasarkan NRP ("First name") dan memperbarui data dashboard secara lokal.
+                <strong>Cara Update Baru:</strong> Klik tombol upload, pilih modul yang ingin diupdate dari daftar, lalu pilih file excel/csv terkait modul tersebut. Sistem akan memvalidasi agar nama file cocok dengan modul yang dipilih (menghindari salah upload).
             </div>
 
-            <!-- TAMBAHAN: FITUR FILTER UNTUK TABEL DATABASE -->
+            <!-- FITUR FILTER UNTUK TABEL DATABASE -->
             <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 10px;">
                 <label style="font-weight: bold; font-size: 13px; color: #111;">Filter Status Progress:</label>
                 <select id="filterMasterStatus" class="filter-select" onchange="renderMasterTable()" style="border: 1px solid #aaa; padding: 6px 10px; border-radius: 4px; font-weight: bold; font-size: 13px; min-width: 150px; outline: none; background: #fff;">
@@ -433,7 +433,7 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
 // ==========================================
 // SYSTEM & NAVIGATION LOGIC
 // ==========================================
-const UPLOAD_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyEC_jqxLFfXGeHI7ozR7VhGYylZLYVgFsx9pF-pcyqrs8vYt5pglCuvIi9GPWw22SLiQ/exec"; // Ganti dengan Web App URL Google Script Anda yang memiliki fungsi doPost(e)
+const UPLOAD_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyEC_jqxLFfXGeHI7ozR7VhGYylZLYVgFsx9pF-pcyqrs8vYt5pglCuvIi9GPWw22SLiQ/exec"; 
 
 function handleLogin(event) {
     event.preventDefault();
@@ -488,8 +488,56 @@ document.addEventListener("webkitfullscreenchange", resizeCharts);
 function resizeCharts() { setTimeout(() => { Object.values(chartInstances).forEach(c => { if(c) c.resize(); }); }, 150); }
 
 // ==========================================
-// UPLOAD MULTIPLE FILE RAW DATA LOGIC
+// UPLOAD FILE RAW DATA LOGIC (TARGETED MODULE)
 // ==========================================
+let targetUploadModule = ""; // Variabel global untuk menyimpan modul yang dipilih user
+
+function showUploadModal() {
+    if (!moduleColumns || moduleColumns.length === 0) {
+        Swal.fire('Peringatan', 'Data baseline modul belum dimuat dari Google Sheets. Tunggu sebentar atau muat ulang aplikasi.', 'warning');
+        return;
+    }
+
+    // Buat daftar dropdown dinamis dari kolom master
+    let optionsHtml = '<option value="" selected disabled>-- Pilih Modul dari Daftar --</option>';
+    moduleColumns.forEach(mod => {
+        optionsHtml += `<option value="${mod.name}">${mod.name}</option>`;
+    });
+
+    Swal.fire({
+        title: 'Pilih Target Modul',
+        html: `
+            <div style="text-align: left; font-size: 14px; margin-bottom: 15px;">
+                <label style="font-weight: bold; color: #333;">Modul yang akan diperbarui:</label>
+                <select id="swalModSelect" style="width: 100%; margin-top: 8px; padding: 10px; border-radius: 6px; border: 1px solid #aaa; font-size:14px; outline:none; background:#f9fafb;">
+                    ${optionsHtml}
+                </select>
+            </div>
+            <div style="font-size: 12px; color: #b45309; background: #fff8e1; padding: 10px; border-radius: 6px; text-align:left; border: 1px solid #ffe082;">
+                <i class="fas fa-shield-alt"></i> <strong>Sistem Keamanan Aktif:</strong> File yang Anda upload nantinya harus mengandung unsur kata dari nama modul ini. Jika berbeda, sistem otomatis menolaknya.
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonColor: '#34a853',
+        cancelButtonColor: '#ea4335',
+        confirmButtonText: '<i class="fas fa-folder-open"></i> Lanjut Pilih File',
+        cancelButtonText: 'Batal',
+        preConfirm: () => {
+            const sel = document.getElementById('swalModSelect').value;
+            if (!sel) {
+                Swal.showValidationMessage('Mohon pilih modul dari dropdown terlebih dahulu!');
+                return false;
+            }
+            return sel;
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            targetUploadModule = result.value;
+            document.getElementById('rawFilesUpload').click(); // Membuka jendela pemilihan file sistem
+        }
+    });
+}
+
 function readFileAsBinary(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -499,107 +547,100 @@ function readFileAsBinary(file) {
     });
 }
 
-async function handleMultipleFileUpload(event) {
+async function handleTargetedFileUpload(event) {
     const files = event.target.files;
     if (!files || files.length === 0) return;
+    
+    const file = files[0]; // Karena sudah dirubah ke input single, kita ambil file indeks 0
+    const fileName = file.name;
+
+    // --- PROTEKSI NAMA FILE ---
+    // Membersihkan string dari karakter spesial dan spasi agar pencocokan nama file & modul tidak kaku
+    const safeFileName = fileName.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const safeModName = targetUploadModule.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+    // Cek apakah unsur nama modul ADA di dalam nama file yang di-upload
+    if (!safeFileName.includes(safeModName)) {
+        Swal.fire({
+            title: 'File Ditolak!',
+            html: `Sistem mendeteksi ketidaksesuaian.<br><br>
+                   Anda memilih modul target: <b>${targetUploadModule}</b><br>
+                   Namun Anda memasukkan file: <b>${fileName}</b><br><br>
+                   <span style="color:#e53e3e; font-size:12px;">Pastikan nama file mengandung unsur kata yang sama dengan modul yang dipilih untuk menghindari kesalahan rekapitulasi data.</span>`,
+            icon: 'error'
+        });
+        event.target.value = ""; // Reset input field agar bisa mengunggah file yang sama setelah di-rename
+        return;
+    }
+    // ----------------------------
 
     Swal.fire({
-        title: 'Memproses Modul...',
-        html: `Sedang membaca dan menyiapkan data dari ${files.length} file. Harap tunggu.`,
+        title: 'Memproses Data...',
+        html: `Sedang memverifikasi kecocokan NRP pada file <b>${fileName}</b> untuk modul target <b>${targetUploadModule}</b>. Harap tunggu.`,
         allowOutsideClick: false,
         didOpen: () => { Swal.showLoading(); }
     });
 
     let updatedRows = 0;
-    let modulesDiscovered = new Set();
-    let uploadPayload = []; // Menyimpan sekumpulan data untuk dikirim (POST) ke Google Sheets
+    let uploadPayload = []; 
 
     try {
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const fileName = file.name;
-            
-            // Ekstrak Nama Modul dari Nama File
-            // Cth: "8DP - Maintenance Management 1 Grades.xlsx" -> "Maintenance Management 1"
-            let extractedModName = fileName.replace(/\.xlsx|\.xls|\.csv/g, '');
-            extractedModName = extractedModName.replace(/^8DP\s*-\s*/i, ''); // Hapus prefix 8DP
-            extractedModName = extractedModName.replace(/\s*Grades$/i, ''); // Hapus suffix Grades
-            extractedModName = extractedModName.trim();
-            
-            modulesDiscovered.add(extractedModName);
+        const data = await readFileAsBinary(file);
+        const workbook = XLSX.read(data, { type: 'binary' });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(sheet, { defval: "" });
 
-            // Pastikan modul terdaftar di master column, jika belum tambahkan dinamis
-            if (!moduleColumns.find(m => m.name === extractedModName)) {
-                moduleColumns.push({ name: extractedModName, preIdx: -1, postIdx: -1, statusIdx: -1 });
-            }
-
-            const data = await readFileAsBinary(file);
-            const workbook = XLSX.read(data, { type: 'binary' });
-            const sheet = workbook.Sheets[workbook.SheetNames[0]];
-            
-            // Konversi ke JSON, skip baris header (defval memastikan sel kosong tetap diproses)
-            const jsonData = XLSX.utils.sheet_to_json(sheet, { defval: "" });
-
-            // Siapkan nama sheet target (Berdasarkan format gambar: Nama File + " Grades")
-            let sheetNameTarget = fileName.replace(/\.xlsx|\.xls|\.csv/g, '').trim();
-            if (!sheetNameTarget.toLowerCase().endsWith("grades")) {
-                sheetNameTarget += " Grades";
-            }
-
-            // Masukkan JSON utuh ke antrean upload payload Google Sheets
-            uploadPayload.push({
-                sheetName: sheetNameTarget,
-                data: jsonData
-            });
-
-            jsonData.forEach(row => {
-                // Pencarian kolom fleksibel berdasarkan nama header yang ditunjukkan di gambar user
-                let keyNrp = Object.keys(row).find(k => k.toLowerCase().includes('first name'));
-                let keyPre = Object.keys(row).find(k => k.toLowerCase().includes('pre test') || k.toLowerCase().includes('quiz: 01'));
-                let keyPost = Object.keys(row).find(k => k.toLowerCase().includes('post test') || k.toLowerCase().includes('quiz: 04'));
-                
-                let nrpRaw = keyNrp ? String(row[keyNrp]).trim() : "";
-                if (!nrpRaw || nrpRaw.toLowerCase() === "first name") return; // Skip header string
-                
-                // Normalisasi string koma desimal ke titik agar bisa di parse
-                let preStr = keyPre ? String(row[keyPre]).replace(',', '.').trim() : "-";
-                let postStr = keyPost ? String(row[keyPost]).replace(',', '.').trim() : "-";
-
-                let preVal = (preStr === "-" || preStr === "") ? NaN : parseFloat(preStr);
-                let postVal = (postStr === "-" || postStr === "") ? NaN : parseFloat(postStr);
-
-                // Cari karyawan ini di baseline data yang sudah di parse dari CSV Google Sheet (Penting: konversi ke String untuk mencocokkan)
-                let userIndex = parsedData.findIndex(u => String(u.nrp) === nrpRaw);
-                
-                if (userIndex !== -1) {
-                    let user = parsedData[userIndex];
-                    
-                    // Inisialisasi modul untuk user ini jika belum ada
-                    if (!user.modules[extractedModName]) {
-                        user.modules[extractedModName] = { pre: null, post: null, status: "Not Picked" };
-                    }
-                    
-                    // Update skor
-                    if (!isNaN(preVal)) user.modules[extractedModName].pre = preVal;
-                    if (!isNaN(postVal)) user.modules[extractedModName].post = postVal;
-                    
-                    // Tentukan Status Modul
-                    let modStatus = "Not Yet";
-                    // Jika ada nilai Post Test (asumsi > 0), maka selesai. 
-                    if (!isNaN(postVal) && postVal > 0) modStatus = "Done"; 
-                    else if (!isNaN(preVal) && preVal > 0) modStatus = "On Progress";
-                    
-                    user.modules[extractedModName].status = modStatus;
-                    updatedRows++;
-                }
-            });
+        // Siapkan nama sheet target di google sheets (Asumsi format sheet target: Nama File + " Grades")
+        let sheetNameTarget = fileName.replace(/\.xlsx|\.xls|\.csv/g, '').trim();
+        if (!sheetNameTarget.toLowerCase().endsWith("grades")) {
+            sheetNameTarget += " Grades";
         }
+
+        uploadPayload.push({
+            sheetName: sheetNameTarget,
+            data: jsonData
+        });
+
+        jsonData.forEach(row => {
+            let keyNrp = Object.keys(row).find(k => k.toLowerCase().includes('first name'));
+            let keyPre = Object.keys(row).find(k => k.toLowerCase().includes('pre test') || k.toLowerCase().includes('quiz: 01'));
+            let keyPost = Object.keys(row).find(k => k.toLowerCase().includes('post test') || k.toLowerCase().includes('quiz: 04'));
+            
+            let nrpRaw = keyNrp ? String(row[keyNrp]).trim() : "";
+            if (!nrpRaw || nrpRaw.toLowerCase() === "first name") return; 
+            
+            let preStr = keyPre ? String(row[keyPre]).replace(',', '.').trim() : "-";
+            let postStr = keyPost ? String(row[keyPost]).replace(',', '.').trim() : "-";
+
+            let preVal = (preStr === "-" || preStr === "") ? NaN : parseFloat(preStr);
+            let postVal = (postStr === "-" || postStr === "") ? NaN : parseFloat(postStr);
+
+            let userIndex = parsedData.findIndex(u => String(u.nrp) === nrpRaw);
+            
+            if (userIndex !== -1) {
+                let user = parsedData[userIndex];
+                
+                if (!user.modules[targetUploadModule]) {
+                    user.modules[targetUploadModule] = { pre: null, post: null, status: "Not Picked" };
+                }
+                
+                if (!isNaN(preVal)) user.modules[targetUploadModule].pre = preVal;
+                if (!isNaN(postVal)) user.modules[targetUploadModule].post = postVal;
+                
+                let modStatus = "Not Yet";
+                if (!isNaN(postVal) && postVal > 0) modStatus = "Done"; 
+                else if (!isNaN(preVal) && preVal > 0) modStatus = "On Progress";
+                
+                user.modules[targetUploadModule].status = modStatus;
+                updatedRows++;
+            }
+        });
         
         // --- PROSES UPLOAD OTOMATIS KE GOOGLE SHEETS ---
         if (typeof UPLOAD_SCRIPT_URL !== 'undefined' && UPLOAD_SCRIPT_URL !== "") {
             Swal.fire({
-                title: 'Mengunggah ke Spreadsheet...',
-                html: `Menyimpan data <b>${files.length}</b> modul ke Google Sheets...`,
+                title: 'Mengirim ke Cloud...',
+                html: `Berhasil mencocokkan ${updatedRows} karyawan.<br>Menyimpan data modul <b>${targetUploadModule}</b> ke Google Sheets...`,
                 allowOutsideClick: false,
                 didOpen: () => { Swal.showLoading(); }
             });
@@ -613,14 +654,9 @@ async function handleMultipleFileUpload(event) {
                 const result = await response.json();
                 if (result.status === "success") {
                     
-                    // PENTING: Dihapus loadDashboardData(false) dan return; dari sini.
-                    // Google Sheets punya delay ~5 menit sebelum CSV yang di-publish terupdate.
-                    // Jika kita download lagi sekarang, data akan ketimpa data lama (yang belum terupdate).
-                    // Jadi biarkan sistem lanjut ke bawah untuk mengupdate UI layar secara lokal.
-
                     Swal.fire({
-                        title: 'Berhasil Terintegrasi!',
-                        html: `Data <b>${files.length}</b> modul berhasil diunggah ke Google Sheets.<br>Tampilan Dashboard telah diperbarui secara lokal. (Database utama akan tersinkronisasi dalam ~5 menit).`,
+                        title: 'Upload Sukses & Tervalidasi!',
+                        html: `Data modul <b>${targetUploadModule}</b> telah diverifikasi dan dikirim ke Google Sheets.<br><br>Dashboard diperbarui secara lokal. <i>(File CSV utama akan tersinkronisasi dalam ~5 menit).</i>`,
                         icon: 'success'
                     });
                     
@@ -632,19 +668,15 @@ async function handleMultipleFileUpload(event) {
                 Swal.fire('Peringatan Integrasi Cloud', 'Gagal mengirim data ke Google Sheets otomatis (' + fetchErr.message + '). Data hanya diperbarui di layar Anda (Lokal).', 'warning');
             }
         }
-        // --- END PROSES UPLOAD GOOGLE SHEETS ---
 
-        // Kalkulasi ulang status keseluruhan karyawan setelah modulnya diperbarui secara lokal
         recalculateOverallStatus();
-        
-        // Render ulang antarmuka menggunakan hasil kalkulasi yang baru
         initFilters();
         applyFilter();
         renderMasterTable();
         
     } catch (err) {
         console.error(err);
-        Swal.fire('Gagal Upload', 'Format file tidak terbaca atau rusak.', 'error');
+        Swal.fire('Gagal Parsing Data', 'Format file Excel tidak terbaca atau rusak.', 'error');
     }
     
     event.target.value = ""; // Reset input field
@@ -656,7 +688,7 @@ function recalculateOverallStatus() {
         let hasAnyPicked = false;
         let hasDoneAny = false;
         let hasProgressAny = false;
-        let hasNotYetAssigned = false; // untuk melacak jika ada modul yang diambil tapi belum dikerjakan sama sekali
+        let hasNotYetAssigned = false; 
 
         for (const [modName, modData] of Object.entries(user.modules)) {
             const mStatus = (modData.status || "").toLowerCase();
@@ -668,18 +700,13 @@ function recalculateOverallStatus() {
             }
         }
 
-        // Tentukan Coverage (asumsi: mengambil minimal 1 modul berarti Tercoverage)
         user.statusCoverage = (user.jumlahModul > 0 || hasAnyPicked) ? "Tercoverage" : "Not Yet";
 
-        // Tentukan Final Progress Recap
         if (hasDoneAny && !hasProgressAny && !hasNotYetAssigned) {
-            // Semua modul yang diambil selesai
             user.allRecap = "Done";
         } else if (hasDoneAny || hasProgressAny) {
-            // Ada progres campuran
             user.allRecap = "On Progress";
         } else {
-            // Belum ada progress sama sekali
             user.allRecap = "Not Yet";
         }
     });
@@ -735,7 +762,7 @@ function renderMasterTable() {
 
 
 // ==========================================
-// DASHBOARD & CHARTING LOGIC (Dari Code 50 - Theme Gelap dgn Leader Lines)
+// DASHBOARD & CHARTING LOGIC
 // ==========================================
 function openTableModal() { document.getElementById("tableModal").style.display = "flex"; }
 function closeTableModal() { document.getElementById("tableModal").style.display = "none"; }
@@ -746,7 +773,6 @@ function downloadTableExcel() {
     XLSX.writeFile(wb, tableTitle.replace(/\s+/g, '_') + ".xlsx");
 }
 
-// Chart Plugin LeaderLines Anti Collision
 const pieLeaderLinesPlugin = {
     id: 'pieLeaderLines',
     afterDraw(chart) {
@@ -794,7 +820,6 @@ const pieLeaderLinesPlugin = {
 };
 Chart.register(ChartDataLabels, pieLeaderLinesPlugin);
 
-// Baseline Google Sheet CSV URL (Berdasarkan crosscheck sheet FINAL DASHBOARD DATA)
 const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQk1Gnwtu-vKG24ImVYA0ytCuAuOuWeujzNpFbUPz2C-Y0jLwRxWspRCSMPqG9gj7WfcTGtXWwSlFH6/pub?gid=1260922175&single=true&output=csv";
 const JABATAN_COLORS = { "BC": "#4285f4", "BM": "#f77f00", "SM": "#34a853", "SDH": "#ea4335", "PDH": "#f59e0b", "ADH": "#14b8a6", "SPV": "#6366f1", "ASE": "#a855f7" };
 const CUSTOM_JABATAN_ORDER = ["BC", "BM", "SM", "SDH", "PDH", "ADH", "SPV", "ASE"];
