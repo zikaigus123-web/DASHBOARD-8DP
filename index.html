@@ -19,6 +19,10 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
+<!-- Leaflet untuk peta lokasi kerja -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
 <!-- Library SheetJS untuk Export & Import Excel (.xlsx) -->
 <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 
@@ -151,12 +155,14 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
 @keyframes spin { 100% { transform: rotate(360deg); } }
 
 /* ===== DASHBOARD V2 ===== */
-.v2-fstable{display:none}
-.v2-fstable .fs-wrap{flex:1;min-height:0;overflow-y:auto;border:1px solid #ccc;border-radius:4px}
-.v2-fstable .jabatan-table{font-size:15px}
-.v2-fstable .jabatan-table th,.v2-fstable .jabatan-table td{padding:7px 12px}
-:fullscreen .v2-fstable{display:flex;flex-direction:column;flex:1 1 0;min-height:200px;background:#fff;border:2px solid #000;border-radius:6px;padding:10px 12px;margin-bottom:10px}
-:-webkit-full-screen .v2-fstable{display:flex;flex-direction:column;flex:1 1 0;min-height:200px;background:#fff;border:2px solid #000;border-radius:6px;padding:10px 12px;margin-bottom:10px}
+.v2-mapcard{background:#fff;border:2px solid #000;border-radius:6px;padding:10px 12px;margin-bottom:10px;display:flex;flex-direction:column;height:360px;flex:none;min-width:0}
+#lokMap{flex:1;min-height:0;border:1px solid #ccc;border-radius:4px;z-index:0;background:#eef2f6}
+.map-lbl{background:transparent!important;border:0!important;box-shadow:none!important;font-weight:800;font-size:11px;color:#000;text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 3px #fff;padding:0}
+.map-lbl:before{display:none!important}
+.map-legend{background:#fff;border:2px solid #000;border-radius:6px;padding:6px 10px;font-size:12px;font-weight:700;line-height:1.7}
+.map-legend i{display:inline-block;width:12px;height:12px;border-radius:50%;border:1px solid #000;margin-right:6px;vertical-align:-2px}
+:fullscreen .v2-mapcard{flex:1 1 0;height:auto;min-height:260px}
+:-webkit-full-screen .v2-mapcard{flex:1 1 0;height:auto;min-height:260px}
 .v2{display:grid;grid-template-columns:repeat(3,1fr) 1.9fr;gap:10px}
 .v2-kpis{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .v2-kpi,.v2-card{background:#fff;border:2px solid #000;border-radius:6px;padding:10px 12px;min-width:0}
@@ -337,9 +343,9 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
                 </div>
             </div>
 
-            <div class="v2-fstable">
-                <div class="v2-h" id="fsTitle">Rekap Jumlah Pegawai per Jabatan</div>
-                <div class="fs-wrap"><table class="jabatan-table"><thead id="fsHead"></thead><tbody id="fsBody"></tbody></table></div>
+            <div class="v2-mapcard">
+                <div class="v2-h" style="cursor:pointer" onclick="showInfo('map')" title="Klik untuk penjelasan">Peta Sebaran Lokasi Kerja <i class="fas fa-info-circle v2-i"></i><span class="v2-attnote" id="mapNote"></span></div>
+                <div id="lokMap"></div>
             </div>
             <div class="v2">
                 <div class="v2-kpis">
@@ -480,7 +486,7 @@ function toggleFullScreen() {
 }
 document.addEventListener("fullscreenchange", resizeCharts);
 document.addEventListener("webkitfullscreenchange", resizeCharts);
-function resizeCharts() { setTimeout(() => { Object.values(chartInstances).forEach(c => { if(c) c.resize(); }); }, 150); }
+function resizeCharts() { setTimeout(() => { Object.values(chartInstances).forEach(c => { if(c) c.resize(); }); if (typeof lokMap !== 'undefined' && lokMap) lokMap.invalidateSize(); }, 150); }
 
 // ==========================================
 // UPLOAD FILE RAW DATA LOGIC (TARGETED MODULE)
@@ -1202,6 +1208,14 @@ function showInfo(key) {
         Object.assign(o, { title: "Perlu Perhatian · Done% Terendah per Lokasi",
             desc: "Daftar lokasi kerja dengan persentase pegawai Done paling rendah, supaya tindak lanjut bisa difokuskan ke sana. Klik sebuah lokasi untuk melihat pegawai yang belum Done.",
             formula: "Pegawai Done ÷ total pegawai di lokasi tersebut. Tampilan default: lokasi dengan minimal 3 pegawai, 7 terendah. Saat sebuah jabatan dipilih, semua lokasi ditampilkan." });
+    } else if (key === "map") {
+        const um = c.unmapped || [], hasNA = um.indexOf("#N/A") !== -1;
+        Object.assign(o, { title: "Peta Sebaran Lokasi Kerja",
+            desc: "Setiap lingkaran adalah satu lokasi kerja. <b>Ukuran</b> menunjukkan jumlah pegawai, <b>warna</b> menunjukkan persentase pegawai Done (hijau ≥ 80%, kuning 50–79%, merah &lt; 50%). Peta mengikuti filter yang aktif. Klik lingkaran untuk melihat rincian lokasi dan memfilter dashboard ke lokasi itu.",
+            formula: "Done % = pegawai Done ÷ total pegawai di lokasi tersebut. Posisi titik diambil dari daftar <code>LOKASI_GEO</code> di kode dashboard. Beberapa titik adalah perkiraan karena kode lokasi berupa singkatan.",
+            chips: chip(c.mapped || 0, "Lokasi di peta", "#34a853") + chip(um.length, "Belum ada koordinat", um.length ? "#ea4335" : "#9aa5b1"),
+            listTitle: um.length ? "Lokasi belum muncul di peta" : "",
+            listHtml: um.length ? `<div style="margin-top:6px;font-size:13px">${um.map(esc).join(", ")}${hasNA ? '<br><span style="color:#b45309">"#N/A" artinya sel Lokasi Kerja di Sheet error atau kosong. Periksa di Sheet.</span>' : ""}<br><span style="color:#777">Tambahkan kode lainnya ke <code>LOKASI_GEO</code> agar muncul di peta.</span></div>` : "" });
     }
     openInfo(o);
 }
@@ -1235,6 +1249,72 @@ function showLocByName(name) {
         listHtml: tblHtml(pend, ["Nama", "Jabatan", "Status"], d => { const s = c.rec(d); return `<tr>${td(esc(d.nama || d.nrp))}${td(esc(d.jabatan))}${td(s, "font-weight:700;color:" + stColor(s))}</tr>`; }, "Semua pegawai di lokasi ini sudah Done ✓") });
 }
 
+
+
+// ==========================================
+// PETA SEBARAN LOKASI KERJA (Leaflet)
+// KODE: { n: "Nama tempat", ll: [lat, lng], a: true bila perkiraan }
+// ==========================================
+const LOKASI_GEO = {
+    JKT: { n: "Jakarta", ll: [-6.20, 106.85] }, TGR: { n: "Tangerang", ll: [-6.18, 106.63] }, SBY: { n: "Surabaya", ll: [-7.25, 112.75] },
+    SMG: { n: "Semarang", ll: [-6.97, 110.42] }, MDN: { n: "Medan", ll: [3.59, 98.67] }, PKB: { n: "Pekanbaru", ll: [0.51, 101.45] },
+    PDG: { n: "Padang", ll: [-0.95, 100.35] }, JBI: { n: "Jambi", ll: [-1.61, 103.61] }, PLB: { n: "Palembang", ll: [-2.98, 104.76] },
+    TJE: { n: "Tanjung Enim", ll: [-3.75, 103.80] }, PTK: { n: "Pontianak", ll: [-0.03, 109.33] }, BJM: { n: "Banjarmasin", ll: [-3.32, 114.59] },
+    BLP: { n: "Balikpapan", ll: [-1.24, 116.85] }, SMD: { n: "Samarinda", ll: [-0.50, 117.15] }, TRK: { n: "Tarakan", ll: [3.30, 117.63] },
+    MTW: { n: "Muara Teweh", ll: [-0.95, 114.89] }, TJR: { n: "Tanjung Redeb", ll: [2.15, 117.49] }, SGT: { n: "Sangatta", ll: [0.51, 117.58] },
+    KPC: { n: "KPC (Sangatta)", ll: [0.62, 117.52] }, UPG: { n: "Makassar", ll: [-5.15, 119.43] }, MDO: { n: "Manado", ll: [1.47, 124.84] },
+    JYP: { n: "Jayapura", ll: [-2.53, 140.72] },
+    // perkiraan dari singkatan kode, mohon diverifikasi
+    TJG: { n: "Tanjung, Tabalong", ll: [-2.16, 115.38], a: true }, BLG: { n: "Balangan", ll: [-2.33, 115.46], a: true },
+    SKL: { n: "Sangkulirang", ll: [0.98, 117.98], a: true }, STI: { n: "Satui", ll: [-3.82, 115.43], a: true },
+    BHT: { n: "Batu Hijau", ll: [-8.97, 116.87], a: true }, MLW: { n: "Melak", ll: [-0.20, 115.87], a: true },
+    FRP: { n: "Timika (Freeport)", ll: [-4.55, 136.89], a: true }, SPT: { n: "Sampit", ll: [-2.54, 112.95], a: true },
+    BNT: { n: "Bontang", ll: [0.13, 117.50], a: true }, TBG: { n: "Tembagapura", ll: [-4.15, 137.12], a: true },
+    RTU: { n: "Rantau, Tapin", ll: [-2.93, 115.04], a: true }, PLU: { n: "Palu", ll: [-0.90, 119.87], a: true },
+    AMB: { n: "Ambon", ll: [-3.70, 128.18], a: true }
+};
+function geoFor(loc) {
+    const k = String(loc || "").toUpperCase().trim();
+    return LOKASI_GEO[k] || null;
+}
+let lokMap = null, lokLayer = null;
+function ensureMap() {
+    if (lokMap) return true;
+    const box = document.getElementById("lokMap");
+    if (typeof L === "undefined") { box.innerHTML = '<div style="padding:20px;color:#b45309;font-weight:700">Peta tidak dapat dimuat (library Leaflet / koneksi internet).</div>'; return false; }
+    lokMap = L.map(box, { zoomControl: true, attributionControl: true, minZoom: 3 }).setView([-2.5, 118], 5);
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", { maxZoom: 18, subdomains: "abcd",
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>' }).addTo(lokMap);
+    lokLayer = L.layerGroup().addTo(lokMap);
+    const lg = L.control({ position: "bottomleft" });
+    lg.onAdd = () => { const d = L.DomUtil.create("div", "map-legend");
+        d.innerHTML = '<i style="background:#34a853"></i>Done ≥ 80%<br><i style="background:#fbbc04"></i>Done 50–79%<br><i style="background:#ea4335"></i>Done &lt; 50%<br><span style="font-weight:600;color:#555">Ukuran = jumlah pegawai</span>'; return d; };
+    lg.addTo(lokMap);
+    if (window.ResizeObserver) new ResizeObserver(() => lokMap.invalidateSize()).observe(box);
+    return true;
+}
+function renderMap(data, rec) {
+    if (!ensureMap()) return;
+    lokLayer.clearLayers();
+    const G = {}; data.forEach(d => { const k = d.lokasi || "-"; const g = (G[k] = G[k] || { n: 0, done: 0 }); g.n++; if (rec(d) === "Done") g.done++; });
+    const band = v => v >= 80 ? "#34a853" : v >= 50 ? "#fbbc04" : "#ea4335";
+    const pts = [], unmapped = []; let mapped = 0;
+    Object.entries(G).sort((a, b) => b[1].n - a[1].n).forEach(([code, g]) => {
+        const geo = geoFor(code); if (!geo) { unmapped.push(code); return; }
+        mapped++;
+        const pct = Math.round(g.done * 1000 / g.n) / 10, r = Math.min(26, 8 + Math.sqrt(g.n) * 2.5);
+        const m = L.circleMarker(geo.ll, { radius: r, color: "#000", weight: 2, fillColor: band(pct), fillOpacity: 0.8 }).addTo(lokLayer);
+        m.bindTooltip(`${esc(code)} · ${pct}%`, { permanent: true, direction: "center", className: "map-lbl" });
+        m.on("click", () => showLocByName(code));
+        m.on("mouseover", () => m.setStyle({ weight: 4 })); m.on("mouseout", () => m.setStyle({ weight: 2 }));
+        pts.push(geo.ll);
+    });
+    if (lastCtx) { lastCtx.unmapped = unmapped; lastCtx.mapped = mapped; }
+    document.getElementById("mapNote").textContent = `${mapped} lokasi dipetakan` + (unmapped.length ? ` · ${unmapped.length} belum ada koordinat (klik ⓘ)` : "");
+    if (unmapped.length) console.warn("Lokasi belum ada koordinat di LOKASI_GEO:", unmapped);
+    if (pts.length) lokMap.fitBounds(L.latLngBounds(pts), { padding: [40, 40], maxZoom: 7 }); else lokMap.setView([-2.5, 118], 5);
+    setTimeout(() => lokMap.invalidateSize(), 50);
+}
 
 function pickJab(j) { const f = document.getElementById("filterJabatan"); f.value = f.value === j ? "ALL" : j; applyFilter(); }
 function renderDashboard(data) {
@@ -1315,6 +1395,8 @@ function renderDashboard(data) {
             scales: { x: { min: 0, max: 100, ticks: { font: { size: 12 } }, grid: { color: "#eee" } },
                       y: { ticks: { font: { size: 12, weight: "600" }, color: "#222", autoSkip: false }, grid: { display: false } } } } });
 
+    renderMap(data, rec);
+
     // Table Logic
     const tbody = document.getElementById("jabatanTableBody"); const thead = document.getElementById("jabatanTableHead"); const tTitle = document.getElementById("tableTitle");
     const isFiltered = document.getElementById("filterLokasi").value!=="ALL" || document.getElementById("filterJabatan").value!=="ALL" || document.getElementById("filterStatus").value!=="ALL";
@@ -1341,9 +1423,6 @@ function renderDashboard(data) {
     document.getElementById("modalTableHead").innerHTML = thead.innerHTML;
     document.getElementById("modalTableBody").innerHTML = tbody.innerHTML;
     document.getElementById("modalTableTitle").textContent = tTitle.textContent;
-    document.getElementById("fsHead").innerHTML = thead.innerHTML;
-    document.getElementById("fsBody").innerHTML = tbody.innerHTML;
-    document.getElementById("fsTitle").textContent = tTitle.textContent;
 }
 </script>
 
