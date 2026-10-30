@@ -1283,8 +1283,8 @@ function ensureMap() {
     const box = document.getElementById("lokMap");
     if (typeof L === "undefined") { box.innerHTML = '<div style="padding:20px;color:#b45309;font-weight:700">Peta tidak dapat dimuat (library Leaflet / koneksi internet).</div>'; return false; }
     lokMap = L.map(box, { zoomControl: true, attributionControl: true, minZoom: 3 }).setView([-2.5, 118], 5);
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", { maxZoom: 18, subdomains: "abcd",
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>' }).addTo(lokMap);
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors' }).addTo(lokMap);
     lokLayer = L.layerGroup().addTo(lokMap);
     const lg = L.control({ position: "bottomleft" });
     lg.onAdd = () => { const d = L.DomUtil.create("div", "map-legend");
