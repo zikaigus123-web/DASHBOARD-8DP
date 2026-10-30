@@ -151,6 +151,12 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
 @keyframes spin { 100% { transform: rotate(360deg); } }
 
 /* ===== DASHBOARD V2 ===== */
+.v2-fstable{display:none}
+.v2-fstable .fs-wrap{flex:1;min-height:0;overflow-y:auto;border:1px solid #ccc;border-radius:4px}
+.v2-fstable .jabatan-table{font-size:15px}
+.v2-fstable .jabatan-table th,.v2-fstable .jabatan-table td{padding:7px 12px}
+:fullscreen .v2-fstable{display:flex;flex-direction:column;flex:1 1 0;min-height:200px;background:#fff;border:2px solid #000;border-radius:6px;padding:10px 12px;margin-bottom:10px}
+:-webkit-full-screen .v2-fstable{display:flex;flex-direction:column;flex:1 1 0;min-height:200px;background:#fff;border:2px solid #000;border-radius:6px;padding:10px 12px;margin-bottom:10px}
 .v2{display:grid;grid-template-columns:repeat(3,1fr) 1.9fr;gap:10px}
 .v2-kpis{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .v2-kpi,.v2-card{background:#fff;border:2px solid #000;border-radius:6px;padding:10px 12px;min-width:0}
@@ -331,6 +337,10 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
                 </div>
             </div>
 
+            <div class="v2-fstable">
+                <div class="v2-h" id="fsTitle">Rekap Jumlah Pegawai per Jabatan</div>
+                <div class="fs-wrap"><table class="jabatan-table"><thead id="fsHead"></thead><tbody id="fsBody"></tbody></table></div>
+            </div>
             <div class="v2">
                 <div class="v2-kpis">
                     <div class="v2-kpi" onclick="showInfo('total')" title="Klik untuk penjelasan"><span>Total Employee Aktif<i class="fas fa-info-circle v2-i"></i></span><b id="kpiTotalPart">0</b></div>
@@ -1135,7 +1145,7 @@ const tblHtml = (rows, heads, rowFn, okMsg) => !rows.length ? `<div style="color
 const td = (v, extra = "") => `<td style="padding:5px 8px;border-bottom:1px solid #eee;${extra}">${v}</td>`;
 function openInfo(o) {
     Swal.fire({
-        width: 680, confirmButtonText: "Tutup", confirmButtonColor: "#ffb703", customClass: { confirmButton: "swal-info-btn" },
+        width: 680, showDenyButton: !!o.action, denyButtonText: o.action ? o.action.label : "", denyButtonColor: "#4285f4", confirmButtonText: "Tutup", confirmButtonColor: "#ffb703", customClass: { confirmButton: "swal-info-btn" },
         title: `<span style="font-size:20px;font-weight:800">${o.title}</span>`,
         html: `<div style="text-align:left;font-size:14px;color:#222;line-height:1.5">
             <p>${o.desc}</p>
@@ -1143,7 +1153,7 @@ function openInfo(o) {
             ${o.chips ? `<div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0">${o.chips}</div>` : ""}
             ${o.listTitle ? `<div style="font-weight:800;margin-top:6px">${o.listTitle}</div>${o.listHtml}` : ""}
         </div>`
-    });
+    }).then(r => { if (r.isDenied && o.action) o.action.fn(); });
 }
 function showInfo(key) {
     const c = lastCtx; if (!c) return;
@@ -1210,19 +1220,21 @@ function showModuleInfo(i) {
         listTitle: `Peserta yang nilainya tidak naik (${weak.length})`,
         listHtml: tblHtml(weak, ["Nama", "Jabatan", "Pre", "Post", "Selisih"], w => `<tr>${td(esc(w.d.nama || w.d.nrp))}${td(esc(w.d.jabatan))}${td(w.pre)}${td(w.post)}${td((w.g >= 0 ? "+" : "") + w.g.toFixed(1), "font-weight:700;color:#dc2626")}</tr>`, "Semua peserta nilainya naik ✓") });
 }
-function showLocInfo(i) {
-    const c = lastCtx, name = c && c.attnLocs[i]; if (name === undefined) return;
+function showLocInfo(i) { const c = lastCtx; if (c) showLocByName(c.attnLocs[i]); }
+function showLocByName(name) {
+    const c = lastCtx; if (!c || name === undefined) return;
     const rows = c.data.filter(d => (d.lokasi || "-") === name);
     const nd = rows.filter(d => c.rec(d) === "Done").length, np = rows.filter(d => c.rec(d) === "On Progress").length, nn = rows.length - nd - np;
     const pend = rows.filter(d => c.rec(d) !== "Done");
     const stColor = s => s === "On Progress" ? "#d97706" : "#dc2626";
     const jab = document.getElementById("filterJabatan").value;
-    openInfo({ title: "Lokasi " + esc(name) + (jab !== "ALL" ? " · Jabatan " + esc(jab) : ""),
+    openInfo({ action: { label: "Filter lokasi ini", fn: () => { const f = document.getElementById("filterLokasi"); if (Array.from(f.options).some(o => o.value === name)) { f.value = name; applyFilter(); } } }, title: "Lokasi " + esc(name) + (jab !== "ALL" ? " · Jabatan " + esc(jab) : ""),
         desc: `Rincian penyelesaian training pegawai di lokasi ini sesuai filter yang sedang aktif.`,
         chips: chip(rows.length, "Total pegawai", "#4285f4") + chip(nd, "Done", "#34a853") + chip(np, "On Progress", "#fbbc04") + chip(nn, "Not Yet", "#ea4335") + chip((rows.length ? Math.round(nd * 1000 / rows.length) / 10 : 0) + "%", "Done %", "#4285f4"),
         listTitle: `Pegawai belum Done (${pend.length})`,
         listHtml: tblHtml(pend, ["Nama", "Jabatan", "Status"], d => { const s = c.rec(d); return `<tr>${td(esc(d.nama || d.nrp))}${td(esc(d.jabatan))}${td(s, "font-weight:700;color:" + stColor(s))}</tr>`; }, "Semua pegawai di lokasi ini sudah Done ✓") });
 }
+
 
 function pickJab(j) { const f = document.getElementById("filterJabatan"); f.value = f.value === j ? "ALL" : j; applyFilter(); }
 function renderDashboard(data) {
@@ -1329,6 +1341,9 @@ function renderDashboard(data) {
     document.getElementById("modalTableHead").innerHTML = thead.innerHTML;
     document.getElementById("modalTableBody").innerHTML = tbody.innerHTML;
     document.getElementById("modalTableTitle").textContent = tTitle.textContent;
+    document.getElementById("fsHead").innerHTML = thead.innerHTML;
+    document.getElementById("fsBody").innerHTML = tbody.innerHTML;
+    document.getElementById("fsTitle").textContent = tTitle.textContent;
 }
 </script>
 
