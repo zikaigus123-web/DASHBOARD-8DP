@@ -262,6 +262,10 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
                         <option value="ALL">-- Semua Jabatan --</option>
                     </select>
 
+                    <label>Status Kerja:</label>
+                    <select id="filterAktif" class="filter-select" style="min-width:100px" onchange="applyFilter()"><option value="AKTIF">Aktif saja</option><option value="ALL">Semua (+Resign)</option></select>
+                    <span id="aktifNote" style="font-size:11px;font-weight:bold;color:#b45309;"></span>
+
                     <label>Status:</label>
                     <select id="filterStatus" class="filter-select" onchange="applyFilter()">
                         <option value="ALL">-- Semua Status --</option>
@@ -398,7 +402,13 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
             </div>
 
             <!-- FITUR FILTER UNTUK TABEL DATABASE -->
-            <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 10px;">
+            <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                <input id="searchMaster" class="filter-select" placeholder="Cari NRP / nama..." oninput="renderMasterTable()" style="min-width:180px">
+                <select id="filterMasterAktif" class="filter-select" onchange="renderMasterTable()" style="min-width:110px"><option value="AKTIF">Aktif</option><option value="RESIGN">Resign</option><option value="ALL">Semua</option></select>
+                <button class="btn-action" style="background:#ea4335;color:#fff;border-color:#991b1b" onclick="openStatusModal('Resign')"><i class="fas fa-user-slash"></i> Nonaktifkan (<span id="selCount">0</span>)</button>
+                <button class="btn-action" style="background:#fff" onclick="openStatusModal('Aktif')"><i class="fas fa-user-check"></i> Aktifkan kembali</button>
+                <button class="btn-action" style="background:#fff" onclick="document.getElementById('resignFile').click()"><i class="fas fa-file-excel"></i> Upload Daftar Resign</button>
+                <input type="file" id="resignFile" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleResignFile(event)">
                 <label style="font-weight: bold; font-size: 13px; color: #111;">Filter Status Progress:</label>
                 <select id="filterMasterStatus" class="filter-select" onchange="renderMasterTable()" style="border: 1px solid #aaa; padding: 6px 10px; border-radius: 4px; font-weight: bold; font-size: 13px; min-width: 150px; outline: none; background: #fff;">
                     <option value="ALL">-- Semua Status --</option>
@@ -412,16 +422,16 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
                 <table class="master-table" id="masterDataTable">
                     <thead>
                         <tr>
-                            <th>NRP</th>
+                            <th style="width:30px"><input type="checkbox" onclick="toggleAllSel(this)"></th><th>NRP</th>
                             <th>Nama Pegawai</th>
                             <th>Jabatan</th>
                             <th>Lokasi</th>
                             <th>Total Modul</th>
-                            <th>Status Progress</th>
+                            <th>Status Progress</th><th>Status Kerja</th>
                         </tr>
                     </thead>
                     <tbody id="masterDataBody">
-                        <tr><td colspan="6" style="text-align:center; padding: 20px;">Memuat data baseline...</td></tr>
+                        <tr><td colspan="8" style="text-align:center; padding: 20px;">Memuat data baseline...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -435,7 +445,7 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
 // SYSTEM & NAVIGATION LOGIC
 // ==========================================
 // PENTING: PASTIKAN URL INI ADALAH URL DARI HASIL "NEW DEPLOYMENT" GOOGLE APPS SCRIPT YANG BARU!
-const UPLOAD_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyuRiWmKLB68-uzHT1nj-f4ms2jgbgTtgKR-3ld29FQkgbAhhwBXBU0LAmYyDUzPTpPMw/exec"; 
+const UPLOAD_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzt_kLQLd_AzQhmgGPRpFUEj0OLOmuCCBhewAFtKJshPi-20OhAVlnZMOfj2ha17Wu12g/exec"; 
 
 function handleLogin(event) {
     event.preventDefault();
@@ -443,6 +453,7 @@ function handleLogin(event) {
     const p = document.getElementById("password").value.trim();
 
     if (u === "admin" && p === "utcorp2026") {
+        adminToken = p;
         document.getElementById("loginModal").style.display = "none";
         document.getElementById("appContainer").style.display = "flex";
         
@@ -757,6 +768,76 @@ function recalculateOverallStatus() {
     });
 }
 
+// ==========================================
+// STATUS KERJA (AKTIF / RESIGN) - karyawan tidak dihapus, hanya diberi status
+// ==========================================
+let statusMap = {}, adminToken = "", selected = new Set();
+const isAktif = d => !statusMap[String(d.nrp).trim()];
+function statusKerjaCell(d) {
+    const s = statusMap[String(d.nrp).trim()];
+    return s ? `<span style="color:#dc2626;font-weight:bold">Resign</span><br><small>${s}</small>` : `<span style="color:#16a34a;font-weight:bold">Aktif</span>`;
+}
+async function loadEmployeeStatus() {
+    try {
+        const r = await (await fetch(UPLOAD_SCRIPT_URL + "?action=getStatus&t=" + Date.now())).json();
+        if (r.status !== "success") throw new Error(r.message);
+        statusMap = {}; r.resigned.forEach(x => statusMap[String(x.nrp).trim()] = x.tglResign || "-");
+    } catch (e) {
+        console.error(e);
+        Swal.fire({ toast: true, position: "top-end", icon: "warning", title: "Status resign gagal dimuat, semua dihitung aktif", showConfirmButton: false, timer: 4000 });
+    }
+}
+function updateAktifNote() {
+    const n = parsedData.filter(d => !isAktif(d)).length, el = document.getElementById("aktifNote");
+    if (el) el.textContent = (document.getElementById("filterAktif").value === "AKTIF" && n) ? `${parsedData.length - n} aktif · ${n} resign dikecualikan` : "";
+}
+function updateSelCount() { const el = document.getElementById("selCount"); if (el) el.textContent = selected.size; }
+function toggleSel(nrp, on) { on ? selected.add(String(nrp)) : selected.delete(String(nrp)); updateSelCount(); }
+function toggleAllSel(cb) { document.querySelectorAll('#masterDataBody input[type=checkbox]').forEach(c => { c.checked = cb.checked; c.onchange(); }); }
+
+async function sendStatus(status, employees, tglResign, alasan) {
+    Swal.fire({ title: "Menyimpan...", allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+    try {
+        const res = await (await fetch(UPLOAD_SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: "setEmployeeStatus", token: adminToken, status, tglResign, alasan, by: "admin", employees }) })).json();
+        if (res.status !== "success") throw new Error(res.message);
+        employees.forEach(e => { const k = String(e.nrp).trim(); if (status === "Resign") statusMap[k] = e.tglResign || tglResign || "-"; else delete statusMap[k]; selected.delete(k); });
+        applyFilter();
+        Swal.fire("Berhasil", res.message, "success");
+    } catch (e) { Swal.fire("Gagal", e.message, "error"); }
+}
+
+function openStatusModal(status) {
+    const emps = parsedData.filter(d => selected.has(String(d.nrp))).map(d => ({ nrp: String(d.nrp).trim(), nama: d.nama, jabatan: d.jabatan }));
+    if (!emps.length) return Swal.fire("Belum ada yang dipilih", "Centang pegawai di tabel terlebih dahulu.", "info");
+    if (status === "Aktif") return Swal.fire({ title: `Aktifkan kembali ${emps.length} pegawai?`, icon: "question", showCancelButton: true }).then(r => r.isConfirmed && sendStatus("Aktif", emps));
+    Swal.fire({
+        title: `Nonaktifkan ${emps.length} pegawai`, showCancelButton: true, confirmButtonText: "Nonaktifkan", confirmButtonColor: "#ea4335",
+        html: `<input type="date" id="rsDate" class="swal2-input" value="${new Date().toISOString().slice(0, 10)}"><select id="rsWhy" class="swal2-input"><option>Resign</option><option>Pensiun</option><option>Mutasi keluar</option><option>PHK</option><option>Lainnya</option></select>`,
+        preConfirm: () => { const d = document.getElementById("rsDate").value; if (!d) { Swal.showValidationMessage("Tanggal wajib diisi"); return false; } return { d, a: document.getElementById("rsWhy").value }; }
+    }).then(r => r.isConfirmed && sendStatus("Resign", emps, r.value.d, r.value.a));
+}
+
+// Upload daftar resign dari HR: kolom NRP, Tgl Resign, Alasan
+const toISO = v => typeof v === "number" ? new Date(Math.round((v - 25569) * 864e5)).toISOString().slice(0, 10)
+    : (m => m ? `${m[3]}-${m[2].padStart(2, "0")}-${m[1].padStart(2, "0")}` : String(v).trim())(String(v).trim().match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/));
+async function handleResignFile(ev) {
+    const f = ev.target.files[0]; if (!f) return;
+    const wb = XLSX.read(await readFileAsBinary(f), { type: "binary" });
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: "" });
+    ev.target.value = "";
+    const kk = (r, s) => Object.keys(r).find(k => k.toLowerCase().includes(s));
+    const byNrp = {}; parsedData.forEach(d => byNrp[String(d.nrp).trim()] = d);
+    const emps = [], miss = [];
+    rows.forEach(r => {
+        const n = String(r[kk(r, "nrp")] || "").trim(); if (!n) return;
+        const d = byNrp[n]; if (!d) { miss.push(n); return; }
+        emps.push({ nrp: n, nama: d.nama, jabatan: d.jabatan, tglResign: toISO(r[kk(r, "tgl")] || ""), alasan: String(r[kk(r, "alasan")] || "Resign") });
+    });
+    const ok = await Swal.fire({ title: `Nonaktifkan ${emps.length} pegawai?`, icon: "question", showCancelButton: true,
+        html: miss.length ? `${miss.length} NRP tidak ditemukan: ${miss.slice(0, 10).join(", ")}` : "Semua NRP cocok." });
+    if (ok.isConfirmed && emps.length) sendStatus("Resign", emps);
+}
+
 // Master Table (View 2) Renderer
 function downloadTableExcelMaster() {
     const table = document.getElementById("masterDataTable");
@@ -766,16 +847,21 @@ function downloadTableExcelMaster() {
 
 function renderMasterTable() {
     const tbody = document.getElementById("masterDataBody");
+    updateSelCount();
     const filterStatus = document.getElementById("filterMasterStatus") ? document.getElementById("filterMasterStatus").value : "ALL";
     tbody.innerHTML = "";
     
     if(!parsedData || parsedData.length === 0) {
-        tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>Data Kosong</td></tr>";
+        tbody.innerHTML = "<tr><td colspan='8' style='text-align:center;'>Data Kosong</td></tr>";
         return;
     }
 
     // Melakukan Filter
+    const fa = document.getElementById("filterMasterAktif").value, q = (document.getElementById("searchMaster").value || "").toLowerCase();
     const filteredMasterData = parsedData.filter(d => {
+        if (fa === "AKTIF" && !isAktif(d)) return false;
+        if (fa === "RESIGN" && isAktif(d)) return false;
+        if (q && !(String(d.nrp) + " " + d.nama).toLowerCase().includes(q)) return false;
         if (filterStatus === "ALL") return true;
         const rec = d.allRecap || "Not Yet";
         if (filterStatus === "Done" && rec.includes("Done")) return true;
@@ -785,7 +871,7 @@ function renderMasterTable() {
     });
 
     if(filteredMasterData.length === 0) {
-        tbody.innerHTML = `<tr><td colspan='6' style='text-align:center; padding: 20px;'>Tidak ada data karyawan dengan status <b>${filterStatus}</b></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan='8' style='text-align:center; padding: 20px;'>Tidak ada data karyawan dengan status <b>${filterStatus}</b></td></tr>`;
         return;
     }
     
@@ -794,12 +880,14 @@ function renderMasterTable() {
         let statusBadge = d.allRecap === "Done" ? "color: #16a34a; font-weight: bold;" : 
                           d.allRecap === "On Progress" ? "color: #d97706; font-weight: bold;" : "color: #dc2626;";
         tr.innerHTML = `
+            <td><input type="checkbox" ${selected.has(String(d.nrp)) ? "checked" : ""} onchange="toggleSel('${d.nrp}', this.checked)"></td>
             <td>${d.nrp}</td>
             <td><strong>${d.nama}</strong></td>
             <td>${d.jabatan}</td>
             <td>${d.lokasi}</td>
             <td style="text-align:center;">${d.jumlahModul}</td>
             <td style="${statusBadge}">${d.allRecap || "Not Yet"}</td>
+            <td>${statusKerjaCell(d)}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -971,8 +1059,9 @@ function loadDashboardData(isInitial = false) {
     
     return fetch(CSV_URL + "&t=" + new Date().getTime())
         .then(res => res.text())
-        .then(csvText => {
+        .then(async csvText => {
             parseCustomCSV(csvText);
+            await loadEmployeeStatus();
             initFilters();
             applyFilter();
             if (isInitial) Swal.close();
@@ -1007,7 +1096,10 @@ function applyFilter() {
     const selectedJab = document.getElementById("filterJabatan").value;
     const selectedStatus = document.getElementById("filterStatus").value;
     
-    const filtered = parsedData.filter(d => {
+    const aktifOnly = document.getElementById("filterAktif").value === "AKTIF";
+    const scope = aktifOnly ? parsedData.filter(isAktif) : parsedData;
+    updateAktifNote();
+    const filtered = scope.filter(d => {
         const matchLoc = selectedLoc === "ALL" || d.lokasi === selectedLoc;
         const matchJab = selectedJab === "ALL" || d.jabatan === selectedJab;
         let dStatus = "Not Yet"; const stText = (d.allRecap || "").toLowerCase();
