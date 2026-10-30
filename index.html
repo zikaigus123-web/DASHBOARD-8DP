@@ -151,30 +151,44 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
 @keyframes spin { 100% { transform: rotate(360deg); } }
 
 /* ===== DASHBOARD V2 ===== */
-.v2{display:grid;grid-template-columns:repeat(3,1fr) 1.4fr;gap:10px}
+.v2{display:grid;grid-template-columns:repeat(3,1fr) 1.9fr;gap:10px}
 .v2-kpis{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .v2-kpi,.v2-card{background:#fff;border:2px solid #000;border-radius:6px;padding:10px 12px;min-width:0}
 .v2-kpi{border-left:6px solid #ffb703}
-.v2-kpi span{font-size:11px;font-weight:700;color:#555;text-transform:uppercase}
+.v2-kpi span{font-size:13px;font-weight:700;color:#555;text-transform:uppercase}
+.v2-kpi,.v2-click{cursor:pointer;transition:box-shadow .15s,transform .1s}
+.v2-kpi:hover,.v2-click:hover{box-shadow:0 3px 10px rgba(0,0,0,.25);transform:translateY(-1px)}
+.v2-i{color:#9ca3af;margin-left:4px;font-size:12px}
+.v2-kpi b span.kn{font-size:30px;font-weight:800;text-transform:none}
+.v2-kpi b span.kl{font-size:14px;font-weight:700;color:#444;text-transform:none;margin:0 14px 0 4px}
 .v2-kpi b{display:block;font-size:28px;font-weight:800;line-height:1.2;color:#000}
-.v2-kpi b small{font-size:12px;color:#555}
-.v2-bar{height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden}
+.v2-kpi b small{font-size:18px;font-weight:700;color:#444}
+.v2-bar{height:8px;background:#e5e7eb;border-radius:3px;overflow:hidden}
 .v2-bar i{display:block;height:100%;background:#34a853;transition:width .6s}
-.v2-h{font-size:12px;font-weight:800;color:#000;margin-bottom:8px;padding-left:8px;border-left:4px solid #ffb703;text-transform:uppercase}
-.v2-gauge{position:relative;height:150px}
+.v2-h{font-size:14px;font-weight:800;color:#000;margin-bottom:8px;padding-left:8px;border-left:4px solid #ffb703;text-transform:uppercase}
+.v2-gauge{position:relative;height:175px}
 .v2-gc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;text-align:center}
-.v2-gc b{font-size:26px;font-weight:800;color:#000}.v2-gc span{font-size:10px;font-weight:700;color:#555;max-width:100px}
-.v2-gain{grid-column:4;grid-row:2/4;display:flex;flex-direction:column}
-.v2-gainscroll{flex:1;min-height:0;overflow-y:auto}
+.v2-gc b{font-size:32px;font-weight:800;color:#000}.v2-gc span{font-size:13px;font-weight:700;color:#444;max-width:130px;line-height:1.3}
+.v2-gain{grid-column:4;grid-row:2/4;position:relative;min-height:440px}
+.v2-gainhead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.v2-gainhead .v2-h{margin:0}
+.v2-gainhead select{font-size:12px;padding:3px 6px;border:1px solid #aaa;border-radius:4px}
+.v2-leg{display:flex;gap:14px;font-size:12px;font-weight:700;color:#333;margin-bottom:4px}
+.v2-leg i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:5px;vertical-align:-2px}
+.v2-gainscroll{position:absolute;left:12px;right:12px;bottom:10px;top:92px;overflow-y:auto}
 .v2-heatcard{grid-column:1/3;grid-row:3}.v2-attn{grid-column:3;grid-row:3}.v2-table{grid-column:1/-1}
-.v2-heat{width:100%;border-collapse:collapse;font-size:12px;text-align:center}
+.v2-heat{width:100%;border-collapse:collapse;font-size:14px;text-align:center}
+.v2-heat th{cursor:pointer}
 .v2-heat th{background:#ffb703;border:1px solid #000;padding:4px}
 .v2-heat td{border:1px solid #ddd;padding:4px 6px;color:#000}
 .v2-heat tbody tr:hover{outline:2px solid #000}
 .v2-hc{display:flex;align-items:center;gap:6px}.v2-hc i{display:block;height:10px;border-radius:2px;flex:none}
-.v2-at{display:grid;grid-template-columns:70px 1fr 42px 24px;gap:6px;align-items:center;font-size:12px;margin-bottom:9px;font-weight:700}
-.v2-at small{color:#777}
-@media(max-width:1100px){.v2{grid-template-columns:1fr 1fr}.v2-gain,.v2-heatcard,.v2-attn{grid-column:1/-1;grid-row:auto}}
+#attn{max-height:250px;overflow-y:auto;padding-right:4px}
+.v2-at{display:grid;grid-template-columns:70px 1fr 56px 30px;gap:8px;align-items:center;font-size:14px;margin-bottom:9px;font-weight:700;cursor:pointer;padding:2px 4px;border-radius:4px}
+.v2-at:hover{background:#fff7e0}
+.v2-attnote{font-size:11px;font-weight:600;color:#777;text-transform:none;margin-left:6px}
+.v2-at small{color:#555;font-size:13px}
+@media(max-width:1100px){.v2{grid-template-columns:1fr 1fr}.v2-gain,.v2-heatcard,.v2-attn{grid-column:1/-1;grid-row:auto}.v2-gain{min-height:560px}}
 :fullscreen #view-dashboard,:-webkit-full-screen #view-dashboard{overflow:auto}
 :fullscreen .v2-table,:-webkit-full-screen .v2-table{display:none}
 </style>
@@ -319,17 +333,17 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
 
             <div class="v2">
                 <div class="v2-kpis">
-                    <div class="v2-kpi"><span>Total Employee Aktif</span><b id="kpiTotalPart">0</b></div>
-                    <div class="v2-kpi"><span>Employee Coverage</span><b id="kpiOverallCoverage">0</b><div class="v2-bar"><i id="barCov"></i></div></div>
-                    <div class="v2-kpi"><span>Training Progress (Done/Prog)</span><b id="kpiCompletionStatus">0/0</b><div class="v2-bar"><i id="barDone"></i></div></div>
-                    <div class="v2-kpi"><span>Target Hours (Tercapai/Blm)</span><b id="kpiTargetHoursStatus">0/0</b><div class="v2-bar"><i id="barHrs"></i></div></div>
+                    <div class="v2-kpi" onclick="showInfo('total')" title="Klik untuk penjelasan"><span>Total Employee Aktif<i class="fas fa-info-circle v2-i"></i></span><b id="kpiTotalPart">0</b></div>
+                    <div class="v2-kpi" onclick="showInfo('cov')" title="Klik untuk penjelasan"><span>Employee Coverage<i class="fas fa-info-circle v2-i"></i></span><b id="kpiOverallCoverage">0</b><div class="v2-bar"><i id="barCov"></i></div></div>
+                    <div class="v2-kpi" onclick="showInfo('part')" title="Klik untuk penjelasan"><span>Training Progress (Done/Prog)<i class="fas fa-info-circle v2-i"></i></span><b id="kpiCompletionStatus">0/0</b><div class="v2-bar"><i id="barDone"></i></div></div>
+                    <div class="v2-kpi" onclick="showInfo('hrs')" title="Klik untuk penjelasan"><span>Target Hours (Tercapai/Blm)<i class="fas fa-info-circle v2-i"></i></span><b id="kpiTargetHoursStatus">0/0</b><div class="v2-bar"><i id="barHrs"></i></div></div>
                 </div>
-                <div class="v2-card"><div class="v2-h">Training Coverage</div><div class="v2-gauge"><canvas id="gCov"></canvas><div class="v2-gc" id="gCovT"></div></div></div>
-                <div class="v2-card"><div class="v2-h">Training Participant</div><div class="v2-gauge"><canvas id="gPart"></canvas><div class="v2-gc" id="gPartT"></div></div></div>
-                <div class="v2-card"><div class="v2-h">Training Hours</div><div class="v2-gauge"><canvas id="gHrs"></canvas><div class="v2-gc" id="gHrsT"></div></div></div>
-                <div class="v2-card v2-gain"><div class="v2-h">Pre-Test → Post-Test per Modul</div><div class="v2-gainscroll"><div id="gainWrap" style="position:relative"><canvas id="cGain"></canvas></div></div></div>
+                <div class="v2-card v2-click" onclick="showInfo('cov')" title="Klik untuk penjelasan"><div class="v2-h">Training Coverage<i class="fas fa-info-circle v2-i"></i></div><div class="v2-gauge"><canvas id="gCov"></canvas><div class="v2-gc" id="gCovT"></div></div></div>
+                <div class="v2-card v2-click" onclick="showInfo('part')" title="Klik untuk penjelasan"><div class="v2-h">Training Participant<i class="fas fa-info-circle v2-i"></i></div><div class="v2-gauge"><canvas id="gPart"></canvas><div class="v2-gc" id="gPartT"></div></div></div>
+                <div class="v2-card v2-click" onclick="showInfo('hrs')" title="Klik untuk penjelasan"><div class="v2-h">Training Hours<i class="fas fa-info-circle v2-i"></i></div><div class="v2-gauge"><canvas id="gHrs"></canvas><div class="v2-gc" id="gHrsT"></div></div></div>
+                <div class="v2-card v2-gain"><div class="v2-gainhead"><div class="v2-h" style="cursor:pointer" onclick="showInfo('gain')" title="Klik untuk penjelasan">Pre-Test vs Post-Test per Modul<i class="fas fa-info-circle v2-i"></i></div><select id="gainSortSel" onchange="gainSort=this.value;renderDashboard(lastCtx.data)"><option value="gain">Urut: Kenaikan terbesar</option><option value="postHi">Urut: Post tertinggi</option><option value="postLo">Urut: Post terendah</option><option value="name">Urut: Nama A–Z</option></select></div><div class="v2-leg"><span><i style="background:#9aa5b1"></i>Pre-Test</span><span><i style="background:#34a853"></i>Post-Test</span><span style="color:#777;font-weight:600">Klik batang untuk detail modul</span></div><div class="v2-gainscroll"><div id="gainWrap" style="position:relative"><canvas id="cGain"></canvas></div></div></div>
                 <div class="v2-card v2-heatcard"><div class="v2-h">Peta Kinerja per Jabatan <small style="text-transform:none;color:#777">(klik baris untuk filter)</small></div><table class="v2-heat" id="heat"></table></div>
-                <div class="v2-card v2-attn"><div class="v2-h">Perlu Perhatian · Done% Terendah per Lokasi</div><div id="attn"></div></div>
+                <div class="v2-card v2-attn"><div class="v2-h" style="cursor:pointer" onclick="showInfo('attn')" title="Klik untuk penjelasan">Perlu Perhatian · Done% Terendah per Lokasi<i class="fas fa-info-circle v2-i"></i><span class="v2-attnote" id="attnNote"></span></div><div id="attn"></div></div>
                 <div class="v2-card v2-table">
                     <div class="v2-h" style="display:flex;justify-content:space-between"><span id="tableTitle">Rekap Jumlah Pegawai per Jabatan</span><button onclick="openTableModal()" style="background:none;border:none;cursor:pointer" title="Perbesar Tabel"><i class="fas fa-expand"></i></button></div>
                     <div class="table-wrapper"><table class="jabatan-table"><thead id="jabatanTableHead"><tr><th>Jabatan</th><th style="width:100px;text-align:center;">Total</th></tr></thead><tbody id="jabatanTableBody"></tbody></table></div>
@@ -1109,6 +1123,107 @@ function getOrderedJabatanList(data) {
     Array.from(e).sort().forEach(j => { if(j) o.push(j); }); return o;
 }
 
+
+// ==========================================
+// POPUP DESKRIPSI (klik KPI / grafik)
+// ==========================================
+let lastCtx = null, gainSort = "gain";
+const esc = x => String(x == null ? "" : x).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const chip = (v, l, c) => `<div style="flex:1;min-width:110px;background:#f8fafc;border:1px solid #e2e8f0;border-left:5px solid ${c};border-radius:6px;padding:8px 10px;text-align:left"><div style="font-size:26px;font-weight:800;color:#111;line-height:1.1">${v}</div><div style="font-size:12px;font-weight:700;color:#555">${l}</div></div>`;
+const tblHtml = (rows, heads, rowFn, okMsg) => !rows.length ? `<div style="color:#16a34a;font-weight:700;margin-top:6px">${okMsg}</div>` :
+    `<div style="max-height:240px;overflow-y:auto;border:1px solid #ddd;border-radius:6px;margin-top:6px"><table style="width:100%;border-collapse:collapse;font-size:13px;text-align:left"><thead><tr>${heads.map(h => `<th style="position:sticky;top:0;background:#ffb703;padding:6px 8px;border-bottom:1px solid #000">${h}</th>`).join("")}</tr></thead><tbody>${rows.slice(0, 200).map(rowFn).join("")}</tbody></table></div>${rows.length > 200 ? `<div style="font-size:12px;color:#777;margin-top:4px">Menampilkan 200 dari ${rows.length} pegawai</div>` : ""}`;
+const td = (v, extra = "") => `<td style="padding:5px 8px;border-bottom:1px solid #eee;${extra}">${v}</td>`;
+function openInfo(o) {
+    Swal.fire({
+        width: 680, confirmButtonText: "Tutup", confirmButtonColor: "#ffb703", customClass: { confirmButton: "swal-info-btn" },
+        title: `<span style="font-size:20px;font-weight:800">${o.title}</span>`,
+        html: `<div style="text-align:left;font-size:14px;color:#222;line-height:1.5">
+            <p>${o.desc}</p>
+            ${o.formula ? `<p style="background:#fff8e1;border:1px solid #ffe082;border-radius:6px;padding:8px 10px;margin-top:8px;font-size:13px"><b>Cara hitung:</b> ${o.formula}</p>` : ""}
+            ${o.chips ? `<div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0">${o.chips}</div>` : ""}
+            ${o.listTitle ? `<div style="font-weight:800;margin-top:6px">${o.listTitle}</div>${o.listHtml}` : ""}
+        </div>`
+    });
+}
+function showInfo(key) {
+    const c = lastCtx; if (!c) return;
+    const { data, n, nCov, nHit, nDone, nProg, rec, isCov, hit } = c;
+    const P = (a, b) => b ? Math.round(a * 1000 / b) / 10 : 0;
+    const G = "#34a853", Y = "#fbbc04", R = "#ea4335", B = "#4285f4";
+    const stColor = s => s === "Done" ? "#16a34a" : s === "On Progress" ? "#d97706" : "#dc2626";
+    const o = {};
+    if (key === "total") {
+        const jc = {}; data.forEach(d => jc[d.jabatan] = (jc[d.jabatan] || 0) + 1);
+        Object.assign(o, { title: "Total Employee Aktif",
+            desc: "Jumlah pegawai yang sedang dipantau pada dashboard. Angka mengikuti filter yang sedang dipilih (lokasi, jabatan, status kerja, dan status progress).",
+            formula: "Jumlah pegawai setelah semua filter diterapkan. Pegawai berstatus Resign tidak dihitung jika Status Kerja = 'Aktif saja'.",
+            chips: chip(n, "Total pegawai", B) + getOrderedJabatanList(data).map(j => chip(jc[j], "Jabatan " + j, getJabatanColor(j))).join("") });
+    } else if (key === "cov") {
+        const rows = data.filter(d => !isCov(d));
+        Object.assign(o, { title: "Employee / Training Coverage",
+            desc: "Persentase pegawai yang sudah ter-cover program training, yaitu sudah mengambil minimal satu modul.",
+            formula: "Pegawai berstatus 'Tercoverage' ÷ total pegawai.",
+            chips: chip(nCov, "Tercoverage", G) + chip(n - nCov, "Belum tercoverage", R) + chip(P(nCov, n) + "%", "Coverage", B),
+            listTitle: `Pegawai belum tercoverage (${rows.length})`,
+            listHtml: tblHtml(rows, ["Nama", "Jabatan", "Lokasi"], d => `<tr>${td(esc(d.nama || d.nrp))}${td(esc(d.jabatan))}${td(esc(d.lokasi))}</tr>`, "Semua pegawai sudah tercoverage ✓") });
+    } else if (key === "part") {
+        const rows = data.filter(d => rec(d) !== "Done");
+        Object.assign(o, { title: "Training Participant / Progress",
+            desc: "Status penyelesaian training per pegawai. <b>Done</b> = semua modul yang diambil selesai, <b>On Progress</b> = sedang berjalan, <b>Not Yet</b> = belum mulai.",
+            formula: "Pegawai berstatus Done ÷ total pegawai (angka di tengah grafik).",
+            chips: chip(nDone, "Done", G) + chip(nProg, "On Progress", Y) + chip(n - nDone - nProg, "Not Yet", R) + chip(P(nDone, n) + "%", "Done %", B),
+            listTitle: `Pegawai belum Done (${rows.length})`,
+            listHtml: tblHtml(rows, ["Nama", "Jabatan", "Lokasi", "Status"], d => { const s = rec(d); return `<tr>${td(esc(d.nama || d.nrp))}${td(esc(d.jabatan))}${td(esc(d.lokasi))}${td(s, "font-weight:700;color:" + stColor(s))}</tr>`; }, "Semua pegawai sudah Done ✓") });
+    } else if (key === "hrs") {
+        const rows = data.filter(d => !hit(d));
+        Object.assign(o, { title: "Training Hours / Target Jam",
+            desc: "Pegawai yang jam trainingnya sudah mencapai target jam yang ditetapkan.",
+            formula: "Pegawai berstatus 'Tercapai' ÷ total pegawai. Jam aktual dan target dibaca dari Sheet 'Final Dashboard Data'.",
+            chips: chip(nHit, "Tercapai", G) + chip(n - nHit, "Belum tercapai", R) + chip(P(nHit, n) + "%", "Target tercapai", B),
+            listTitle: `Pegawai belum mencapai target jam (${rows.length})`,
+            listHtml: tblHtml(rows, ["Nama", "Jabatan", "Lokasi", "Jam / Target"], d => `<tr>${td(esc(d.nama || d.nrp))}${td(esc(d.jabatan))}${td(esc(d.lokasi))}${td((d.trainingHours || 0) + " / " + (d.targetHours || 0))}</tr>`, "Semua pegawai sudah mencapai target jam ✓") });
+    } else if (key === "gain") {
+        const ms = c.mods, avgPre = ms.length ? (ms.reduce((a, m) => a + m.pre, 0) / ms.length).toFixed(1) : 0, avgPost = ms.length ? (ms.reduce((a, m) => a + m.post, 0) / ms.length).toFixed(1) : 0;
+        Object.assign(o, { title: "Pre-Test vs Post-Test per Modul",
+            desc: "Perbandingan rata-rata nilai Pre-Test (abu-abu) dan Post-Test (hijau) untuk tiap modul. Selisih di samping batang hijau menunjukkan kenaikan nilai (merah jika turun).",
+            formula: "Rata-rata nilai seluruh peserta yang punya nilai Pre/Post pada modul tersebut, sesuai filter aktif. Klik sebuah batang untuk melihat detail modul.",
+            chips: chip(ms.length, "Modul dengan data", B) + chip(avgPre, "Rata-rata Pre", "#9aa5b1") + chip(avgPost, "Rata-rata Post", G) });
+    } else if (key === "attn") {
+        Object.assign(o, { title: "Perlu Perhatian · Done% Terendah per Lokasi",
+            desc: "Daftar lokasi kerja dengan persentase pegawai Done paling rendah, supaya tindak lanjut bisa difokuskan ke sana. Klik sebuah lokasi untuk melihat pegawai yang belum Done.",
+            formula: "Pegawai Done ÷ total pegawai di lokasi tersebut. Tampilan default: lokasi dengan minimal 3 pegawai, 7 terendah. Saat sebuah jabatan dipilih, semua lokasi ditampilkan." });
+    }
+    openInfo(o);
+}
+function showModuleInfo(i) {
+    const c = lastCtx, m = c && c.mods[i]; if (!m) return;
+    const ok = v => v !== null && v !== undefined && !isNaN(v);
+    let up = 0, same = 0, down = 0, picked = 0, done = 0; const weak = [];
+    c.data.forEach(d => { const x = d.modules[m.name]; if (!x) return;
+        const st = (x.status || "").toLowerCase(); if (st && !st.includes("not picked")) picked++; if (st.includes("done")) done++;
+        if (ok(x.pre) && ok(x.post)) { const g = x.post - x.pre; if (g > 0) up++; else if (g < 0) down++; else same++; if (g <= 0) weak.push({ d, pre: x.pre, post: x.post, g }); } });
+    const g = m.post - m.pre;
+    openInfo({ title: esc(m.name),
+        desc: `Rata-rata nilai Pre-Test <b>${m.pre}</b> naik/turun menjadi Post-Test <b>${m.post}</b> (<b style="color:${g >= 0 ? "#16a34a" : "#dc2626"}">${g >= 0 ? "+" : ""}${g.toFixed(1)}</b>) pada modul ini, berdasarkan pegawai sesuai filter aktif.`,
+        formula: "Rata-rata nilai Pre dan Post dari peserta yang nilainya terisi.",
+        chips: chip(m.pre, "Rata-rata Pre", "#9aa5b1") + chip(m.post, "Rata-rata Post", "#34a853") + chip((g >= 0 ? "+" : "") + g.toFixed(1), "Kenaikan", g >= 0 ? "#34a853" : "#ea4335") + chip(picked, "Peserta mengambil modul", "#4285f4") + chip(done, "Peserta Done", "#34a853") + chip(up, "Nilai naik", "#34a853") + chip(same + down, "Tidak naik / turun", "#ea4335"),
+        listTitle: `Peserta yang nilainya tidak naik (${weak.length})`,
+        listHtml: tblHtml(weak, ["Nama", "Jabatan", "Pre", "Post", "Selisih"], w => `<tr>${td(esc(w.d.nama || w.d.nrp))}${td(esc(w.d.jabatan))}${td(w.pre)}${td(w.post)}${td((w.g >= 0 ? "+" : "") + w.g.toFixed(1), "font-weight:700;color:#dc2626")}</tr>`, "Semua peserta nilainya naik ✓") });
+}
+function showLocInfo(i) {
+    const c = lastCtx, name = c && c.attnLocs[i]; if (name === undefined) return;
+    const rows = c.data.filter(d => (d.lokasi || "-") === name);
+    const nd = rows.filter(d => c.rec(d) === "Done").length, np = rows.filter(d => c.rec(d) === "On Progress").length, nn = rows.length - nd - np;
+    const pend = rows.filter(d => c.rec(d) !== "Done");
+    const stColor = s => s === "On Progress" ? "#d97706" : "#dc2626";
+    const jab = document.getElementById("filterJabatan").value;
+    openInfo({ title: "Lokasi " + esc(name) + (jab !== "ALL" ? " · Jabatan " + esc(jab) : ""),
+        desc: `Rincian penyelesaian training pegawai di lokasi ini sesuai filter yang sedang aktif.`,
+        chips: chip(rows.length, "Total pegawai", "#4285f4") + chip(nd, "Done", "#34a853") + chip(np, "On Progress", "#fbbc04") + chip(nn, "Not Yet", "#ea4335") + chip((rows.length ? Math.round(nd * 1000 / rows.length) / 10 : 0) + "%", "Done %", "#4285f4"),
+        listTitle: `Pegawai belum Done (${pend.length})`,
+        listHtml: tblHtml(pend, ["Nama", "Jabatan", "Status"], d => { const s = c.rec(d); return `<tr>${td(esc(d.nama || d.nrp))}${td(esc(d.jabatan))}${td(s, "font-weight:700;color:" + stColor(s))}</tr>`; }, "Semua pegawai di lokasi ini sudah Done ✓") });
+}
+
 function pickJab(j) { const f = document.getElementById("filterJabatan"); f.value = f.value === j ? "ALL" : j; applyFilter(); }
 function renderDashboard(data) {
     const jabatanList = getOrderedJabatanList(data), el = id => document.getElementById(id);
@@ -1121,9 +1236,10 @@ function renderDashboard(data) {
     const nDone = data.filter(d => rec(d) === "Done").length, nProg = data.filter(d => rec(d) === "On Progress").length;
 
     el("kpiTotalPart").textContent = n;
+    lastCtx = { data, n, nCov, nHit, nDone, nProg, rec, isCov, hit, mods: [], attnLocs: [] };
     el("kpiOverallCoverage").innerHTML = `${nCov} <small>(${P(nCov, n)}%)</small>`;
-    el("kpiCompletionStatus").innerHTML = `<span style="color:#2e7d32">${nDone}</span>/<span style="color:#fbbc04">${nProg}</span>`;
-    el("kpiTargetHoursStatus").innerHTML = `<span style="color:#2e7d32">${nHit}</span>/<span style="color:#ea4335">${n - nHit}</span>`;
+    el("kpiCompletionStatus").innerHTML = `<span class="kn" style="color:#2e7d32">${nDone}</span><span class="kl">Done</span><span class="kn" style="color:#d99a00">${nProg}</span><span class="kl">Prog</span>`;
+    el("kpiTargetHoursStatus").innerHTML = `<span class="kn" style="color:#2e7d32">${nHit}</span><span class="kl">Tercapai</span><span class="kn" style="color:#ea4335">${n - nHit}</span><span class="kl">Belum</span>`;
     el("barCov").style.width = P(nCov, n) + "%"; el("barDone").style.width = P(nDone, n) + "%"; el("barHrs").style.width = P(nHit, n) + "%";
 
     // Gauge (ring) dengan angka di tengah
@@ -1134,35 +1250,58 @@ function renderDashboard(data) {
         el(id + "T").innerHTML = `<b>${pct}%</b><span>${sub}</span>`;
     };
     G("gCov", [nCov, n - nCov], ["#34a853", "#ea4335"], ["Tercoverage", "Not Yet"], P(nCov, n), `${nCov} / ${n} pegawai`);
-    G("gPart", [nDone, nProg, n - nDone - nProg], ["#34a853", "#fbbc04", "#ea4335"], ["Done", "On Progress", "Not Yet"], P(nDone, n), `${nDone} done · ${nProg} prog · ${n - nDone - nProg} belum`);
+    G("gPart", [nDone, nProg, n - nDone - nProg], ["#34a853", "#fbbc04", "#ea4335"], ["Done", "On Progress", "Not Yet"], P(nDone, n), `${nDone} done<br>${nProg} prog · ${n - nDone - nProg} belum`);
     G("gHrs", [nHit, n - nHit], ["#34a853", "#ea4335"], ["Tercapai", "Belum Tercapai"], P(nHit, n), `${nHit} / ${n} tercapai`);
 
     // Heatmap per jabatan (klik = filter)
     const band = v => v >= 80 ? "#34a853" : v >= 50 ? "#fbbc04" : "#ea4335";
     const heatBg = v => hexToRgba(band(v), v >= 80 ? 0.3 + (v - 80) / 40 : v >= 50 ? 0.4 : 0.3 + (50 - v) / 100);
     const maxC = Math.max(1, ...Object.values(jCounts));
-    el("heat").innerHTML = `<thead><tr><th>Jabatan</th><th>Headcount</th><th>Coverage</th><th>Done</th><th>Jam Target</th></tr></thead><tbody>` + jabatanList.map(j => {
+    el("heat").innerHTML = `<thead><tr><th>Jabatan</th><th onclick="showInfo('total')" title="Klik untuk penjelasan">Headcount ⓘ</th><th onclick="showInfo('cov')" title="Klik untuk penjelasan">Coverage ⓘ</th><th onclick="showInfo('part')" title="Klik untuk penjelasan">Done ⓘ</th><th onclick="showInfo('hrs')" title="Klik untuk penjelasan">Jam Target ⓘ</th></tr></thead><tbody>` + jabatanList.map(j => {
         const g = data.filter(d => d.jabatan === j), c = g.length, col = getJabatanColor(j);
         const cell = v => `<td style="background:${heatBg(v)}"><b>${v}%</b></td>`;
         return `<tr onclick="pickJab('${j}')" style="cursor:pointer"><td style="border-left:5px solid ${col}"><b>${j}</b></td><td><div class="v2-hc"><i style="width:${c * 70 / maxC}%;background:${col}"></i><b>${c}</b></div></td>${cell(P(g.filter(isCov).length, c))}${cell(P(g.filter(d => rec(d) === "Done").length, c))}${cell(P(g.filter(hit).length, c))}</tr>`;
     }).join("") + `</tbody>`;
 
-    // Perlu perhatian: lokasi dengan Done% terendah (min. 3 pegawai)
+    // Perlu perhatian: lokasi dengan Done% terendah.
+    // Default: min. 3 pegawai & top 7. Saat jabatan dipilih: SEMUA lokasi ditampilkan.
+    const jabSel = el("filterJabatan").value !== "ALL";
     const L = {}; data.forEach(d => { const k = d.lokasi || "-"; (L[k] = L[k] || { n: 0, done: 0 }).n++; if (rec(d) === "Done") L[k].done++; });
-    const worst = Object.entries(L).filter(([, v]) => v.n >= 3).map(([k, v]) => [k, v.n, P(v.done, v.n)]).sort((a, b) => a[2] - b[2]).slice(0, 7);
-    el("attn").innerHTML = worst.map(([k, c, p]) => `<div class="v2-at"><span>${k}</span><div class="v2-bar"><i style="width:${p}%;background:${band(p)}"></i></div><b>${p}%</b><small>${c}</small></div>`).join("") || "<small>Tidak ada data</small>";
+    let worst = Object.entries(L).filter(([, v]) => jabSel || v.n >= 3).map(([k, v]) => [k, v.n, P(v.done, v.n)]).sort((a, b) => a[2] - b[2] || b[1] - a[1]);
+    const totalLoc = worst.length;
+    if (!jabSel) worst = worst.slice(0, 7);
+    lastCtx.attnLocs = worst.map(w => w[0]);
+    el("attnNote").textContent = jabSel ? `Jabatan ${el("filterJabatan").value} · semua ${totalLoc} lokasi` : `Top ${worst.length} · pilih jabatan untuk semua lokasi`;
+    el("attn").innerHTML = worst.map(([k, c, p], i) => `<div class="v2-at" onclick="showLocInfo(${i})" title="Klik untuk detail lokasi"><span>${esc(k)}</span><div class="v2-bar"><i style="width:${p}%;background:${band(p)}"></i></div><b>${p}%</b><small>${c}</small></div>`).join("") || "<small>Tidak ada data</small>";
 
-    // Pre -> Post per modul, urut kenaikan terbesar
+    // Pre vs Post per modul (grouped bar, label terbaca, klik = detail)
+    const sorters = { gain: (a, b) => (b.post - b.pre) - (a.post - a.pre), postHi: (a, b) => b.post - a.post, postLo: (a, b) => a.post - b.post, name: (a, b) => a.name.localeCompare(b.name) };
     const mods = moduleColumns.map(m => { let a = 0, ac = 0, b = 0, bc = 0;
         data.forEach(d => { const x = d.modules[m.name]; if (!x) return; if (x.pre !== null && !isNaN(x.pre)) { a += x.pre; ac++; } if (x.post !== null && !isNaN(x.post)) { b += x.post; bc++; } });
-        return ac && bc ? { name: m.name, pre: +(a / ac).toFixed(1), post: +(b / bc).toFixed(1) } : null; }).filter(Boolean).sort((x, y) => (y.post - y.pre) - (x.post - x.pre));
-    el("gainWrap").style.height = Math.max(260, mods.length * 24) + "px";
+        return ac && bc ? { name: m.name, pre: +(a / ac).toFixed(1), post: +(b / bc).toFixed(1), nPre: ac, nPost: bc } : null; }).filter(Boolean).sort(sorters[gainSort] || sorters.gain);
+    lastCtx.mods = mods;
+    const wrapLabel = (t, w = 26) => { const lines = []; let cur = ""; String(t).split(" ").forEach(wd => { if (cur && (cur + " " + wd).length > w) { lines.push(cur); cur = wd; } else cur = (cur ? cur + " " : "") + wd; }); if (cur) lines.push(cur); return lines; };
+    el("gainWrap").style.height = Math.max(300, mods.length * 66 + 40) + "px";
     destroyChart("gain");
-    chartInstances["gain"] = new Chart(el("cGain"), { type: "bar", data: { labels: mods.map(m => m.name), datasets: [{ data: mods.map(m => [m.pre, m.post]), backgroundColor: mods.map(m => m.post >= m.pre ? "#34a853" : "#ea4335"), borderRadius: 4, barThickness: 10 }] },
-        options: { indexAxis: "y", responsive: true, maintainAspectRatio: false, layout: { padding: { right: 34 } },
-            plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `Pre ${mods[c.dataIndex].pre} → Post ${mods[c.dataIndex].post}` } },
-                datalabels: { anchor: "end", align: "end", color: "#000", font: { weight: "bold", size: 10 }, formatter: (v, c) => { const g = mods[c.dataIndex].post - mods[c.dataIndex].pre; return (g >= 0 ? "+" : "") + g.toFixed(1); } } },
-            scales: { x: { min: 0, max: 100, ticks: { font: { size: 9 } } }, y: { ticks: { font: { size: 9 }, autoSkip: false, callback(v) { const t = this.getLabelForValue(v); return t.length > 34 ? t.slice(0, 33) + "…" : t; } } } } } });
+    chartInstances["gain"] = new Chart(el("cGain"), { type: "bar",
+        data: { labels: mods.map(m => wrapLabel(m.name)), datasets: [
+            { label: "Pre-Test", data: mods.map(m => m.pre), backgroundColor: "#9aa5b1", borderRadius: 3 },
+            { label: "Post-Test", data: mods.map(m => m.post), backgroundColor: "#34a853", borderRadius: 3 } ] },
+        options: { indexAxis: "y", responsive: true, maintainAspectRatio: false, layout: { padding: { right: 92 } },
+            interaction: { mode: "nearest", axis: "y", intersect: false },
+            onClick: (e, els) => { if (els.length) showModuleInfo(els[0].index); },
+            onHover: (e, els) => { e.native.target.style.cursor = els.length ? "pointer" : "default"; },
+            categoryPercentage: 0.85, barPercentage: 0.9,
+            plugins: { legend: { display: false },
+                tooltip: { titleFont: { size: 13 }, bodyFont: { size: 13 }, callbacks: {
+                    title: it => mods[it[0].dataIndex].name,
+                    label: c => `${c.dataset.label}: ${c.parsed.x}`,
+                    afterBody: it => { const m = mods[it[0].dataIndex], g = m.post - m.pre; return `Kenaikan: ${g >= 0 ? "+" : ""}${g.toFixed(1)}`; } } },
+                datalabels: { anchor: "end", align: "end", clamp: true, font: { weight: "bold", size: 12 },
+                    color: c => c.datasetIndex === 0 ? "#555" : (mods[c.dataIndex].post >= mods[c.dataIndex].pre ? "#15803d" : "#dc2626"),
+                    formatter: (v, c) => { if (c.datasetIndex === 0) return v.toFixed(1); const g = mods[c.dataIndex].post - mods[c.dataIndex].pre; return v.toFixed(1) + "  (" + (g >= 0 ? "+" : "") + g.toFixed(1) + ")"; } } },
+            scales: { x: { min: 0, max: 100, ticks: { font: { size: 12 } }, grid: { color: "#eee" } },
+                      y: { ticks: { font: { size: 12, weight: "600" }, color: "#222", autoSkip: false }, grid: { display: false } } } } });
 
     // Table Logic
     const tbody = document.getElementById("jabatanTableBody"); const thead = document.getElementById("jabatanTableHead"); const tTitle = document.getElementById("tableTitle");
