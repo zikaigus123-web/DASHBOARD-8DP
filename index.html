@@ -149,6 +149,34 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
 
 .spinning { animation: spin 0.8s linear infinite; }
 @keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* ===== DASHBOARD V2 ===== */
+.v2{display:grid;grid-template-columns:repeat(3,1fr) 1.4fr;gap:10px}
+.v2-kpis{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.v2-kpi,.v2-card{background:#fff;border:2px solid #000;border-radius:6px;padding:10px 12px;min-width:0}
+.v2-kpi{border-left:6px solid #ffb703}
+.v2-kpi span{font-size:11px;font-weight:700;color:#555;text-transform:uppercase}
+.v2-kpi b{display:block;font-size:28px;font-weight:800;line-height:1.2;color:#000}
+.v2-kpi b small{font-size:12px;color:#555}
+.v2-bar{height:6px;background:#e5e7eb;border-radius:3px;overflow:hidden}
+.v2-bar i{display:block;height:100%;background:#34a853;transition:width .6s}
+.v2-h{font-size:12px;font-weight:800;color:#000;margin-bottom:8px;padding-left:8px;border-left:4px solid #ffb703;text-transform:uppercase}
+.v2-gauge{position:relative;height:150px}
+.v2-gc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;text-align:center}
+.v2-gc b{font-size:26px;font-weight:800;color:#000}.v2-gc span{font-size:10px;font-weight:700;color:#555;max-width:100px}
+.v2-gain{grid-column:4;grid-row:2/4;display:flex;flex-direction:column}
+.v2-gainscroll{flex:1;min-height:0;overflow-y:auto}
+.v2-heatcard{grid-column:1/3;grid-row:3}.v2-attn{grid-column:3;grid-row:3}.v2-table{grid-column:1/-1}
+.v2-heat{width:100%;border-collapse:collapse;font-size:12px;text-align:center}
+.v2-heat th{background:#ffb703;border:1px solid #000;padding:4px}
+.v2-heat td{border:1px solid #ddd;padding:4px 6px;color:#000}
+.v2-heat tbody tr:hover{outline:2px solid #000}
+.v2-hc{display:flex;align-items:center;gap:6px}.v2-hc i{display:block;height:10px;border-radius:2px;flex:none}
+.v2-at{display:grid;grid-template-columns:70px 1fr 42px 24px;gap:6px;align-items:center;font-size:12px;margin-bottom:9px;font-weight:700}
+.v2-at small{color:#777}
+@media(max-width:1100px){.v2{grid-template-columns:1fr 1fr}.v2-gain,.v2-heatcard,.v2-attn{grid-column:1/-1;grid-row:auto}}
+:fullscreen #view-dashboard,:-webkit-full-screen #view-dashboard{overflow:auto}
+:fullscreen .v2-table,:-webkit-full-screen .v2-table{display:none}
 </style>
 </head>
 <body>
@@ -289,93 +317,23 @@ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-
                 </div>
             </div>
 
-            <!-- MAIN LAYOUT -->
-            <div class="main-layout">
-                <!-- LEFT COLUMN -->
-                <div class="left-column">
-                    <div class="column-card">
-                        <div class="column-header">Training Coverage</div>
-                        <div class="chart-wrapper">
-                            <div class="sub-header">Overall Coverage Rate</div>
-                            <div class="chart-box">
-                                <div class="canvas-wrapper"><canvas id="coveragePieChart"></canvas></div>
-                            </div>
-                        </div>
-                        <div class="chart-wrapper">
-                            <div class="sub-header">Training Coverage per Jabatan</div>
-                            <div class="chart-box">
-                                <div class="canvas-wrapper"><canvas id="coverageBarChart"></canvas></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="kpi-container">
-                        <div class="sub-header" style="width: 100%; text-align: center; margin-bottom: 2px;">SUMMARY KPI 2026 (YTD)</div>
-                        <div class="kpi-content-wrapper">
-                            <div class="kpi-icon-box"><i class="fas fa-chart-pie"></i></div>
-                            <div class="kpi-metrics">
-                                <div class="kpi-item"><h3 id="kpiTotalPart">0</h3><p>Total Employee<br>2026 (YTD)</p></div>
-                                <div class="kpi-item"><h3 id="kpiOverallCoverage">0</h3><p>Employee Coverage<br>(Assigned)</p></div>
-                                <div class="kpi-item"><h3 id="kpiCompletionStatus">0/0</h3><p>Training Progress<br><span style="color:#555;">(Done/Prog)</span></p></div>
-                                <div class="kpi-item"><h3 id="kpiTargetHoursStatus">0/0</h3><p>Target Hours<br><span style="color:#555;">(Tercapai/Blm)</span></p></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="jabatan-table-container">
-                        <div class="sub-header" style="margin-bottom:4px; display: flex; justify-content: space-between; align-items: center; padding: 0 8px;">
-                            <span id="tableTitle">Rekap Jumlah Pegawai per Jabatan</span>
-                            <button onclick="openTableModal()" style="background:none; border:none; cursor:pointer;" title="Perbesar Tabel">
-                                <i class="fas fa-expand"></i>
-                            </button>
-                        </div>
-                        <div class="table-wrapper">
-                            <table class="jabatan-table">
-                                <thead id="jabatanTableHead"><tr><th>Jabatan</th><th style="width: 100px; text-align: center;">Total</th></tr></thead>
-                                <tbody id="jabatanTableBody"></tbody>
-                            </table>
-                        </div>
-                    </div>
+            <div class="v2">
+                <div class="v2-kpis">
+                    <div class="v2-kpi"><span>Total Employee Aktif</span><b id="kpiTotalPart">0</b></div>
+                    <div class="v2-kpi"><span>Employee Coverage</span><b id="kpiOverallCoverage">0</b><div class="v2-bar"><i id="barCov"></i></div></div>
+                    <div class="v2-kpi"><span>Training Progress (Done/Prog)</span><b id="kpiCompletionStatus">0/0</b><div class="v2-bar"><i id="barDone"></i></div></div>
+                    <div class="v2-kpi"><span>Target Hours (Tercapai/Blm)</span><b id="kpiTargetHoursStatus">0/0</b><div class="v2-bar"><i id="barHrs"></i></div></div>
                 </div>
-
-                <!-- RIGHT COLUMN -->
-                <div class="right-column">
-                    <div class="top-right-grid">
-                        <div class="column-card">
-                            <div class="column-header">Training Participant</div>
-                            <div class="chart-wrapper">
-                                <div class="sub-header">Overall Participation Status</div>
-                                <div class="chart-box"><div class="canvas-wrapper"><canvas id="EmployeePieChart"></canvas></div></div>
-                            </div>
-                            <div class="chart-wrapper">
-                                <div class="sub-header">Training Participant per Jabatan</div>
-                                <div class="chart-box"><div class="canvas-wrapper"><canvas id="EmployeeBarChart"></canvas></div></div>
-                            </div>
-                        </div>
-
-                        <div class="column-card">
-                            <div class="column-header">Training Hours</div>
-                            <div class="chart-wrapper">
-                                <div class="sub-header">Overall Hours Target Achievement</div>
-                                <div class="chart-box"><div class="canvas-wrapper"><canvas id="hoursPieChart"></canvas></div></div>
-                            </div>
-                            <div class="chart-wrapper">
-                                <div class="sub-header">Training Hours per Jabatan</div>
-                                <div class="chart-box"><div class="canvas-wrapper"><canvas id="hoursBarChart"></canvas></div></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="column-card" style="flex: 1;">
-                        <div class="sub-header">Distribusi Total Employee Berdasarkan Jabatan</div>
-                        <div class="chart-box"><div class="canvas-wrapper"><canvas id="jabatanPieChart"></canvas></div></div>
-                    </div>
+                <div class="v2-card"><div class="v2-h">Training Coverage</div><div class="v2-gauge"><canvas id="gCov"></canvas><div class="v2-gc" id="gCovT"></div></div></div>
+                <div class="v2-card"><div class="v2-h">Training Participant</div><div class="v2-gauge"><canvas id="gPart"></canvas><div class="v2-gc" id="gPartT"></div></div></div>
+                <div class="v2-card"><div class="v2-h">Training Hours</div><div class="v2-gauge"><canvas id="gHrs"></canvas><div class="v2-gc" id="gHrsT"></div></div></div>
+                <div class="v2-card v2-gain"><div class="v2-h">Pre-Test → Post-Test per Modul</div><div class="v2-gainscroll"><div id="gainWrap" style="position:relative"><canvas id="cGain"></canvas></div></div></div>
+                <div class="v2-card v2-heatcard"><div class="v2-h">Peta Kinerja per Jabatan <small style="text-transform:none;color:#777">(klik baris untuk filter)</small></div><table class="v2-heat" id="heat"></table></div>
+                <div class="v2-card v2-attn"><div class="v2-h">Perlu Perhatian · Done% Terendah per Lokasi</div><div id="attn"></div></div>
+                <div class="v2-card v2-table">
+                    <div class="v2-h" style="display:flex;justify-content:space-between"><span id="tableTitle">Rekap Jumlah Pegawai per Jabatan</span><button onclick="openTableModal()" style="background:none;border:none;cursor:pointer" title="Perbesar Tabel"><i class="fas fa-expand"></i></button></div>
+                    <div class="table-wrapper"><table class="jabatan-table"><thead id="jabatanTableHead"><tr><th>Jabatan</th><th style="width:100px;text-align:center;">Total</th></tr></thead><tbody id="jabatanTableBody"></tbody></table></div>
                 </div>
-            </div>
-
-            <!-- BOTTOM SECTION -->
-            <div class="bottom-section">
-                <div class="sub-header">Rata-Rata Nilai Pre-Test vs Post-Test per Modul Training</div>
-                <div class="bottom-chart-box"><div class="canvas-wrapper"><canvas id="prePostLineChart"></canvas></div></div>
             </div>
         </div>
 
@@ -1151,67 +1109,60 @@ function getOrderedJabatanList(data) {
     Array.from(e).sort().forEach(j => { if(j) o.push(j); }); return o;
 }
 
+function pickJab(j) { const f = document.getElementById("filterJabatan"); f.value = f.value === j ? "ALL" : j; applyFilter(); }
 function renderDashboard(data) {
-    const jabatanList = getOrderedJabatanList(data);
-    const isJabatanFiltered = document.getElementById("filterJabatan").value !== "ALL";
-    let totalCovered=0, countDone=0, countProgress=0, countTargetTercapai=0, countTargetBelum=0;
+    const jabatanList = getOrderedJabatanList(data), el = id => document.getElementById(id);
+    const jCounts = {}; data.forEach(d => jCounts[d.jabatan] = (jCounts[d.jabatan] || 0) + 1);
+    const lw = x => (x || "").toLowerCase(), P = (a, b) => b ? Math.round(a * 1000 / b) / 10 : 0;
+    const isCov = d => lw(d.statusCoverage).includes("tercoverage");
+    const rec = d => { const x = lw(d.allRecap); return x.includes("done") ? "Done" : x.includes("progress") ? "On Progress" : "Not Yet"; };
+    const hit = d => { const x = lw(d.statusTarget); return x.includes("tercapai") && !x.includes("belum"); };
+    const n = data.length, nCov = data.filter(isCov).length, nHit = data.filter(hit).length;
+    const nDone = data.filter(d => rec(d) === "Done").length, nProg = data.filter(d => rec(d) === "On Progress").length;
 
-    data.forEach(d => {
-        if(d.statusCoverage==="Tercoverage" || (d.statusCoverage||"").toLowerCase().includes("tercoverage")) totalCovered++;
-        const st = (d.allRecap || "").toLowerCase();
-        if(st.includes("done")) countDone++; else if(st.includes("progress")) countProgress++;
-        const stT = (d.statusTarget || "").toLowerCase();
-        if(stT.includes("tercapai") && !stT.includes("belum")) countTargetTercapai++; else countTargetBelum++;
-    });
+    el("kpiTotalPart").textContent = n;
+    el("kpiOverallCoverage").innerHTML = `${nCov} <small>(${P(nCov, n)}%)</small>`;
+    el("kpiCompletionStatus").innerHTML = `<span style="color:#2e7d32">${nDone}</span>/<span style="color:#fbbc04">${nProg}</span>`;
+    el("kpiTargetHoursStatus").innerHTML = `<span style="color:#2e7d32">${nHit}</span>/<span style="color:#ea4335">${n - nHit}</span>`;
+    el("barCov").style.width = P(nCov, n) + "%"; el("barDone").style.width = P(nDone, n) + "%"; el("barHrs").style.width = P(nHit, n) + "%";
 
-    const covPct = data.length>0 ? ((totalCovered/data.length)*100).toFixed(1):0;
-    document.getElementById("kpiTotalPart").textContent = data.length;
-    document.getElementById("kpiOverallCoverage").innerHTML = `${totalCovered} <span style="font-size:10px; color:#555;">(${covPct}%)</span>`;
-    document.getElementById("kpiCompletionStatus").innerHTML = `<span style="color:#2e7d32;">${countDone}</span>/<span style="color:#fbbc04;">${countProgress}</span>`;
-    document.getElementById("kpiTargetHoursStatus").innerHTML = `<span style="color:#2e7d32;">${countTargetTercapai}</span>/<span style="color:#ea4335;">${countTargetBelum}</span>`;
+    // Gauge (ring) dengan angka di tengah
+    const G = (id, vals, cols, labels, pct, sub) => {
+        destroyChart(id);
+        chartInstances[id] = new Chart(el(id), { type: "doughnut", data: { labels, datasets: [{ data: vals, backgroundColor: cols, borderWidth: 2, borderColor: "#fff" }] },
+            options: { responsive: true, maintainAspectRatio: false, cutout: "74%", plugins: { legend: { display: false }, datalabels: { display: false } } } });
+        el(id + "T").innerHTML = `<b>${pct}%</b><span>${sub}</span>`;
+    };
+    G("gCov", [nCov, n - nCov], ["#34a853", "#ea4335"], ["Tercoverage", "Not Yet"], P(nCov, n), `${nCov} / ${n} pegawai`);
+    G("gPart", [nDone, nProg, n - nDone - nProg], ["#34a853", "#fbbc04", "#ea4335"], ["Done", "On Progress", "Not Yet"], P(nDone, n), `${nDone} done · ${nProg} prog · ${n - nDone - nProg} belum`);
+    G("gHrs", [nHit, n - nHit], ["#34a853", "#ea4335"], ["Tercapai", "Belum Tercapai"], P(nHit, n), `${nHit} / ${n} tercapai`);
 
-    // Coverage
-    let terC=0, notC=0; const covByJab={}; jabatanList.forEach(j=>covByJab[j]={"Tercoverage":0,"Not Yet":0});
-    data.forEach(d=>{ const ic = d.statusCoverage==="Tercoverage"||(d.statusCoverage||"").toLowerCase().includes("tercoverage");
-        if(ic) terC++; else notC++; if(covByJab[d.jabatan]){ if(ic) covByJab[d.jabatan]["Tercoverage"]++; else covByJab[d.jabatan]["Not Yet"]++; }
-    });
-    destroyChart("coveragePie"); chartInstances["coveragePie"] = new Chart(document.getElementById("coveragePieChart"), { type:"pie", data:{ labels:["Tercoverage","Not Yet"], datasets:[{data:[terC,notC],backgroundColor:["#34a853","#ea4335"]}] }, options:getStatusPieOptions() });
-    destroyChart("coverageBar"); chartInstances["coverageBar"] = new Chart(document.getElementById("coverageBarChart"), { type:"bar", data:{ labels:jabatanList, datasets:[
-        { label:"Tercoverage", data:jabatanList.map(j=>covByJab[j]["Tercoverage"]), backgroundColor:jabatanList.map(j=>isJabatanFiltered?"#34a853":getJabatanColor(j)), borderColor:jabatanList.map(j=>isJabatanFiltered?"#34a853":getJabatanColor(j)), borderWidth:1},
-        { label:"Not Yet", data:jabatanList.map(j=>covByJab[j]["Not Yet"]), backgroundColor:jabatanList.map(j=>isJabatanFiltered?hexToRgba("#ea4335",0.3):hexToRgba(getJabatanColor(j),0.2)), borderColor:jabatanList.map(j=>isJabatanFiltered?"#ea4335":getJabatanColor(j)), borderWidth:1.5}
-    ]}, options:getBarOptionsWithStatusLegend() });
+    // Heatmap per jabatan (klik = filter)
+    const band = v => v >= 80 ? "#34a853" : v >= 50 ? "#fbbc04" : "#ea4335";
+    const heatBg = v => hexToRgba(band(v), v >= 80 ? 0.3 + (v - 80) / 40 : v >= 50 ? 0.4 : 0.3 + (50 - v) / 100);
+    const maxC = Math.max(1, ...Object.values(jCounts));
+    el("heat").innerHTML = `<thead><tr><th>Jabatan</th><th>Headcount</th><th>Coverage</th><th>Done</th><th>Jam Target</th></tr></thead><tbody>` + jabatanList.map(j => {
+        const g = data.filter(d => d.jabatan === j), c = g.length, col = getJabatanColor(j);
+        const cell = v => `<td style="background:${heatBg(v)}"><b>${v}%</b></td>`;
+        return `<tr onclick="pickJab('${j}')" style="cursor:pointer"><td style="border-left:5px solid ${col}"><b>${j}</b></td><td><div class="v2-hc"><i style="width:${c * 70 / maxC}%;background:${col}"></i><b>${c}</b></div></td>${cell(P(g.filter(isCov).length, c))}${cell(P(g.filter(d => rec(d) === "Done").length, c))}${cell(P(g.filter(hit).length, c))}</tr>`;
+    }).join("") + `</tbody>`;
 
-    // Participation
-    let dnC=0, opC=0, nyC=0; const empByJab={}; jabatanList.forEach(j=>empByJab[j]={"Done":0,"On Progress":0,"Not Yet":0});
-    data.forEach(d=>{ const st=(d.allRecap||"").toLowerCase(); let sc="Not Yet"; if(st.includes("done"))sc="Done"; else if(st.includes("progress"))sc="On Progress";
-        if(sc==="Done")dnC++; else if(sc==="On Progress")opC++; else nyC++; if(empByJab[d.jabatan])empByJab[d.jabatan][sc]++;
-    });
-    destroyChart("partPie"); chartInstances["partPie"] = new Chart(document.getElementById("EmployeePieChart"), { type:"pie", data:{ labels:["Not Yet","Done","On Progress"], datasets:[{data:[nyC,dnC,opC],backgroundColor:["#ea4335","#34a853","#fbbc04"]}] }, options:getStatusPieOptions() });
-    destroyChart("partBar"); chartInstances["partBar"] = new Chart(document.getElementById("EmployeeBarChart"), { type:"bar", data:{ labels:jabatanList, datasets:[
-        {label:"Done",data:jabatanList.map(j=>empByJab[j]["Done"]),backgroundColor:jabatanList.map(j=>isJabatanFiltered?"#34a853":getJabatanColor(j)),borderColor:jabatanList.map(j=>isJabatanFiltered?"#34a853":getJabatanColor(j)),borderWidth:1},
-        {label:"On Progress",data:jabatanList.map(j=>empByJab[j]["On Progress"]),backgroundColor:jabatanList.map(j=>isJabatanFiltered?getStripePattern("#fbbc04"):getStripePattern(getJabatanColor(j))),borderColor:jabatanList.map(j=>isJabatanFiltered?"#fbbc04":getJabatanColor(j)),borderWidth:1.5},
-        {label:"Not Yet",data:jabatanList.map(j=>empByJab[j]["Not Yet"]),backgroundColor:jabatanList.map(j=>isJabatanFiltered?hexToRgba("#ea4335",0.3):hexToRgba(getJabatanColor(j),0.15)),borderColor:jabatanList.map(j=>isJabatanFiltered?"#ea4335":getJabatanColor(j)),borderWidth:1.5}
-    ]}, options:getBarOptionsWithStatusLegend() });
+    // Perlu perhatian: lokasi dengan Done% terendah (min. 3 pegawai)
+    const L = {}; data.forEach(d => { const k = d.lokasi || "-"; (L[k] = L[k] || { n: 0, done: 0 }).n++; if (rec(d) === "Done") L[k].done++; });
+    const worst = Object.entries(L).filter(([, v]) => v.n >= 3).map(([k, v]) => [k, v.n, P(v.done, v.n)]).sort((a, b) => a[2] - b[2]).slice(0, 7);
+    el("attn").innerHTML = worst.map(([k, c, p]) => `<div class="v2-at"><span>${k}</span><div class="v2-bar"><i style="width:${p}%;background:${band(p)}"></i></div><b>${p}%</b><small>${c}</small></div>`).join("") || "<small>Tidak ada data</small>";
 
-    // Hours
-    let tcC=0, btcC=0; const hrsByJab={}; jabatanList.forEach(j=>hrsByJab[j]={act:0,tgt:0});
-    data.forEach(d=>{ const st=(d.statusTarget||"").toLowerCase(); if(st.includes("tercapai")&&!st.includes("belum"))tcC++; else btcC++;
-        if(hrsByJab[d.jabatan]){hrsByJab[d.jabatan].act+=d.trainingHours; hrsByJab[d.jabatan].tgt+=d.targetHours;}
-    });
-    destroyChart("hoursPie"); chartInstances["hoursPie"] = new Chart(document.getElementById("hoursPieChart"), { type:"pie", data:{labels:["Tercapai","Belum Tercapai"],datasets:[{data:[tcC,btcC],backgroundColor:["#34a853","#ea4335"]}]}, options:getStatusPieOptions() });
-    destroyChart("hoursBar"); chartInstances["hoursBar"] = new Chart(document.getElementById("hoursBarChart"), { type:"bar", data:{labels:jabatanList,datasets:[
-        {label:"Training Hours",data:jabatanList.map(j=>hrsByJab[j].act),backgroundColor:jabatanList.map(j=>isJabatanFiltered?"#34a853":getJabatanColor(j)),borderColor:jabatanList.map(j=>isJabatanFiltered?"#34a853":getJabatanColor(j)),borderWidth:1},
-        {label:"Target Hours",data:jabatanList.map(j=>hrsByJab[j].tgt),backgroundColor:jabatanList.map(j=>isJabatanFiltered?hexToRgba("#ea4335",0.3):hexToRgba(getJabatanColor(j),0.2)),borderColor:jabatanList.map(j=>isJabatanFiltered?"#ea4335":getJabatanColor(j)),borderWidth:1.5}
-    ]}, options:getBarOptionsWithStatusLegend() });
-
-    // Distribusi
-    const jCounts={}; data.forEach(d=>{jCounts[d.jabatan]=(jCounts[d.jabatan]||0)+1;});
-    destroyChart("jabatanPie"); chartInstances["jabatanPie"] = new Chart(document.getElementById("jabatanPieChart"), { type:"pie", data:{labels:jabatanList,datasets:[{data:jabatanList.map(j=>jCounts[j]||0),backgroundColor:jabatanList.map(j=>getJabatanColor(j))}]}, options:{ responsive:true, maintainAspectRatio:false, plugins:{ pieLeaderLines:{display:false}, legend:{position:'right',labels:{font:{size:10,weight:'bold'},boxWidth:12,padding:8}}, datalabels:{formatter:(v,c)=>{let s=0;c.chart.data.datasets[0].data.map(d=>s+=d);return s===0?"0%":(v*100/s).toFixed(1)+"%";},color:'#000',font:{weight:'bold',size:10}} } } });
-
-    // Line Pre Post
-    const modNs = moduleColumns.map(m=>m.name); const aPre=[], aPost=[];
-    moduleColumns.forEach(mod=>{ let pS=0,pC=0,poS=0,poC=0; data.forEach(d=>{const m=d.modules[mod.name];if(m){if(m.pre!==null&&!isNaN(m.pre)){pS+=m.pre;pC++;}if(m.post!==null&&!isNaN(m.post)){poS+=m.post;poC++;}}}); aPre.push(pC>0?(pS/pC).toFixed(1):0); aPost.push(poC>0?(poS/poC).toFixed(1):0); });
-    destroyChart("prePostLine"); chartInstances["prePostLine"] = new Chart(document.getElementById("prePostLineChart"), { type:"line", data:{labels:modNs.length>0?modNs:["M1","M2"],datasets:[{label:"Rata-Rata Pre-Test",data:aPre,borderColor:"#ea4335",backgroundColor:"#ea4335",tension:0.3,borderWidth:2,pointRadius:3},{label:"Rata-Rata Post-Test",data:aPost,borderColor:"#34a853",backgroundColor:"#34a853",tension:0.3,borderWidth:2,pointRadius:3}]}, options:{responsive:true,maintainAspectRatio:false,plugins:{datalabels:{display:false}},scales:{y:{beginAtZero:true,max:100,ticks:{font:{size:9}}},x:{ticks:{font:{size:9}}}}} });
+    // Pre -> Post per modul, urut kenaikan terbesar
+    const mods = moduleColumns.map(m => { let a = 0, ac = 0, b = 0, bc = 0;
+        data.forEach(d => { const x = d.modules[m.name]; if (!x) return; if (x.pre !== null && !isNaN(x.pre)) { a += x.pre; ac++; } if (x.post !== null && !isNaN(x.post)) { b += x.post; bc++; } });
+        return ac && bc ? { name: m.name, pre: +(a / ac).toFixed(1), post: +(b / bc).toFixed(1) } : null; }).filter(Boolean).sort((x, y) => (y.post - y.pre) - (x.post - x.pre));
+    el("gainWrap").style.height = Math.max(260, mods.length * 24) + "px";
+    destroyChart("gain");
+    chartInstances["gain"] = new Chart(el("cGain"), { type: "bar", data: { labels: mods.map(m => m.name), datasets: [{ data: mods.map(m => [m.pre, m.post]), backgroundColor: mods.map(m => m.post >= m.pre ? "#34a853" : "#ea4335"), borderRadius: 4, barThickness: 10 }] },
+        options: { indexAxis: "y", responsive: true, maintainAspectRatio: false, layout: { padding: { right: 34 } },
+            plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `Pre ${mods[c.dataIndex].pre} → Post ${mods[c.dataIndex].post}` } },
+                datalabels: { anchor: "end", align: "end", color: "#000", font: { weight: "bold", size: 10 }, formatter: (v, c) => { const g = mods[c.dataIndex].post - mods[c.dataIndex].pre; return (g >= 0 ? "+" : "") + g.toFixed(1); } } },
+            scales: { x: { min: 0, max: 100, ticks: { font: { size: 9 } } }, y: { ticks: { font: { size: 9 }, autoSkip: false, callback(v) { const t = this.getLabelForValue(v); return t.length > 34 ? t.slice(0, 33) + "…" : t; } } } } } });
 
     // Table Logic
     const tbody = document.getElementById("jabatanTableBody"); const thead = document.getElementById("jabatanTableHead"); const tTitle = document.getElementById("tableTitle");
